@@ -1,7 +1,8 @@
 <div align = "center">
     <h1>Animal Chess AR Android</h1>
     <p>An AR version Animal Chess Game<p>
-     <a href="https://gradle.org/" target="_blank"><img src="https://img.shields.io/badge/Gradle-4.4-green.svg?longCache=true&style=for-the-badge" alt="Gradle"></a>
+    <a href="https://firebase.google.com/" target="_blank"><img src="https://img.shields.io/badge/Firebase-Cloud-orange.svg?longCache=true&style=for-the-badge" alt="Firebase"></a>
+    <a href="https://gradle.org/" target="_blank"><img src="https://img.shields.io/badge/Gradle-4.4-green.svg?longCache=true&style=for-the-badge" alt="Gradle"></a>
 </div>
 
 ## Instructions
