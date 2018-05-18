@@ -47,3 +47,8 @@ sceneform.asset('sampledata/models/Animals/Cat/Mesh_Cat.obj',
         'default',
         'sampledata/models/Animals/Cat/Mesh_Cat.sfa',
         'src/main/assets/Mesh_Cat')
+
+sceneform.asset('sampledata/models/Animals/Dog/Mesh_Beagle.obj',
+        'default',
+        'sampledata/models/Animals/Dog/Mesh_Beagle.sfa',
+        'src/main/assets/Mesh_Beagle')
