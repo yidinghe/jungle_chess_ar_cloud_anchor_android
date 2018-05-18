@@ -52,3 +52,33 @@ sceneform.asset('sampledata/models/Animals/Dog/Mesh_Beagle.obj',
         'default',
         'sampledata/models/Animals/Dog/Mesh_Beagle.sfa',
         'src/main/assets/Mesh_Beagle')
+
+sceneform.asset('sampledata/models/Animals/Mouse/Mesh_Hamster.obj',
+        'default',
+        'sampledata/models/Animals/Mouse/Mesh_Hamster.sfa',
+        'src/main/assets/Mesh_Hamster')
+
+sceneform.asset('sampledata/models/Animals/Tiger/Mesh_BengalTiger.obj',
+        'default',
+        'sampledata/models/Animals/Tiger/Mesh_BengalTiger.sfa',
+        'src/main/assets/Mesh_BengalTiger')
+
+sceneform.asset('sampledata/models/Animals/Wolves/Mesh_Wolf.obj',
+        'default',
+        'sampledata/models/Animals/Wolves/Mesh_Wolf.sfa',
+        'src/main/assets/Mesh_Wolf')
+
+sceneform.asset('sampledata/models/Animals/Lion/Mesh_Lion.obj',
+        'default',
+        'sampledata/models/Animals/Lion/Mesh_Lion.sfa',
+        'src/main/assets/Mesh_Lion')
+
+sceneform.asset('sampledata/models/Animals/Leopard/Mesh_Leopard.obj',
+        'default',
+        'sampledata/models/Animals/Leopard/Mesh_Leopard.sfa',
+        'src/main/assets/Mesh_Leopard')
+
+sceneform.asset('sampledata/models/Animals/Elephant/Elephant.obj',
+        'default',
+        'sampledata/models/Animals/Elephant/Elephant.sfa',
+        'src/main/assets/Elephant')

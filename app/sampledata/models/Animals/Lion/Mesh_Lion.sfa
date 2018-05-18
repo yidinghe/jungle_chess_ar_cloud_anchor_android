@@ -1,0 +1,61 @@
+{
+   materials: [
+      {
+         name: "lambert2SG",
+         parameters: [
+            {
+               baseColor: "Tex_Lion",
+            },
+            {
+               baseColorTint: [
+                  1,
+                  1,
+                  1,
+                  1,
+               ],
+            },
+            {
+               metallic: 0,
+            },
+            {
+               roughness: 1,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+   ],
+   model: {
+      attributes: [
+         "Position",
+         "TexCoord",
+         "Orientation",
+      ],
+      file: "sampledata/models/Animals/Lion/Mesh_Lion.obj",
+      name: "Mesh_Lion",
+      scale: 0.01545,
+      suggested_collision: {
+         center: {
+            x: 0,
+            y: 0,
+            z: 0,
+         },
+         size: {
+            x: 1,
+            y: 1,
+            z: 1,
+         },
+         type: "Box",
+      },
+   },
+   samplers: [
+      {
+         file: "sampledata/models/Animals/Lion\\Tex_Lion.png",
+         name: "Tex_Lion",
+         pipeline_name: "Tex_Lion.png",
+      },
+   ],
+   version: "0.51:1",
+}
