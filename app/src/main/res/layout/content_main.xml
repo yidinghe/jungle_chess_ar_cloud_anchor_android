@@ -8,13 +8,12 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <fragment
-        android:id="@+id/sceneform_fragment"
-        android:name="com.ar.animal.chess.WritingArFragment"
+    <com.google.ar.sceneform.ArSceneView
+        android:id="@+id/ar_scene_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/gallery_layout"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/gallery_layout"
         app:layout_constraintVertical_chainStyle="spread"
         app:layout_constraintVertical_weight="9" />
 
@@ -24,7 +23,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sceneform_fragment"
+        app:layout_constraintTop_toBottomOf="@+id/ar_scene_view"
         app:layout_constraintVertical_chainStyle="spread"
         app:layout_constraintVertical_weight="1">
 

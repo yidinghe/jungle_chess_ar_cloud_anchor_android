@@ -82,3 +82,8 @@ sceneform.asset('sampledata/models/Animals/Elephant/Elephant.obj',
         'default',
         'sampledata/models/Animals/Elephant/Elephant.sfa',
         'src/main/assets/Elephant')
+
+sceneform.asset('sampledata/models/Tile/Field_1268.obj',
+        'default',
+        'sampledata/models/Tile/Field_1268.sfa',
+        'src/main/assets/Field_1268')
