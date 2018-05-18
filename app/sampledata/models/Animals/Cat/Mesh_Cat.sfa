@@ -1,10 +1,10 @@
 {
    materials: [
       {
-         name: "Lion:blinn4SG",
+         name: "lambert2SG",
          parameters: [
             {
-               baseColor: "Lion_BaseColor",
+               baseColor: "Tex_Cat",
             },
             {
                baseColorTint: [
@@ -33,9 +33,9 @@
          "TexCoord",
          "Orientation",
       ],
-      file: "sampledata/models/Lion.obj",
-      name: "Lion",
-      scale: 0.029385699999999998,
+      file: "sampledata/models/Animals/Cat/Mesh_Cat.obj",
+      name: "Mesh_Cat",
+      scale: 0.057182999999999998,
       suggested_collision: {
          center: {
             x: 0,
@@ -52,9 +52,9 @@
    },
    samplers: [
       {
-         file: "sampledata/models\\Lion_BaseColor.png",
-         name: "Lion_BaseColor",
-         pipeline_name: "Lion_BaseColor.png",
+         file: "sampledata/models/Animals/Cat\\Tex_Cat.png",
+         name: "Tex_Cat",
+         pipeline_name: "Tex_Cat.png",
       },
    ],
    version: "0.51:1",
