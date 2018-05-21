@@ -29,61 +29,19 @@
 
 
             <Button
-                android:id="@+id/btn_dog"
+                android:id="@+id/btn_checkAnchor"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="1" />
+                android:text="CHECK" />
 
             <Button
-                android:id="@+id/btn_cat"
+                android:id="@+id/btn_resolveAnchor"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="2" />
+                android:text="RESOLVE" />
 
-            <Button
-                android:id="@+id/btn_mouse"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="3" />
-
-            <Button
-                android:id="@+id/btn_tiger"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="4" />
-
-            <Button
-                android:id="@+id/btn_leopard"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="5" />
-
-            <Button
-                android:id="@+id/btn_wolve"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="6" />
-
-
-            <Button
-                android:id="@+id/btn_lion"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="7" />
-
-            <Button
-                android:id="@+id/btn_elephant"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="8" />
 
 
     </LinearLayout>
