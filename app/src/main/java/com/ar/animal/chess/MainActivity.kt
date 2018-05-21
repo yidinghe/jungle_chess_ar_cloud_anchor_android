@@ -1,32 +1,19 @@
 package com.ar.animal.chess
 
-import android.graphics.Point
 import android.net.Uri
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
-import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
-import android.view.Menu
-import android.view.MenuItem
 import android.view.WindowManager
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.Toast
-import com.ar.animal.chess.PointerDrawable
-import com.ar.animal.chess.Utils
 
-import com.google.ar.core.Anchor
 import com.google.ar.core.Frame
-import com.google.ar.core.HitResult
 import com.google.ar.core.Plane
-import com.google.ar.core.Session
-import com.google.ar.core.Trackable
 import com.google.ar.core.TrackingState
 import com.google.ar.core.exceptions.CameraNotAvailableException
 import com.google.ar.core.exceptions.UnavailableException
@@ -36,21 +23,22 @@ import com.google.ar.sceneform.HitTestResult
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
-import com.google.ar.sceneform.rendering.Renderable
-import com.google.ar.sceneform.rendering.ViewRenderable
-import com.google.ar.sceneform.ux.ArFragment
-import com.google.ar.sceneform.ux.TransformableNode
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 
 class MainActivity : AppCompatActivity() {
+
+    private val RC_PERMISSIONS = 0x123
+
     private var installRequested: Boolean = false
 
     private var gestureDetector: GestureDetector? = null
     private var loadingMessageSnackbar: Snackbar? = null
     private var arSceneView: ArSceneView? = null
-    private var tilesRenderable: ModelRenderable? = null
-
+    private var tilesGrassRenderable: ModelRenderable? = null
+    private var tilesRiverRenderable: ModelRenderable? = null
+    private var tilesTrapRenderable: ModelRenderable? = null
+    private var tilesBasementRenderable: ModelRenderable? = null
     // True once scene is loaded
     private var hasFinishedLoading = false
 
@@ -67,16 +55,26 @@ class MainActivity : AppCompatActivity() {
 
         arSceneView = findViewById(R.id.ar_scene_view)
 
-        val tiles_7x9 = ModelRenderable.builder().setSource(this, Uri.parse("Field_1268.sfb")).build()
+        val tiles_grass = ModelRenderable.builder().setSource(this, Uri.parse("Field_1268.sfb")).build()
+        val tiles_river = ModelRenderable.builder().setSource(this, Uri.parse("Field_1268.sfb")).build()
+        val tiles_trap = ModelRenderable.builder().setSource(this, Uri.parse("Field_1268.sfb")).build()
+        val tiles_basement = ModelRenderable.builder().setSource(this, Uri.parse("Field_1268.sfb")).build()
 
-        CompletableFuture.allOf(tiles_7x9).handle<Any> { notUsed, throwable ->
+        CompletableFuture.allOf(
+                tiles_grass,
+                tiles_river,
+                tiles_trap,
+                tiles_basement).handle<Any> { notUsed, throwable ->
             if (throwable != null) {
                 Utils.displayError(this, "Unable to load renderable", throwable)
                 return@handle null
             }
 
             try {
-                tilesRenderable = tiles_7x9.get()
+                tilesGrassRenderable = tiles_grass.get()
+                tilesRiverRenderable = tiles_river.get()
+                tilesTrapRenderable = tiles_trap.get()
+                tilesBasementRenderable = tiles_basement.get()
                 // Everything finished loading successfully.
                 hasFinishedLoading = true
 
@@ -137,7 +135,7 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 }
-
+        Utils.requestCameraPermission(this, RC_PERMISSIONS)
         //initializeGallery();
     }
 
@@ -232,33 +230,59 @@ class MainActivity : AppCompatActivity() {
                 Log.d(TAG, "capture Hit")
                 val trackable = hit.trackable
                 if (trackable is Plane && trackable.isPoseInPolygon(hit.hitPose)) {
-
-                    for (plane in frame.getUpdatedTrackables(Plane::class.java)) {
-                        Log.d(TAG, "capture plane")
-                        for (anchor in plane.anchors) {
-                            Log.d(TAG, "capture anchor")
-                            val anchorNode = AnchorNode(anchor)
-                            anchorNode.setParent(arSceneView!!.scene)
-                            val singleTile = createSingleTile()
-                            anchorNode.addChild(singleTile)
-                        }
-                        return true
-                    }
+                    // Create the Anchor.
+                    val anchor = hit.createAnchor()
+                    val anchorNode = AnchorNode(anchor)
+                    anchorNode.setParent(arSceneView!!.scene)
+                    val singleTile = createCenterTile()
+                    anchorNode.addChild(singleTile)
                 }
             }
         }
         return true
     }
 
-    private fun createSingleTile(): Node {
+    private fun createCenterTile(): Node {
         val base = Node()
-        val tile = Node()
-        tile.setParent(base)
-        tile.localPosition = Vector3(0.0f, 0.5f, 0.0f)
-        tile.renderable = tilesRenderable
+        val centerTile = Node()
+        centerTile.setParent(base)
+        centerTile.localPosition = Vector3(0.0f, 0.0f, 0.0f)
+        centerTile.renderable = tilesGrassRenderable
+        createNeighbourTiles(centerTile)
         return base
     }
 
+    
+    private fun createNeighbourTiles(center:Node) {
+        var name:String
+        var tile:Tile
+        var distanceToCenter: Double
+        var modelRenderable:ModelRenderable
+        var test: String
+
+        for (row in 0..8) {
+            for(col in 0..6){
+                name = row.toString() + "_" + col.toString()
+                distanceToCenter =  Math.sqrt(Math.pow((row - 4).toDouble(), 2.0)+Math.pow((col - 3).toDouble(), 2.0))
+
+                if((row == 4 && col == 0) ||(row == 4 && col == 6)){
+                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_BASEMENT, tilesBasementRenderable!!)
+                } else if((row == 3 && (col == 0 || col == 6)) ||
+                        (row == 4 && (col == 1 || col == 5)) ||
+                        (row == 5 && (col == 0 || col == 6))){
+                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_TRAP, tilesTrapRenderable!!)
+                } else if(col == 3){
+                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_RIVER, tilesRiverRenderable!!)
+                } else{
+                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_GRASS, tilesGrassRenderable!!)
+                }
+                //tile.localScale = Vector3(0.05f, 0.05f, 0.05f)
+                tile.localPosition = Vector3((col-3).toFloat(),(row - 4).toFloat(), 0F)
+                tile.setParent(center)
+            }
+        }
+    }
+    
     private fun showLoadingMessage() {
         if (loadingMessageSnackbar != null && loadingMessageSnackbar!!.isShownOrQueued) {
             return

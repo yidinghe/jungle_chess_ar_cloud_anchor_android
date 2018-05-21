@@ -321,7 +321,7 @@
       ],
       file: "sampledata/models/Tile/Field_1268.obj",
       name: "Field_1268",
-      scale: 0.030318999999999999,
+      scale: 0.00030318999999999999,
       suggested_collision: {
          center: {
             x: 0,
