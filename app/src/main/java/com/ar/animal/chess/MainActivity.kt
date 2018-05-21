@@ -260,27 +260,31 @@ class MainActivity : AppCompatActivity() {
         var modelRenderable:ModelRenderable
         var test: String
 
-        for (row in 0..8) {
-            for(col in 0..6){
-                name = row.toString() + "_" + col.toString()
-                distanceToCenter =  Math.sqrt(Math.pow((row - 4).toDouble(), 2.0)+Math.pow((col - 3).toDouble(), 2.0))
+//        for (row in 0..8) {
+//            for(col in 0..6){
+//                name = row.toString() + "_" + col.toString()
+//                distanceToCenter =  Math.sqrt(Math.pow((row - 4).toDouble(), 2.0)+Math.pow((col - 3).toDouble(), 2.0))
+//
+//                if((row == 4 && col == 0) ||(row == 4 && col == 6)){
+//                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_BASEMENT, tilesBasementRenderable!!)
+//                } else if((row == 3 && (col == 0 || col == 6)) ||
+//                        (row == 4 && (col == 1 || col == 5)) ||
+//                        (row == 5 && (col == 0 || col == 6))){
+//                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_TRAP, tilesTrapRenderable!!)
+//                } else if(col == 3){
+//                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_RIVER, tilesRiverRenderable!!)
+//                } else{
+//                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_GRASS, tilesGrassRenderable!!)
+//                }
+//                //tile.localScale = Vector3(0.05f, 0.05f, 0.05f)
+//                tile.localPosition = Vector3((col-3).toFloat(),(row - 4).toFloat(), 0F)
+//                tile.setParent(center)
+//            }
+//        }
 
-                if((row == 4 && col == 0) ||(row == 4 && col == 6)){
-                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_BASEMENT, tilesBasementRenderable!!)
-                } else if((row == 3 && (col == 0 || col == 6)) ||
-                        (row == 4 && (col == 1 || col == 5)) ||
-                        (row == 5 && (col == 0 || col == 6))){
-                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_TRAP, tilesTrapRenderable!!)
-                } else if(col == 3){
-                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_RIVER, tilesRiverRenderable!!)
-                } else{
-                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_GRASS, tilesGrassRenderable!!)
-                }
-                //tile.localScale = Vector3(0.05f, 0.05f, 0.05f)
-                tile.localPosition = Vector3((col-3).toFloat(),(row - 4).toFloat(), 0F)
-                tile.setParent(center)
-            }
-        }
+        tile = Tile(this, "TEST", 1.0F, TileType.TILE_GRASS, tilesRiverRenderable!!)
+        tile.localPosition = Vector3(5F,5F,0F)
+        tile.setParent(center)
     }
     
     private fun showLoadingMessage() {

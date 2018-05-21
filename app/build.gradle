@@ -87,3 +87,9 @@ sceneform.asset('sampledata/models/Tile/Field_1268.obj',
         'default',
         'sampledata/models/Tile/Field_1268.sfa',
         'src/main/assets/Field_1268')
+
+
+sceneform.asset('sampledata/models/Tile/Waterfall_1228.obj',
+        'default',
+        'sampledata/models/Tile/Waterfall_1228.sfa',
+        'src/main/assets/Waterfall_1228')
