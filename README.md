@@ -19,6 +19,7 @@ Animal Chess AR is an Android AR version Animal Chess Game which created by usin
 - 对动物的操作，用tap加view
 - 输赢逻辑定义
 - 游戏入口出口
+- 用户登录
 - Use Resonance Audio SDK to do 3D sound
 
 ## backend logic design (draft 2)
