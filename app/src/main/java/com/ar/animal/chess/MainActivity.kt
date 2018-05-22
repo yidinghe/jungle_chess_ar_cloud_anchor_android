@@ -58,9 +58,9 @@ class MainActivity : AppCompatActivity() {
         arSceneView = findViewById(R.id.ar_scene_view)
 
         val tiles_grass = ModelRenderable.builder().setSource(this, Uri.parse("trees1.sfb")).build()
-        val tiles_river = ModelRenderable.builder().setSource(this, Uri.parse("Environment.sfb")).build()
+        val tiles_river = ModelRenderable.builder().setSource(this, Uri.parse("Wave.sfb")).build()
         val tiles_trap = ModelRenderable.builder().setSource(this, Uri.parse("Field_1268.sfb")).build()
-        val tiles_basement = ModelRenderable.builder().setSource(this, Uri.parse("Field_1268.sfb")).build()
+        val tiles_basement = ModelRenderable.builder().setSource(this, Uri.parse("model.sfb")).build()
 
         btn_checkAnchor.setOnClickListener {
             checkUpdatedAnchor()
@@ -269,15 +269,15 @@ class MainActivity : AppCompatActivity() {
                 name = row.toString() + "_" + col.toString()
                 distanceToCenter = Math.sqrt(Math.pow((row - 4).toDouble(), 2.0) + Math.pow((col - 3).toDouble(), 2.0))
 
-                if ((row == 4 && col == 0) || (row == 4 && col == 6)) {
+                if ((row == 0 && col == 3) || (row == 8 && col == 3)) {
                     tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_BASEMENT, tilesBasementRenderable!!)
                     tile.renderable = tilesBasementRenderable
-                } else if ((row == 3 && (col == 0 || col == 6)) ||
-                        (row == 4 && (col == 1 || col == 5)) ||
-                        (row == 5 && (col == 0 || col == 6))) {
+                } else if ((col == 2 && (row == 0 || row == 8)) ||
+                        (col == 3 && (row == 1 || row == 7)) ||
+                        (col == 4 && (row == 0 || row == 8))) {
                     tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_TRAP, tilesTrapRenderable!!)
                     tile.renderable = tilesTrapRenderable
-                } else if (col == 3) {
+                } else if (row == 4) {
                     tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_RIVER, tilesRiverRenderable!!)
                     tile.renderable = tilesRiverRenderable
                 } else {
