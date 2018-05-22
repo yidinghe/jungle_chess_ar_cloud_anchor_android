@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Animal Chess</string>
     <string name="action_settings">Settings</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="resolve_dialog_title">Resolve Anchor</string>
+    <string name="resolve_button_text">Resolve</string>
 </resources>
