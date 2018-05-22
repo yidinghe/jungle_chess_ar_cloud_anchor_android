@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity() {
     private var appAnchorState = AppAnchorState.NONE
     private var cloudAnchor: Anchor? = null
     private var arSession: Session? = null
+    private var storageManager: StorageManager? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +57,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         arSceneView = findViewById(R.id.ar_scene_view)
+        storageManager = StorageManager(this)
 
         val tiles_grass = ModelRenderable.builder().setSource(this, Uri.parse("trees1.sfb")).build()
         val tiles_river = ModelRenderable.builder().setSource(this, Uri.parse("Wave.sfb")).build()
@@ -64,6 +66,10 @@ class MainActivity : AppCompatActivity() {
 
         btn_checkAnchor.setOnClickListener {
             checkUpdatedAnchor()
+        }
+
+        btn_resolveAnchor.setOnClickListener {
+            resolveAnchor()
         }
 
         CompletableFuture.allOf(
@@ -142,7 +148,7 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
         Utils.requestCameraPermission(this, RC_PERMISSIONS)
-        //initializeGallery();
+
     }
 
     override fun onResume() {
@@ -285,7 +291,7 @@ class MainActivity : AppCompatActivity() {
                     tile.renderable = tilesGrassRenderable
                 }
                 //tile.localScale = Vector3(0.05f, 0.05f, 0.05f)
-                tile.localPosition = Vector3((col - 3).toFloat()/4, 0F, (row - 4).toFloat()/4)
+                tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
 
                 tile.setParent(center)
             }
@@ -327,13 +333,14 @@ class MainActivity : AppCompatActivity() {
             cloudAnchor!!.detach()
         }
         cloudAnchor = newAnchor
+        appAnchorState = AppAnchorState.NONE
+    }
 
+    private fun placeBoard() {
         val anchorNode = AnchorNode(cloudAnchor)
         anchorNode.setParent(arSceneView!!.scene)
         val singleTile = createCenterTile()
         anchorNode.addChild(singleTile)
-
-        appAnchorState = AppAnchorState.NONE
     }
 
     private fun hostCloudAnchor(anchor: Anchor) {
@@ -341,27 +348,80 @@ class MainActivity : AppCompatActivity() {
 
         val newAnchor = session.hostCloudAnchor(anchor)
         setNewAnchor(newAnchor)
-
+        placeBoard()
         Snackbar.make(findViewById(android.R.id.content), "hostCloudAnchor", Snackbar.LENGTH_SHORT).show()
         d(TAG, "setNewAnchor: hostCloudAnchor HOSTING")
         appAnchorState = AppAnchorState.HOSTING
     }
 
+    private fun resolveAnchor() {
+        if (cloudAnchor != null) {
+            e(TAG, "Already had cloud anchor, need clear anchor first.")
+            return
+        }
+        val dialogFragment = ResolveDialogFragment()
+
+    }
+
+    private fun onResolveOkPressed(dialogValue: String) {
+        val shortCode = dialogValue.toInt()
+        storageManager?.getCloudAnchorID(shortCode) { cloudAnchorId ->
+            if (arSession == null) {
+                e(TAG, "onResolveOkPressed failed due to arSession is null")
+            } else {
+                val resolveAnchor = arSession!!.resolveCloudAnchor(cloudAnchorId)
+                setNewAnchor(resolveAnchor)
+                d(TAG, "onResolveOkPressed: resolving anchor")
+                appAnchorState = AppAnchorState.RESOLVING
+            }
+
+        }
+    }
+
     private fun checkUpdatedAnchor() {
-        if (appAnchorState != AppAnchorState.HOSTING || cloudAnchor == null)
+        if (appAnchorState != AppAnchorState.HOSTING && appAnchorState != AppAnchorState.RESOLVING || cloudAnchor == null)
             return
         val cloudState = cloudAnchor!!.cloudAnchorState
-        if (cloudState.isError) {
-            appAnchorState = AppAnchorState.NONE
-            Snackbar.make(findViewById(android.R.id.content), "Anchor hosted error:  state: $cloudState", Snackbar.LENGTH_SHORT).show()
-            e(TAG, "Anchor hosted error:  CloudId: $cloudState")
-        } else if (cloudState == Anchor.CloudAnchorState.SUCCESS) {
-            appAnchorState = AppAnchorState.HOSTED
-            Snackbar.make(findViewById(android.R.id.content), "Anchor hosted stored  CloudId: ${cloudAnchor!!.cloudAnchorId}", Snackbar.LENGTH_SHORT).show()
-            d(TAG, "Anchor hosted stored  CloudId:  ${cloudAnchor!!.cloudAnchorId}")
-        } else {
-            d(TAG, "Anchor state: $cloudState")
+
+        if (appAnchorState == AppAnchorState.HOSTING) {
+            if (cloudState.isError) {
+                appAnchorState = AppAnchorState.NONE
+                Snackbar.make(findViewById(android.R.id.content), "Anchor hosted error:  state: $cloudState", Snackbar.LENGTH_SHORT).show()
+                e(TAG, "Anchor hosted error:  CloudId: $cloudState")
+            } else if (cloudState == Anchor.CloudAnchorState.SUCCESS) {
+                storageManager?.nextShortCode { shortCode ->
+                    if (shortCode == null) {
+                        Snackbar.make(findViewById(android.R.id.content), "Could not obtain a short code.", Snackbar.LENGTH_SHORT).show()
+                        e(TAG, "Could not obtain a short code.")
+                    } else {
+                        storageManager!!.storeUsingShortCode(shortCode, cloudAnchor!!.cloudAnchorId)
+                        d(TAG, "Anchor hosted stored shortCode: $shortCode" +
+                                " CloudId: ${cloudAnchor!!.cloudAnchorId}")
+                        Snackbar.make(findViewById(android.R.id.content), "Anchor hosted stored shortCode: $shortCode" +
+                                " CloudId: ${cloudAnchor!!.cloudAnchorId}", Snackbar.LENGTH_SHORT).show()
+
+                    }
+                }
+                appAnchorState = AppAnchorState.HOSTED
+                d(TAG, "Anchor hosted stored  CloudId:  ${cloudAnchor!!.cloudAnchorId}")
+            } else {
+                d(TAG, "Anchor state: $cloudState")
+            }
+        } else if (appAnchorState == AppAnchorState.RESOLVING) {
+            if (cloudState.isError) {
+                appAnchorState = AppAnchorState.NONE
+                Snackbar.make(findViewById(android.R.id.content), "Anchor resolving error:  state: $cloudState", Snackbar.LENGTH_SHORT).show()
+                e(TAG, "Anchor hosted error:  CloudId: $cloudState")
+            } else if (cloudState == Anchor.CloudAnchorState.SUCCESS) {
+                appAnchorState = AppAnchorState.RESOLVED
+                Snackbar.make(findViewById(android.R.id.content), "Anchor resolved successfully!", Snackbar.LENGTH_SHORT).show()
+                d(TAG, "Anchor resolved successfully!")
+                placeBoard()
+            } else {
+                d(TAG, "Anchor state: $cloudState")
+            }
         }
+
     }
 
     companion object {
