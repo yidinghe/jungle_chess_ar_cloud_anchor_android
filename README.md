@@ -6,10 +6,10 @@
 </div>
 
 ## Instructions
-Animal Chess AR is an Android AR version Animal Chess Game which created by using Google AR Core.
+Animal Chess AR is an Android AR version Animal Chess Game which created by using Google AR Core and CloudAnchor.
 #### To build this application, following techniques are used:  
 - AR Core 1.2.0
-- Scenefrom SDK 1.0.0
+- Scenefrom SDK 1.0.1
 
 ## Development Steps
 - 渲染7*9的棋盘， 然后放置
@@ -38,8 +38,9 @@ Use Google Firebase Realtime Db to avoid server development.
 - User1登入游戏，创建room，生成棋盘， 生成cloudAnchorId
 - User1 send roomId, cloudAnchorId to realtime Db
 - User2使用roomId拿到cloudAnchorId登入游戏，看到棋盘
-- 先后手决定？
-- 每个user下棋时，block other user to 操作棋子
+- 先后手决定, by using gameState and currentRound
+- 每个user下棋时，block other user to 操作棋子 (10S)
+- every 5s? pull db to update view and rerender棋子
 - 每个user自己回合结束，2台手机同时重新绘制棋子
 
 ## 游戏规则参考

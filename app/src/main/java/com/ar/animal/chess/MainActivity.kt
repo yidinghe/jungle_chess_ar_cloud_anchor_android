@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
     private var arSession: Session? = null
     private var storageManager: ChessStorageManager? = null
     private val TAG = MainActivity::class.java.simpleName
-    private var mAuth= FirebaseAuth.getInstance()
+    private var mAuth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -199,7 +199,7 @@ class MainActivity : AppCompatActivity() {
             // Successfully signed in
             if (resultCode == RESULT_OK) {
                 //continue
-                var metadata = mAuth!!. getCurrentUser()!!.getMetadata();
+                var metadata = mAuth!!.getCurrentUser()!!.getMetadata();
                 if (metadata!!.getCreationTimestamp() == metadata.getLastSignInTimestamp()) {
                     // The user is new, show them a fancy intro screen!
                 } else {
@@ -365,7 +365,7 @@ class MainActivity : AppCompatActivity() {
                 distanceToCenter = Math.sqrt(Math.pow((row - 4).toDouble(), 2.0) + Math.pow((col - 3).toDouble(), 2.0))
 
                 if ((row == 0 && col == 3)
-                        //|| (row == 8 && col == 3)
+                //|| (row == 8 && col == 3)
                 ) {
                     tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_BASEMENT, tilesBasementRenderable!!)
                     tile.localPosition = Vector3((col - 3).toFloat() / 4, 0.25F, (row - 4).toFloat() / 4)
