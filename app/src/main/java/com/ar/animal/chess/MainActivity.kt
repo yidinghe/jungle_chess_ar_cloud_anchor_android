@@ -239,6 +239,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+
+
     private fun tryPlaceTile(tap: MotionEvent?, frame: Frame): Boolean {
         if (tap != null && frame.camera.trackingState == TrackingState.TRACKING) {
             for (hit in frame.hitTest(tap)) {
@@ -277,12 +280,15 @@ class MainActivity : AppCompatActivity() {
                 name = row.toString() + "_" + col.toString()
                 distanceToCenter = Math.sqrt(Math.pow((row - 4).toDouble(), 2.0) + Math.pow((col - 3).toDouble(), 2.0))
 
-                if ((row == 0 && col == 3)
-                        //|| (row == 8 && col == 3)
-                ) {
+                if (row == 0 && col == 3) {
                     tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_BASEMENT, tilesBasementRenderable!!)
                     tile.localPosition = Vector3((col - 3).toFloat() / 4, 0.25F, (row - 4).toFloat() / 4)
                     tile.localRotation = Quaternion.axisAngle(Vector3(0.0f, 1.0f, 0.0f), 90f)
+                    tile.renderable = tilesBasementRenderable
+                } else if(row == 8 && col == 3){
+                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_BASEMENT, tilesBasementRenderable!!)
+                    tile.localPosition = Vector3((col - 3).toFloat() / 4, 0.25F, (row - 4).toFloat() / 4)
+                    tile.localRotation = Quaternion.axisAngle(Vector3(0.0f, 1.0f, 0.0f), 270f)
                     tile.renderable = tilesBasementRenderable
                 } else if ((col == 2 && (row == 0 || row == 8)) ||
                         (col == 3 && (row == 1 || row == 7)) ||
@@ -299,9 +305,6 @@ class MainActivity : AppCompatActivity() {
                     tile.renderable = tilesGrassRenderable
                     tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
                 }
-                //tile.localScale = Vector3(0.05f, 0.05f, 0.05f)
-                //tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
-
                 tile.setParent(center)
             }
         }
@@ -351,6 +354,7 @@ class MainActivity : AppCompatActivity() {
         val singleTile = createCenterTile()
         anchorNode.addChild(singleTile)
     }
+
 
     private fun hostCloudAnchor(anchor: Anchor) {
         val session = arSceneView!!.session

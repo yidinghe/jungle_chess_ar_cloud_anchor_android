@@ -119,4 +119,10 @@ sceneform.asset('sampledata/models/Tile/model.obj',
         'default',
         'sampledata/models/Tile/model.sfa',
         'src/main/assets/model')
+
 apply plugin: 'com.google.gms.google-services'
+
+sceneform.asset('sampledata/models/Tile/grass/model-triangulated.obj',
+        'default',
+        'sampledata/models/Tile/grass/model-triangulated.sfa',
+        'src/main/assets/model-triangulated')
