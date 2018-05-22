@@ -40,7 +40,7 @@ class StorageManager {
 
     StorageManager(Context context) {
         FirebaseApp firebaseApp = FirebaseApp.initializeApp(context);
-        rootRef = FirebaseDatabase.getInstance(firebaseApp).getReference().child(KEY_ROOT_DIR);
+        rootRef = FirebaseDatabase.getInstance().getReference().child(KEY_ROOT_DIR);
         DatabaseReference.goOnline();
     }
 

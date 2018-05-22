@@ -1,5 +1,6 @@
 package com.ar.animal.chess
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -11,6 +12,9 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.ErrorCodes
+import com.firebase.ui.auth.IdpResponse
 import com.google.ar.core.*
 
 import com.google.ar.core.exceptions.CameraNotAvailableException
@@ -21,6 +25,8 @@ import com.google.ar.sceneform.HitTestResult
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.content_main.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
@@ -28,6 +34,9 @@ import java.util.concurrent.ExecutionException
 class MainActivity : AppCompatActivity() {
 
     private val RC_PERMISSIONS = 0x123
+    private val RC_SIGN_IN = 234
+
+    val providers: List<AuthUI.IdpConfig> = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
 
     private var installRequested: Boolean = false
 
@@ -49,12 +58,30 @@ class MainActivity : AppCompatActivity() {
     private var cloudAnchor: Anchor? = null
     private var arSession: Session? = null
     private var storageManager: StorageManager? = null
+    private var mAuth: FirebaseAuth? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
+
+
+        mAuth = FirebaseAuth.getInstance();
+        if (mAuth!!.currentUser != null) {
+
+            showSnackbar("Welcome back ${mAuth!!.currentUser!!.displayName}")
+        } else {
+            //Sign In
+            startActivityForResult(
+                    AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setAvailableProviders(providers)
+                            .build(),
+                    RC_SIGN_IN)
+        }
+
+
 
         arSceneView = findViewById(R.id.ar_scene_view)
         storageManager = StorageManager(this)
@@ -149,6 +176,53 @@ class MainActivity : AppCompatActivity() {
                 }
         Utils.requestCameraPermission(this, RC_PERMISSIONS)
 
+//        startActivity(Intent(this,LoginActivity.javaClass))
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == RC_SIGN_IN) {
+
+            var response = IdpResponse.fromResultIntent(data)
+
+            // Successfully signed in
+            if (resultCode == RESULT_OK) {
+                //continue
+                var metadata = mAuth!!. getCurrentUser()!!.getMetadata();
+                if (metadata!!.getCreationTimestamp() == metadata.getLastSignInTimestamp()) {
+                    // The user is new, show them a fancy intro screen!
+                } else {
+                    // This is an existing user, show them a welcome back screen.
+                }
+            } else {
+                // Sign in failed
+                if (response == null) {
+                    // User pressed back button
+                    showSnackbar(R.string.sign_in_cancelled);
+                    return;
+                }
+
+                if (response.getError()?.getErrorCode() == ErrorCodes.NO_NETWORK) {
+                    showSnackbar(R.string.no_internet_connection);
+                    return;
+                }
+
+                showSnackbar(R.string.unknown_error);
+                Log.e(TAG, "Sign-in error: ", response.getError());
+            }
+        }
+    }
+
+    fun showSnackbar(string: Int) {
+        val snackbar = Snackbar.make(findViewById(android.R.id.content), string, Snackbar.LENGTH_LONG)
+        snackbar.show()
+    }
+
+    fun showSnackbar(string: String) {
+        val snackbar = Snackbar.make(findViewById(android.R.id.content), string, Snackbar.LENGTH_LONG)
+        snackbar.show()
     }
 
     override fun onResume() {
