@@ -360,7 +360,8 @@ class MainActivity : AppCompatActivity() {
             return
         }
         val dialogFragment = ResolveDialogFragment()
-
+        dialogFragment.setOkListener(this::onResolveOkPressed)
+        dialogFragment.showNow(supportFragmentManager, "Resolve")
     }
 
     private fun onResolveOkPressed(dialogValue: String) {
