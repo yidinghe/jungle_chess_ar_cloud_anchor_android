@@ -20,8 +20,10 @@ import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.ArSceneView
 import com.google.ar.sceneform.HitTestResult
 import com.google.ar.sceneform.Node
+import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
+import com.google.ar.sceneform.ux.RotationController
 import kotlinx.android.synthetic.main.content_main.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
@@ -62,9 +64,9 @@ class MainActivity : AppCompatActivity() {
         storageManager = ChessStorageManager(this)
 
         val tiles_grass = ModelRenderable.builder().setSource(this, Uri.parse("trees1.sfb")).build()
-        val tiles_river = ModelRenderable.builder().setSource(this, Uri.parse("Environment.sfb")).build()
+        val tiles_river = ModelRenderable.builder().setSource(this, Uri.parse("Wave.sfb")).build()
         val tiles_trap = ModelRenderable.builder().setSource(this, Uri.parse("Field_1268.sfb")).build()
-        val tiles_basement = ModelRenderable.builder().setSource(this, Uri.parse("Field_1268.sfb")).build()
+        val tiles_basement = ModelRenderable.builder().setSource(this, Uri.parse("model.sfb")).build()
 
         btn_checkAnchor.setOnClickListener {
             checkUpdatedAnchor()
@@ -283,23 +285,30 @@ class MainActivity : AppCompatActivity() {
                 name = row.toString() + "_" + col.toString()
                 distanceToCenter = Math.sqrt(Math.pow((row - 4).toDouble(), 2.0) + Math.pow((col - 3).toDouble(), 2.0))
 
-                if ((row == 4 && col == 0) || (row == 4 && col == 6)) {
+                if ((row == 0 && col == 3)
+                        //|| (row == 8 && col == 3)
+                ) {
                     tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_BASEMENT, tilesBasementRenderable!!)
+                    tile.localPosition = Vector3((col - 3).toFloat() / 4, 0.25F, (row - 4).toFloat() / 4)
+                    tile.localRotation = Quaternion.axisAngle(Vector3(0.0f, 1.0f, 0.0f), 90f)
                     tile.renderable = tilesBasementRenderable
-                } else if ((row == 3 && (col == 0 || col == 6)) ||
-                        (row == 4 && (col == 1 || col == 5)) ||
-                        (row == 5 && (col == 0 || col == 6))) {
+                } else if ((col == 2 && (row == 0 || row == 8)) ||
+                        (col == 3 && (row == 1 || row == 7)) ||
+                        (col == 4 && (row == 0 || row == 8))) {
                     tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_TRAP, tilesTrapRenderable!!)
                     tile.renderable = tilesTrapRenderable
-                } else if (col == 3) {
+                    tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
+                } else if (row == 4) {
                     tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_RIVER, tilesRiverRenderable!!)
                     tile.renderable = tilesRiverRenderable
+                    tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
                 } else {
                     tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_GRASS, tilesGrassRenderable!!)
                     tile.renderable = tilesGrassRenderable
+                    tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
                 }
                 //tile.localScale = Vector3(0.05f, 0.05f, 0.05f)
-                tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
+                //tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
 
                 tile.setParent(center)
             }
