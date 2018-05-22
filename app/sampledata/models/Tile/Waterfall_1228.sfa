@@ -165,7 +165,7 @@
       ],
       file: "sampledata/models/Tile/Waterfall_1228.obj",
       name: "Waterfall_1228",
-      scale:  0.00030318999999999999,
+      scale:  0.00075,
       suggested_collision: {
          center: {
             x: 0,

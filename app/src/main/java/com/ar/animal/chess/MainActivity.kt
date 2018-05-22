@@ -11,10 +11,8 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import com.google.ar.core.*
 
-import com.google.ar.core.Frame
-import com.google.ar.core.Plane
-import com.google.ar.core.TrackingState
 import com.google.ar.core.exceptions.CameraNotAvailableException
 import com.google.ar.core.exceptions.UnavailableException
 import com.google.ar.sceneform.AnchorNode
@@ -23,6 +21,7 @@ import com.google.ar.sceneform.HitTestResult
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
+import kotlinx.android.synthetic.main.content_main.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 
@@ -46,6 +45,9 @@ class MainActivity : AppCompatActivity() {
     private val isTracking: Boolean = false
     private val isHitting: Boolean = false
     private var hasPlacedTilesSystem = false
+    private var appAnchorState = AppAnchorState.NONE
+    private var cloudAnchor: Anchor? = null
+    private var arSession: Session? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,10 +57,14 @@ class MainActivity : AppCompatActivity() {
 
         arSceneView = findViewById(R.id.ar_scene_view)
 
-        val tiles_grass = ModelRenderable.builder().setSource(this, Uri.parse("Field_1268.sfb")).build()
-        val tiles_river = ModelRenderable.builder().setSource(this, Uri.parse("Field_1268.sfb")).build()
+        val tiles_grass = ModelRenderable.builder().setSource(this, Uri.parse("trees1.sfb")).build()
+        val tiles_river = ModelRenderable.builder().setSource(this, Uri.parse("Environment.sfb")).build()
         val tiles_trap = ModelRenderable.builder().setSource(this, Uri.parse("Field_1268.sfb")).build()
         val tiles_basement = ModelRenderable.builder().setSource(this, Uri.parse("Field_1268.sfb")).build()
+
+        btn_checkAnchor.setOnClickListener {
+            checkUpdatedAnchor()
+        }
 
         CompletableFuture.allOf(
                 tiles_grass,
@@ -151,6 +157,7 @@ class MainActivity : AppCompatActivity() {
                     installRequested = Utils.hasCameraPermission(this)
                     return
                 } else {
+                    arSession = session
                     arSceneView!!.setupSession(session)
                 }
             } catch (e: UnavailableException) {
@@ -232,10 +239,7 @@ class MainActivity : AppCompatActivity() {
                 if (trackable is Plane && trackable.isPoseInPolygon(hit.hitPose)) {
                     // Create the Anchor.
                     val anchor = hit.createAnchor()
-                    val anchorNode = AnchorNode(anchor)
-                    anchorNode.setParent(arSceneView!!.scene)
-                    val singleTile = createCenterTile()
-                    anchorNode.addChild(singleTile)
+                    hostCloudAnchor(anchor)
                 }
             }
         }
@@ -252,41 +256,49 @@ class MainActivity : AppCompatActivity() {
         return base
     }
 
-    
-    private fun createNeighbourTiles(center:Node) {
-        var name:String
-        var tile:Tile
+
+    private fun createNeighbourTiles(center: Node) {
+        var name: String
+        var tile: Tile
+        var tile2: Tile
         var distanceToCenter: Double
-        var modelRenderable:ModelRenderable
         var test: String
 
-//        for (row in 0..8) {
-//            for(col in 0..6){
-//                name = row.toString() + "_" + col.toString()
-//                distanceToCenter =  Math.sqrt(Math.pow((row - 4).toDouble(), 2.0)+Math.pow((col - 3).toDouble(), 2.0))
-//
-//                if((row == 4 && col == 0) ||(row == 4 && col == 6)){
-//                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_BASEMENT, tilesBasementRenderable!!)
-//                } else if((row == 3 && (col == 0 || col == 6)) ||
-//                        (row == 4 && (col == 1 || col == 5)) ||
-//                        (row == 5 && (col == 0 || col == 6))){
-//                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_TRAP, tilesTrapRenderable!!)
-//                } else if(col == 3){
-//                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_RIVER, tilesRiverRenderable!!)
-//                } else{
-//                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_GRASS, tilesGrassRenderable!!)
-//                }
-//                //tile.localScale = Vector3(0.05f, 0.05f, 0.05f)
-//                tile.localPosition = Vector3((col-3).toFloat(),(row - 4).toFloat(), 0F)
-//                tile.setParent(center)
-//            }
-//        }
+        for (row in 0..8) {
+            for (col in 0..6) {
+                name = row.toString() + "_" + col.toString()
+                distanceToCenter = Math.sqrt(Math.pow((row - 4).toDouble(), 2.0) + Math.pow((col - 3).toDouble(), 2.0))
 
-        tile = Tile(this, "TEST", 1.0F, TileType.TILE_GRASS, tilesRiverRenderable!!)
-        tile.localPosition = Vector3(5F,5F,0F)
-        tile.setParent(center)
+                if ((row == 4 && col == 0) || (row == 4 && col == 6)) {
+                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_BASEMENT, tilesBasementRenderable!!)
+                    tile.renderable = tilesBasementRenderable
+                } else if ((row == 3 && (col == 0 || col == 6)) ||
+                        (row == 4 && (col == 1 || col == 5)) ||
+                        (row == 5 && (col == 0 || col == 6))) {
+                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_TRAP, tilesTrapRenderable!!)
+                    tile.renderable = tilesTrapRenderable
+                } else if (col == 3) {
+                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_RIVER, tilesRiverRenderable!!)
+                    tile.renderable = tilesRiverRenderable
+                } else {
+                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_GRASS, tilesGrassRenderable!!)
+                    tile.renderable = tilesGrassRenderable
+                }
+                //tile.localScale = Vector3(0.05f, 0.05f, 0.05f)
+                tile.localPosition = Vector3((col - 3).toFloat()/4, 0F, (row - 4).toFloat()/4)
+
+                tile.setParent(center)
+            }
+        }
+//        tile = Tile(this, "test", 5.0f, TileType.TILE_GRASS, tilesGrassRenderable!!)
+//        tile.localPosition = Vector3(0f, 0f, 0.25F)
+//        tile.setParent(center)
+//
+//        tile2 = Tile(this, "test2", 5.0f, TileType.TILE_GRASS, tilesRiverRenderable!!)
+//        tile2.localPosition = Vector3(0.20f, 0f, 0F)
+//        tile2.setParent(center)
     }
-    
+
     private fun showLoadingMessage() {
         if (loadingMessageSnackbar != null && loadingMessageSnackbar!!.isShownOrQueued) {
             return
@@ -307,6 +319,49 @@ class MainActivity : AppCompatActivity() {
 
         loadingMessageSnackbar!!.dismiss()
         loadingMessageSnackbar = null
+    }
+
+
+    private fun setNewAnchor(newAnchor: Anchor) {
+        if (cloudAnchor != null) {
+            cloudAnchor!!.detach()
+        }
+        cloudAnchor = newAnchor
+
+        val anchorNode = AnchorNode(cloudAnchor)
+        anchorNode.setParent(arSceneView!!.scene)
+        val singleTile = createCenterTile()
+        anchorNode.addChild(singleTile)
+
+        appAnchorState = AppAnchorState.NONE
+    }
+
+    private fun hostCloudAnchor(anchor: Anchor) {
+        val session = arSceneView!!.session
+
+        val newAnchor = session.hostCloudAnchor(anchor)
+        setNewAnchor(newAnchor)
+
+        Snackbar.make(findViewById(android.R.id.content), "hostCloudAnchor", Snackbar.LENGTH_SHORT).show()
+        d(TAG, "setNewAnchor: hostCloudAnchor HOSTING")
+        appAnchorState = AppAnchorState.HOSTING
+    }
+
+    private fun checkUpdatedAnchor() {
+        if (appAnchorState != AppAnchorState.HOSTING || cloudAnchor == null)
+            return
+        val cloudState = cloudAnchor!!.cloudAnchorState
+        if (cloudState.isError) {
+            appAnchorState = AppAnchorState.NONE
+            Snackbar.make(findViewById(android.R.id.content), "Anchor hosted error:  state: $cloudState", Snackbar.LENGTH_SHORT).show()
+            e(TAG, "Anchor hosted error:  CloudId: $cloudState")
+        } else if (cloudState == Anchor.CloudAnchorState.SUCCESS) {
+            appAnchorState = AppAnchorState.HOSTED
+            Snackbar.make(findViewById(android.R.id.content), "Anchor hosted stored  CloudId: ${cloudAnchor!!.cloudAnchorId}", Snackbar.LENGTH_SHORT).show()
+            d(TAG, "Anchor hosted stored  CloudId:  ${cloudAnchor!!.cloudAnchorId}")
+        } else {
+            d(TAG, "Anchor state: $cloudState")
+        }
     }
 
     companion object {

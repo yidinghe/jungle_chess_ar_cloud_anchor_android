@@ -93,3 +93,18 @@ sceneform.asset('sampledata/models/Tile/Waterfall_1228.obj',
         'default',
         'sampledata/models/Tile/Waterfall_1228.sfa',
         'src/main/assets/Waterfall_1228')
+
+sceneform.asset('sampledata/models/Tile/model.obj',
+        'default',
+        'sampledata/models/Tile/model.sfa',
+        'src/main/assets/model')
+
+sceneform.asset('sampledata/models/Tile/Environment.obj',
+        'default',
+        'sampledata/models/Tile/Environment.sfa',
+        'src/main/assets/Environment')
+
+sceneform.asset('sampledata/models/Tile/trees1.obj',
+        'default',
+        'sampledata/models/Tile/trees1.sfa',
+        'src/main/assets/trees1')

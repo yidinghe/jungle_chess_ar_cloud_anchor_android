@@ -1,0 +1,158 @@
+{
+   materials: [
+      {
+         name: "03___Default",
+         parameters: [
+            {
+               baseColor: null,
+            },
+            {
+               baseColorTint: [
+                  0.070599999999999996,
+                  0.44309999999999999,
+                  0.043099999999999999,
+                  1,
+               ],
+            },
+            {
+               metallic: 1,
+            },
+            {
+               roughness: 0.408248,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "08___Default",
+         parameters: [
+            {
+               baseColor: null,
+            },
+            {
+               baseColorTint: [
+                  0.10589999999999999,
+                  0.047100000000000003,
+                  0.0038999999999999998,
+                  1,
+               ],
+            },
+            {
+               metallic: 1,
+            },
+            {
+               roughness: 0.408248,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "07___Default",
+         parameters: [
+            {
+               baseColor: null,
+            },
+            {
+               baseColorTint: [
+                  0.047100000000000003,
+                  0.26269999999999999,
+                  0.031399999999999997,
+                  1,
+               ],
+            },
+            {
+               metallic: 1,
+            },
+            {
+               roughness: 0.408248,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "02___Default",
+         parameters: [
+            {
+               baseColor: null,
+            },
+            {
+               baseColorTint: [
+                  0.094100000000000003,
+                  0.4078,
+                  0,
+                  1,
+               ],
+            },
+            {
+               metallic: 1,
+            },
+            {
+               roughness: 0.408248,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+      {
+         name: "01___Default",
+         parameters: [
+            {
+               baseColor: null,
+            },
+            {
+               baseColorTint: [
+                  0.043099999999999999,
+                  0.20780000000000001,
+                  0.0118,
+                  1,
+               ],
+            },
+            {
+               metallic: 1,
+            },
+            {
+               roughness: 0.408248,
+            },
+            {
+               opacity: null,
+            },
+         ],
+         source: "build/sceneform_sdk/default_materials/obj_material.sfm",
+      },
+   ],
+   model: {
+      attributes: [
+         "Position",
+         "TexCoord",
+         "Orientation",
+      ],
+      file: "sampledata/models/Tile/trees1.obj",
+      name: "trees1",
+      scale: 0.0005,
+      suggested_collision: {
+         center: {
+            x: 0,
+            y: 0,
+            z: 0,
+         },
+         size: {
+            x: 1,
+            y: 1,
+            z: 1,
+         },
+         type: "Box",
+      },
+   },
+   version: "0.51:1",
+}
