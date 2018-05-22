@@ -16,7 +16,6 @@ Animal Chess AR is an Android AR version Animal Chess Game which created by usin
 - Cloud Anchor的实现 （两台手机同时看到棋盘）
 - 动物放置（8种类型）
 - 动物移动animation定义
-- 碰撞定义
 - 对动物的操作，用tap加view
 - 输赢逻辑定义
 - 游戏入口出口
