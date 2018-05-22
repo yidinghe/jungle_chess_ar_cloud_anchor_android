@@ -11,8 +11,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
-import com.ar.animal.chess.model.Tile
-import com.ar.animal.chess.model.TileType
+import com.ar.animal.chess.model.*
 import com.ar.animal.chess.storage.ChessStorageManager
 import com.ar.animal.chess.util.Utils
 import com.ar.animal.chess.util.d
@@ -32,6 +31,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 import com.google.ar.sceneform.ux.RotationController
 import kotlinx.android.synthetic.main.content_main.*
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,10 +42,37 @@ class MainActivity : AppCompatActivity() {
     private var gestureDetector: GestureDetector? = null
     private var loadingMessageSnackbar: Snackbar? = null
     private var arSceneView: ArSceneView? = null
+    /*
+    Chess tiles
+     */
     private var tilesGrassRenderable: ModelRenderable? = null
     private var tilesRiverRenderable: ModelRenderable? = null
     private var tilesTrapRenderable: ModelRenderable? = null
     private var tilesBasementRenderable: ModelRenderable? = null
+
+    /*
+    Chessman
+     */
+    private var playeAChessmen:MutableList<Chessman> = java.util.ArrayList<Chessman>()
+    private var playeBChessmen:MutableList<Chessman> = java.util.ArrayList<Chessman>()
+    private var playeAmouseRenderable: ModelRenderable? = null
+    private var playeAcatRenderable: ModelRenderable? = null
+    private var playeAdogRenderable: ModelRenderable? = null
+    private var playeAwolveRenderable: ModelRenderable? = null
+    private var playeAleopardRenderable: ModelRenderable? = null
+    private var playeAtigerRenderable: ModelRenderable? = null
+    private var playeAlionRenderable: ModelRenderable? = null
+    private var playeAelephantRenderable: ModelRenderable? = null
+
+    private var playeBmouseRenderable: ModelRenderable? = null
+    private var playeBcatRenderable: ModelRenderable? = null
+    private var playeBdogRenderable: ModelRenderable? = null
+    private var playeBwolveRenderable: ModelRenderable? = null
+    private var playeBleopardRenderable: ModelRenderable? = null
+    private var playeBtigerRenderable: ModelRenderable? = null
+    private var playeBlionRenderable: ModelRenderable? = null
+    private var playeBelephantRenderable: ModelRenderable? = null
+
     // True once scene is loaded
     private var hasFinishedLoading = false
 
@@ -73,6 +100,24 @@ class MainActivity : AppCompatActivity() {
         val tiles_trap = ModelRenderable.builder().setSource(this, Uri.parse("Field_1268.sfb")).build()
         val tiles_basement = ModelRenderable.builder().setSource(this, Uri.parse("model.sfb")).build()
 
+        val playA_chessman_mouse = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Hamster.sfb")).build()
+        val playA_chessman_cat = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Cat.sfb")).build()
+        val playA_chessman_dog = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Wolf.sfb")).build()
+        val playA_chessman_wolf = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Hamster.sfb")).build()
+        val playA_chessman_leopard = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Leopard.sfb")).build()
+        val playA_chessman_tiger = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Hamster.sfb")).build()
+        val playA_chessman_lion = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Lion.sfb")).build()
+        val playA_chessman_elephant = ModelRenderable.builder().setSource(this, Uri.parse("Elephant.sfb")).build()
+
+        val playB_chessman_mouse = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Hamster.sfb")).build()
+        val playB_chessman_cat = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Cat.sfb")).build()
+        val playB_chessman_dog = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Wolf.sfb")).build()
+        val playB_chessman_wolf = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Hamster.sfb")).build()
+        val playB_chessman_leopard = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Leopard.sfb")).build()
+        val playB_chessman_tiger = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Hamster.sfb")).build()
+        val playB_chessman_lion = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Lion.sfb")).build()
+        val playB_chessman_elephant = ModelRenderable.builder().setSource(this, Uri.parse("Elephant.sfb")).build()
+
         btn_checkAnchor.setOnClickListener {
             checkUpdatedAnchor()
         }
@@ -85,7 +130,23 @@ class MainActivity : AppCompatActivity() {
                 tiles_grass,
                 tiles_river,
                 tiles_trap,
-                tiles_basement).handle<Any> { notUsed, throwable ->
+                tiles_basement,
+                playA_chessman_mouse,
+                playA_chessman_cat,
+                playA_chessman_dog,
+                playA_chessman_wolf,
+                playA_chessman_leopard,
+                playA_chessman_tiger,
+                playA_chessman_lion,
+                playA_chessman_elephant,
+                playB_chessman_mouse,
+                playB_chessman_cat,
+                playB_chessman_dog,
+                playB_chessman_wolf,
+                playB_chessman_leopard,
+                playB_chessman_tiger,
+                playB_chessman_lion,
+                playB_chessman_elephant).handle<Any> { notUsed, throwable ->
             if (throwable != null) {
                 Utils.displayError(this, "Unable to load renderable", throwable)
                 return@handle null
@@ -96,7 +157,25 @@ class MainActivity : AppCompatActivity() {
                 tilesRiverRenderable = tiles_river.get()
                 tilesTrapRenderable = tiles_trap.get()
                 tilesBasementRenderable = tiles_basement.get()
-                // Everything finished loading successfully.
+
+                playeAmouseRenderable = playA_chessman_mouse.get()
+                playeAcatRenderable = playA_chessman_cat.get()
+                playeAdogRenderable = playA_chessman_dog.get()
+                playeAwolveRenderable = playA_chessman_wolf.get()
+                playeAleopardRenderable = playA_chessman_leopard.get()
+                playeAtigerRenderable = playA_chessman_tiger.get()
+                playeAlionRenderable = playA_chessman_lion.get()
+                playeAelephantRenderable = playA_chessman_elephant.get()
+
+                playeBmouseRenderable = playB_chessman_mouse.get()
+                playeBcatRenderable = playB_chessman_cat.get()
+                playeBdogRenderable = playB_chessman_dog.get()
+                playeBwolveRenderable = playB_chessman_wolf.get()
+                playeBleopardRenderable = playB_chessman_leopard.get()
+                playeBtigerRenderable = playB_chessman_tiger.get()
+                playeBlionRenderable = playB_chessman_lion.get()
+                playeBelephantRenderable = playB_chessman_elephant.get()
+                // EvBrything finished loading successfully.
                 hasFinishedLoading = true
 
             } catch (ex: InterruptedException) {
@@ -280,6 +359,64 @@ class MainActivity : AppCompatActivity() {
         return base
     }
 
+    private fun createChessmen(tile: Tile){
+
+        var mouseA:Chessman = Chessman(this,
+                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                playeAmouseRenderable!!)
+        var catA:Chessman = Chessman(this,
+                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                playeAcatRenderable!!)
+        var dogA:Chessman = Chessman(this,
+                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                playeAdogRenderable!!)
+        var wolfA:Chessman = Chessman(this,
+                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                playeAwolveRenderable!!)
+        var leopardA:Chessman = Chessman(this,
+                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                playeAleopardRenderable!!)
+        var tigerA:Chessman = Chessman(this,
+                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                playeAtigerRenderable!!)
+        var lionA:Chessman = Chessman(this,
+                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                playeAlionRenderable!!)
+        var elephantA:Chessman = Chessman(this,
+                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                playeAelephantRenderable!!)
+
+        val chessmanArrayA = arrayOf(mouseA,catA, dogA, wolfA, leopardA, tigerA, lionA, elephantA)
+        playeAChessmen = Arrays.asList(*chessmanArrayA)
+
+        var mouseB:Chessman = Chessman(this,
+                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                playeBmouseRenderable!!)
+        var catB:Chessman = Chessman(this,
+                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                playeBcatRenderable!!)
+        var dogB:Chessman = Chessman(this,
+                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                playeBdogRenderable!!)
+        var wolfB:Chessman = Chessman(this,
+                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                playeBwolveRenderable!!)
+        var leopardB:Chessman = Chessman(this,
+                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                playeBleopardRenderable!!)
+        var tigerB:Chessman = Chessman(this,
+                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                playeBtigerRenderable!!)
+        var lionB:Chessman = Chessman(this,
+                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                playeBlionRenderable!!)
+        var elephantB:Chessman = Chessman(this,
+                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                playeBelephantRenderable!!)
+
+        val chessmanArrayB = arrayOf(mouseB,catB, dogB, wolfB, leopardB, tigerB, lionB, elephantB)
+        playeBChessmen = Arrays.asList(*chessmanArrayB)
+    }
 
     private fun createNeighbourTiles(center: Node) {
         var name: String

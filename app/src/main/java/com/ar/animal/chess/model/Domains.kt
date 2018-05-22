@@ -8,7 +8,7 @@ data class ConfigDbModel(var cloudAnchorId: String = "", var currentRound: Int =
                          var gameState: Int = GameState.USER_A_TURN.ordinal,
                          var timestamp: String = "")
 
-data class AnimalDbModel(var positionX: Int = 0, var positionY: Int = 0,
+data class AnimalDbModel(var positionX: Int = 0, var positionY: Int = 0, var stats: AnimalStats = AnimalStats.ALIVE,
                          var animalType: Int = AnimalType.MOUSE.ordinal)
 
 enum class GameState {
@@ -28,6 +28,11 @@ enum class AnimalType {
     TIGER,
     LION,
     ELEPHANT
+}
+
+enum class AnimalStats{
+    ALIVE,
+    DEAD
 }
 
 enum class EndPointType {
