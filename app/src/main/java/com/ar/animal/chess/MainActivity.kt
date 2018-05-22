@@ -15,6 +15,12 @@ import android.widget.Toast
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
+import com.ar.animal.chess.model.Tile
+import com.ar.animal.chess.model.TileType
+import com.ar.animal.chess.storage.ChessStorageManager
+import com.ar.animal.chess.util.Utils
+import com.ar.animal.chess.util.d
+import com.ar.animal.chess.util.e
 import com.google.ar.core.*
 
 import com.google.ar.core.exceptions.CameraNotAvailableException
@@ -23,6 +29,7 @@ import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.ArSceneView
 import com.google.ar.sceneform.HitTestResult
 import com.google.ar.sceneform.Node
+import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.firebase.auth.FirebaseAuth
@@ -30,6 +37,7 @@ import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.content_main.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
+import com.google.ar.sceneform.ux.RotationController
 
 class MainActivity : AppCompatActivity() {
 
@@ -57,8 +65,9 @@ class MainActivity : AppCompatActivity() {
     private var appAnchorState = AppAnchorState.NONE
     private var cloudAnchor: Anchor? = null
     private var arSession: Session? = null
-    private var storageManager: StorageManager? = null
-    private var mAuth: FirebaseAuth? = null
+    private var storageManager: ChessStorageManager? = null
+    private val TAG = MainActivity::class.java.simpleName
+    private var mAuth= FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,12 +93,12 @@ class MainActivity : AppCompatActivity() {
 
 
         arSceneView = findViewById(R.id.ar_scene_view)
-        storageManager = StorageManager(this)
+        storageManager = ChessStorageManager(this)
 
         val tiles_grass = ModelRenderable.builder().setSource(this, Uri.parse("trees1.sfb")).build()
-        val tiles_river = ModelRenderable.builder().setSource(this, Uri.parse("Environment.sfb")).build()
+        val tiles_river = ModelRenderable.builder().setSource(this, Uri.parse("Wave.sfb")).build()
         val tiles_trap = ModelRenderable.builder().setSource(this, Uri.parse("Field_1268.sfb")).build()
-        val tiles_basement = ModelRenderable.builder().setSource(this, Uri.parse("Field_1268.sfb")).build()
+        val tiles_basement = ModelRenderable.builder().setSource(this, Uri.parse("model.sfb")).build()
 
         btn_checkAnchor.setOnClickListener {
             checkUpdatedAnchor()
@@ -312,6 +321,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun tryPlaceTile(tap: MotionEvent?, frame: Frame): Boolean {
+
+        if (cloudAnchor != null) {
+            d(TAG, "Already had cloudAnchor, no need to host again.")
+            return false
+        }
+
         if (tap != null && frame.camera.trackingState == TrackingState.TRACKING) {
             for (hit in frame.hitTest(tap)) {
                 Log.d(TAG, "capture Hit")
@@ -349,23 +364,30 @@ class MainActivity : AppCompatActivity() {
                 name = row.toString() + "_" + col.toString()
                 distanceToCenter = Math.sqrt(Math.pow((row - 4).toDouble(), 2.0) + Math.pow((col - 3).toDouble(), 2.0))
 
-                if ((row == 4 && col == 0) || (row == 4 && col == 6)) {
+                if ((row == 0 && col == 3)
+                        //|| (row == 8 && col == 3)
+                ) {
                     tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_BASEMENT, tilesBasementRenderable!!)
+                    tile.localPosition = Vector3((col - 3).toFloat() / 4, 0.25F, (row - 4).toFloat() / 4)
+                    tile.localRotation = Quaternion.axisAngle(Vector3(0.0f, 1.0f, 0.0f), 90f)
                     tile.renderable = tilesBasementRenderable
-                } else if ((row == 3 && (col == 0 || col == 6)) ||
-                        (row == 4 && (col == 1 || col == 5)) ||
-                        (row == 5 && (col == 0 || col == 6))) {
+                } else if ((col == 2 && (row == 0 || row == 8)) ||
+                        (col == 3 && (row == 1 || row == 7)) ||
+                        (col == 4 && (row == 0 || row == 8))) {
                     tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_TRAP, tilesTrapRenderable!!)
                     tile.renderable = tilesTrapRenderable
-                } else if (col == 3) {
+                    tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
+                } else if (row == 4) {
                     tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_RIVER, tilesRiverRenderable!!)
                     tile.renderable = tilesRiverRenderable
+                    tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
                 } else {
                     tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_GRASS, tilesGrassRenderable!!)
                     tile.renderable = tilesGrassRenderable
+                    tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
                 }
                 //tile.localScale = Vector3(0.05f, 0.05f, 0.05f)
-                tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
+                //tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
 
                 tile.setParent(center)
             }
@@ -440,17 +462,20 @@ class MainActivity : AppCompatActivity() {
 
     private fun onResolveOkPressed(dialogValue: String) {
         val shortCode = dialogValue.toInt()
-        storageManager?.getCloudAnchorID(shortCode) { cloudAnchorId ->
-            if (arSession == null) {
-                e(TAG, "onResolveOkPressed failed due to arSession is null")
-            } else {
-                val resolveAnchor = arSession!!.resolveCloudAnchor(cloudAnchorId)
-                setNewAnchor(resolveAnchor)
-                d(TAG, "onResolveOkPressed: resolving anchor")
-                appAnchorState = AppAnchorState.RESOLVING
+
+        storageManager?.getCloudAnchorId(shortCode, object : ChessStorageManager.CloudAnchorIdListener {
+            override fun onCloudAnchorIdAvailable(cloudAnchorId: String?) {
+                if (arSession == null) {
+                    e(TAG, "onResolveOkPressed failed due to arSession is null")
+                } else {
+                    val resolveAnchor = arSession!!.resolveCloudAnchor(cloudAnchorId)
+                    setNewAnchor(resolveAnchor)
+                    d(TAG, "onResolveOkPressed: resolving anchor")
+                    appAnchorState = AppAnchorState.RESOLVING
+                }
             }
 
-        }
+        })
     }
 
     private fun checkUpdatedAnchor() {
@@ -464,23 +489,25 @@ class MainActivity : AppCompatActivity() {
                 Snackbar.make(findViewById(android.R.id.content), "Anchor hosted error:  state: $cloudState", Snackbar.LENGTH_SHORT).show()
                 e(TAG, "Anchor hosted error:  CloudId: $cloudState")
             } else if (cloudState == Anchor.CloudAnchorState.SUCCESS) {
-                storageManager?.nextShortCode { shortCode ->
-                    if (shortCode == null) {
-                        Snackbar.make(findViewById(android.R.id.content), "Could not obtain a short code.", Snackbar.LENGTH_SHORT).show()
-                        e(TAG, "Could not obtain a short code.")
-                    } else {
-                        storageManager!!.storeUsingShortCode(shortCode, cloudAnchor!!.cloudAnchorId)
-                        d(TAG, "Anchor hosted stored shortCode: $shortCode" +
-                                " CloudId: ${cloudAnchor!!.cloudAnchorId}")
-                        Snackbar.make(findViewById(android.R.id.content), "Anchor hosted stored shortCode: $shortCode" +
-                                " CloudId: ${cloudAnchor!!.cloudAnchorId}", Snackbar.LENGTH_SHORT).show()
+                storageManager?.nextRoomId(object : ChessStorageManager.ShortCodeListener {
+                    override fun onShortCodeAvailable(shortCode: Int?) {
+                        if (shortCode == null) {
+                            Snackbar.make(findViewById(android.R.id.content), "Could not obtain a short code.", Snackbar.LENGTH_SHORT).show()
+                            e(TAG, "Could not obtain a short code.")
+                        } else {
+                            storageManager!!.storeCloudAnchorIdUsingRoomId(shortCode, cloudAnchor!!.cloudAnchorId)
+                            d(TAG, "Anchor hosted stored shortCode: $shortCode" +
+                                    " CloudId: ${cloudAnchor!!.cloudAnchorId}")
+                            Snackbar.make(findViewById(android.R.id.content), "Anchor hosted stored shortCode: $shortCode" +
+                                    " CloudId: ${cloudAnchor!!.cloudAnchorId}", Snackbar.LENGTH_SHORT).show()
 
+                        }
                     }
-                }
+                })
                 appAnchorState = AppAnchorState.HOSTED
                 d(TAG, "Anchor hosted stored  CloudId:  ${cloudAnchor!!.cloudAnchorId}")
             } else {
-                d(TAG, "Anchor state: $cloudState")
+                d(TAG, "Host Anchor state: $cloudState")
             }
         } else if (appAnchorState == AppAnchorState.RESOLVING) {
             if (cloudState.isError) {
@@ -493,13 +520,11 @@ class MainActivity : AppCompatActivity() {
                 d(TAG, "Anchor resolved successfully!")
                 placeBoard()
             } else {
-                d(TAG, "Anchor state: $cloudState")
+                d(TAG, "Resolve Anchor state: $cloudState")
             }
         }
 
     }
 
-    companion object {
-        private val TAG = "MainActivity"
-    }
+
 }

@@ -16,16 +16,23 @@ Animal Chess AR is an Android AR version Animal Chess Game which created by usin
 - Cloud Anchor的实现 （两台手机同时看到棋盘）
 - 动物放置（8种类型）
 - 动物移动animation定义
-- 碰撞定义
 - 对动物的操作，用tap加view
 - 输赢逻辑定义
 - 游戏入口出口
 - Use Resonance Audio SDK to do 3D sound
 
-## backend logic design (draft 1)
+## backend logic design (draft 2)
 Use Google Firebase Realtime Db to avoid server development.
 - db primary key is 房号（roomId）
 - roomId(Int) couldAnchorId, user1Id, user2Id, current board
+- data class ChessDbModel(var roomId: Int = 0,
+                         var config: ConfigDbModel = ConfigDbModel(),
+                         var animalList: List<AnimalDbModel> = listOf())
+- data class ConfigDbModel(var cloudAnchorId: String = "", var currentRound: Int = 0,
+                           var gameState: Int = GameState.USER_A_TURN.ordinal,
+                           var timestamp: String = "")
+- data class AnimalDbModel(var positionX: Int = 0, var positionY: Int = 0,
+                           var animalType: Int = AnimalType.MOUSE.ordinal)
 
 ## game logic design (draft 1)
 - User1登入游戏，创建room，生成棋盘， 生成cloudAnchorId

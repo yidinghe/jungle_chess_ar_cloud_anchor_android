@@ -35,7 +35,6 @@ dependencies {
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.google.firebase:firebase-database:15.0.0'
     implementation 'com.firebaseui:firebase-ui-auth:3.3.1'
-
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -97,11 +96,6 @@ sceneform.asset('sampledata/models/Tile/Waterfall_1228.obj',
         'sampledata/models/Tile/Waterfall_1228.sfa',
         'src/main/assets/Waterfall_1228')
 
-sceneform.asset('sampledata/models/Tile/model.obj',
-        'default',
-        'sampledata/models/Tile/model.sfa',
-        'src/main/assets/model')
-
 sceneform.asset('sampledata/models/Tile/Environment.obj',
         'default',
         'sampledata/models/Tile/Environment.sfa',
@@ -111,4 +105,19 @@ sceneform.asset('sampledata/models/Tile/trees1.obj',
         'default',
         'sampledata/models/Tile/trees1.sfa',
         'src/main/assets/trees1')
+
+sceneform.asset('sampledata/models/Tile/Canal.obj',
+        'default',
+        'sampledata/models/Tile/Canal.sfa',
+        'src/main/assets/Canal')
+
+sceneform.asset('sampledata/models/Tile/Wave.obj',
+        'default',
+        'sampledata/models/Tile/Wave.sfa',
+        'src/main/assets/Wave')
+
+sceneform.asset('sampledata/models/Tile/model.obj',
+        'default',
+        'sampledata/models/Tile/model.sfa',
+        'src/main/assets/model')
 apply plugin: 'com.google.gms.google-services'
