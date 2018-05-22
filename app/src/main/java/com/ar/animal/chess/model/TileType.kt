@@ -1,4 +1,4 @@
-package com.ar.animal.chess
+package com.ar.animal.chess.model
 
 enum class TileType(val enumValue:String){
     TILE_GRASS("TILE_GRASS"),
