@@ -1,4 +1,4 @@
-package com.ar.animal.chess
+package com.ar.animal.chess.util
 
 import android.util.Log
 

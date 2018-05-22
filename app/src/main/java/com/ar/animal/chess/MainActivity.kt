@@ -11,7 +11,12 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import com.ar.animal.chess.model.Tile
+import com.ar.animal.chess.model.TileType
 import com.ar.animal.chess.storage.ChessStorageManager
+import com.ar.animal.chess.util.Utils
+import com.ar.animal.chess.util.d
+import com.ar.animal.chess.util.e
 import com.google.ar.core.*
 
 import com.google.ar.core.exceptions.CameraNotAvailableException
@@ -23,10 +28,10 @@ import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
-import com.google.ar.sceneform.ux.RotationController
-import kotlinx.android.synthetic.main.content_main.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
+import com.google.ar.sceneform.ux.RotationController
+import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : AppCompatActivity() {
 

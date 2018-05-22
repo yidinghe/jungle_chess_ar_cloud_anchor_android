@@ -1,8 +1,8 @@
-package com.ar.animal.chess
+package com.ar.animal.chess.model
 
 import android.content.Context
+import com.ar.animal.chess.model.TileType
 import com.google.ar.sceneform.Node
-import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
 
 class Tile(var context: Context,
