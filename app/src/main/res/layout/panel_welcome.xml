@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/testview"
+    android:layout_width="360dp"
+    android:layout_height="wrap_content"
+    android:background="@color/deep_teal"
+    android:orientation="vertical"
+    android:padding="4dp"
+    android:clipChildren="false"
+    android:clipToPadding="false" >
+
+    <TextView
+        android:id="@+id/orbitHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Jungle Chess AR"
+        android:textAlignment="center"
+        android:textStyle="bold"/>
+
+    <Button
+        android:id="@+id/btn_new_game"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create New Game"
+        android:textSize="10sp"
+        android:layout_margin="7dp"
+       />
+
+    <Button
+        android:id="@+id/btn_pair"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="QUICK MATCH"
+        android:textSize="10sp"
+        android:layout_margin="7dp"
+        />
+</LinearLayout>

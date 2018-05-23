@@ -37,6 +37,8 @@ import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
+import com.google.ar.sceneform.rendering.ViewRenderable
+import com.google.ar.sceneform.ux.TransformableNode
 import com.google.firebase.auth.FirebaseAuth
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
@@ -56,10 +58,20 @@ class MainActivity : AppCompatActivity() {
     private var gestureDetector: GestureDetector? = null
     private var loadingMessageSnackbar: Snackbar? = null
     private var arSceneView: ArSceneView? = null
+
     /*
     Game controller
      */
     private lateinit var gameController: GameController
+    private var welcomeAnchor: Anchor? = null
+    private var controllerRenderable:ViewRenderable? = null
+    private var welcomeRenderable:ViewRenderable? = null
+    private var controllerNode:Node = Node()
+    private var welcomeNode:Node = Node()
+    private val pointer = PointerDrawable()
+    private var needShowWelcomePanel:Boolean = true
+    private var isTracking: Boolean = false
+    private var isHitting: Boolean = false
 
     /*
     Chess tiles
@@ -95,9 +107,7 @@ class MainActivity : AppCompatActivity() {
     // True once scene is loaded
     private var hasFinishedLoading = false
 
-    private val mPointer = PointerDrawable()
-    private val isTracking: Boolean = false
-    private val isHitting: Boolean = false
+
     private var hasPlacedTilesSystem = false
     private var appAnchorState = AppAnchorState.NONE
     private var cloudAnchor: Anchor? = null
@@ -132,6 +142,8 @@ class MainActivity : AppCompatActivity() {
 
         gameController = GameController.instance
         arSceneView = findViewById(R.id.ar_scene_view)
+
+        val panel_welcome = ViewRenderable.builder().setView(this, R.layout.panel_welcome).build();
 
         val tiles_grass = ModelRenderable.builder().setSource(this, Uri.parse("trees1.sfb")).build()
         val tiles_river = ModelRenderable.builder().setSource(this, Uri.parse("Wave.sfb")).build()
@@ -189,6 +201,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             try {
+                welcomeRenderable = panel_welcome.get()
+
                 tilesGrassRenderable = tiles_grass.get()
                 tilesRiverRenderable = tiles_river.get()
                 tilesTrapRenderable = tiles_trap.get()
@@ -252,6 +266,11 @@ class MainActivity : AppCompatActivity() {
         arSceneView!!
                 .scene
                 .setOnUpdateListener { frameTime ->
+
+                    if (needShowWelcomePanel){
+                        onUpdate()
+                    }
+
                     if (loadingMessageSnackbar == null) {
                         return@setOnUpdateListener
                     }
@@ -270,11 +289,71 @@ class MainActivity : AppCompatActivity() {
                             hideLoadingMessage()
                         }
                     }
+
+
                 }
+
         Utils.requestCameraPermission(this, RC_PERMISSIONS)
 
 //        startActivity(Intent(this,LoginActivity.javaClass))
 
+    }
+
+    private fun getScreenCenter(): android.graphics.Point {
+        val vw = findViewById<View>(android.R.id.content)
+        return android.graphics.Point(vw.width / 2, vw.height / 2)
+    }
+
+    private fun onUpdate() {
+        val trackingChanged = updateTracking()
+        val contentView = findViewById<View>(android.R.id.content)
+        if (trackingChanged) {
+            if (isTracking) {
+                contentView.overlay.add(pointer)
+            } else {
+                contentView.overlay.remove(pointer)
+            }
+            contentView.invalidate()
+        }
+
+        if (isTracking) {
+            val hitTestChanged = updateHitTest()
+            if (hitTestChanged) {
+                pointer.setEnabled(isHitting)
+                contentView.invalidate()
+            }
+        }
+    }
+
+    private fun updateTracking(): Boolean {
+        val frame = arSceneView!!.getArFrame()
+        val wasTracking = isTracking
+        isTracking = frame.getCamera().getTrackingState() == TrackingState.TRACKING
+        return isTracking !== wasTracking
+    }
+
+
+    private fun updateHitTest(): Boolean {
+        val frame = arSceneView!!.getArFrame()
+        val pt = getScreenCenter()
+        val hits: List<HitResult>
+        val wasHitting = isHitting
+        isHitting = false
+        if (frame != null) {
+            hits = frame!!.hitTest(pt.x.toFloat(), pt.y.toFloat())
+            for (hit in hits) {
+                val trackable = hit.trackable
+                if (trackable is Plane && trackable.isPoseInPolygon(hit.hitPose)) {
+                    Log.d(TAG,"HIT CAPTURE")
+                    welcomeAnchor = hit.createAnchor()
+                    placeWelcomePanel()
+                    needShowWelcomePanel = false
+                    isHitting = true
+                    break
+                }
+            }
+        }
+        return wasHitting != isHitting
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -609,6 +688,28 @@ class MainActivity : AppCompatActivity() {
         }
         cloudAnchor = newAnchor
         appAnchorState = AppAnchorState.NONE
+    }
+
+
+    private fun placeWelcomePanel(){
+        welcomeNode?.renderable = welcomeRenderable
+        welcomeNode?.localPosition = Vector3(0.0f, 0f, 0.0f)
+
+        var welcomeRenderableView = welcomeRenderable!!.view
+        var btn_new_game = welcomeRenderableView.findViewById<Button>(R.id.btn_new_game)
+        var btn_pair = welcomeRenderableView.findViewById<Button>(R.id.btn_pair)
+        btn_new_game.setOnClickListener {
+            welcomeAnchor!!.detach()
+        }
+
+        btn_pair.setOnClickListener {
+            welcomeAnchor!!.detach()
+
+        }
+
+        val anchorNode = AnchorNode(welcomeAnchor)
+        anchorNode.setParent(arSceneView!!.scene)
+        anchorNode.addChild(welcomeNode)
     }
 
     private fun placeBoard() {
