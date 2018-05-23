@@ -11,20 +11,54 @@ Animal Chess AR is an Android AR version Animal Chess Game which created by usin
 - AR Core 1.2.0
 - Scenefrom SDK 1.0.1
 
+## Game Board Example
+![Game_Board_Demo](Resources/example_board.png)
+[Jungle Board Game wiki documentation](https://en.wikipedia.org/wiki/Jungle_(board_game))
+## Rules
+### Objective
+The goal of the game is either to move a piece onto a special square, the den, on the opponent's side of the board, or capture all of the opponent's pieces.
+### Board
+The Jungle gameboard consists of seven columns and nine rows of squares. Pieces move on the square spaces as in international chess, not on the lines as in xiangqi. Pictures of eight animals and their names appear on each side of the board to indicate initial placement of the game pieces. After initial setup, these animal spaces have no special meaning in gameplay.
+There are several special squares and areas of the Jungle board: The den (Chinese: 獸穴: literally: "lair") is located in the center of the first row or rank of the board, and is labeled as such in Chinese. Traps (Chinese: 陷阱; literally: "snare") are located to each side and in front of the den, and are also labeled in Chinese. Two water areas or rivers (Chinese: 河川; literally: "river") are located in the center of the Jungle board. Each comprises six squares in a 2×3 rectangle, and labeled with the Chinese characters for "river". There are single columns or files of ordinary land squares on the edges of the board, and down the middle between the rivers.
+### Pieces
+Each side has eight pieces representing different animals, each with a different rank. Higher ranking pieces can capture all pieces of identical or weaker ranking. However, there is one exception: The rat may capture the elephant, while the elephant may or may not capture the rat (depending on the variant). The animal ranking, from strongest to weakest, is:
+- Elephant
+- Lion
+- Tiger
+- Leopard
+- Wolf
+- Dog
+- Cat
+- Rat
+
+Pieces are placed onto the corresponding pictures of the animals which are invariably shown on the Jungle board. All pieces move one space orthogonally.
+### Movement
+Players alternate moves with White moving first. During their turn, a player must move. Each piece moves one square horizontally or vertically (not diagonally). A piece may not move to its own den.
+There are special rules related to the water squares:
+- The rat is the only animal that is allowed to go onto a water square. However, some players prefer that the dog is also allowed to go onto a water square, which makes it easier to capture the opponent's rat in the water.
+- The rat may not capture the elephant or another rat on land directly from a water square. If the dog is also allowed to go onto a water square, the dog may not capture the rat on land directly from a water square.
+- Similarly, a rat on land may not attack a rat in the water.
+- The rat may attack the opponent rat in the water if both pieces are in the water. If the dog is also allowed to go onto a water square, the dog may also attack the opponent's rat when both pieces are in the water.
+- The lion and tiger pieces may jump over a river by moving horizontally or vertically. They move from a square on one edge of the river to the next non-water square on the other side. Such a move is not allowed if there is a rat (whether friendly or enemy) on any of the intervening water squares. If the dog is allowed on water, a dog (friendly or enemy) on any intervening water square also prevents the lion and the tiger from jumping over the river. The lion and tiger are allowed to capture enemy pieces by such jumping moves.
+### Capturing
+Animals capture the opponent pieces by "eating" them. A piece can capture any enemy piece which has the same or lower rank, with the following exceptions:
+- The rat may kill (capture) the elephant.
+- The player may capture any enemy piece in one of the player's trap squares regardless of rank.
+
 ## Development Steps
-- 渲染7*9的棋盘， 然后放置
-- Cloud Anchor的实现 （两台手机同时看到棋盘）
-- 动物放置（8种类型）
-- 动物移动animation定义
-- 对动物的操作，用tap加view
-- 输赢逻辑定义
-- 游戏入口出口
-- 用户登录
+- render 7*9 Game Board，then place it
+- Integrate with Cloud Anchor and Firebase Realtime Db so that two phones can have a same AR Game Board
+- Render 8 types of Animals and place them
+- Define Animal movement and capturing animation
+- Define how to control Animals by using tap and views
+- Define Game Win/Lose logic
+- Implement All the UIs including launch page and setting page
+- Integrate with Google SignIn to get user info
 - Use Resonance Audio SDK to do 3D sound
 
 ## backend logic design (draft 2)
 Use Google Firebase Realtime Db to avoid server development.
-- db primary key is 房号（roomId）
+- db primary key is roomId
 - roomId(Int) couldAnchorId, user1Id, user2Id, current board
 - data class ChessDbModel(var roomId: Int = 0,
                          var config: ConfigDbModel = ConfigDbModel(),
@@ -36,39 +70,10 @@ Use Google Firebase Realtime Db to avoid server development.
                            var animalType: Int = AnimalType.MOUSE.ordinal)
 
 ## game logic design (draft 1)
-- User1登入游戏，创建room，生成棋盘， 生成cloudAnchorId
-- User1 send roomId, cloudAnchorId to realtime Db
-- User2使用roomId拿到cloudAnchorId登入游戏，看到棋盘
-- 先后手决定, by using gameState and currentRound
-- 每个user下棋时，block other user to 操作棋子 (10S)
-- every 5s? pull db to update view and rerender棋子
-- 每个user自己回合结束，2台手机同时重新绘制棋子
-
-## 游戏规则参考
-### 棋具
-棋盤横7列，纵9行。双方底线上各有1个兽穴（置於第一行的中间）和3个陷阱（分别置於兽穴的前、左及右方），在棋盤中央有2个2×3大小的长方形，称为小河，另外有图案标示棋子的起始位置。
-双方各有八只以动物命名的棋子。
-### 棋规
-#### 目的
-己方任一棋子走进对方兽穴或吃光对方所有棋子者胜。
-#### 棋子
-双方的八只棋子由强至弱为：象、狮、虎、豹、狼、狗、猫、鼠。
-棋子可以吃掉同级或较弱的棋子。
-例外：鼠可以吃掉象，但象却不可以吃掉鼠。
-若棋子走进敌方的陷阱，任一棋子都可把它吃掉。
-#### 移动
-棋子可以纵横向移动一格，但不可移动到自己的兽穴。
-只有鼠才可以进入小河，而且可以直接把对岸的动物吃掉。
-在小河的棋子不可吃掉在陆地的棋子，反之亦然。但在水中的棋子可吃掉同样在水中的棋子。
-狮子可跳纵横河，虎只可跳横河，而且可以直接把对岸的动物吃掉。可是若小河中有鼠（无论是敌方或是己方），狮、虎便不可跳河。　　
-#### 胜负判定:
-- 任何一方的兽走入敌方的兽穴就算胜利（自己的兽类不可以走入自己的兽穴）；
-- 任何一方的兽被吃光就算失败，对方获胜；
-- 任何一方所有活着的兽被对方困住，均不可移动时，就算失败，对方获胜；
-- 任何一方连续两次走棋时间用完，就算失败，对方获胜；
-- 任何一方中途离开游戏，就算逃跑，对方获胜；
-- 在连续100回合内，双方均无动物被吃，就算和棋。
-#### 违例处理:
-- 为了防止无赖长杀，在连续7步棋内，如果同一动物连续超过3次进入同一棋格，在接下来的第8步棋将禁止该动物进入该棋格（若7步内有进入陷阱，则不受该限制；被追动物不受该限制），该规则简称7-3违例规则；
-- 为了防止长杀，在连续17步棋内，如果只操作同一个动物，且该动物的活动范围不超过5个棋格，在接下来的第18步棋将禁止该动物进入上述5个棋格中的任意一个（若17步内有进入陷阱，则不受该限制），该规则简称17-5违例规则。
-
+- UserA login game，create room，generate roomId，host CloudAnchor and generate cloudAnchorId
+- UserA send roomId, cloudAnchorId to realtime Db
+- UserB login game, pair with roomId, see the game board
+- Define turns, by using gameState and currentRound
+- When UserA plays game，block UserB tap event for the Game Board, When UserB plays game，block UserA tap event for the Game Board, 
+- Every 5s? pull db to update view and rerender Game Board
+- Every user turn finish, pull db to update view and rerender Game Board

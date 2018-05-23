@@ -8,7 +8,7 @@ data class Tile(var posCol: Int = 0, var posRow: Int = 0,
 
 data class Animal(var posCol: Int = 0, var posRow: Int = 0,
                   var state: AnimalState = AnimalState.ALIVE,
-                  var animalType: AnimalType = AnimalType.MOUSE)
+                  var animalType: AnimalType = AnimalType.RAT)
 
 enum class UserType {
     USER_A,
@@ -24,10 +24,10 @@ enum class GameState {
 }
 
 enum class AnimalType {
-    MOUSE,
+    RAT,
     CAT,
     DOG,
-    WOLVES,
+    WOLF,
     LEOPARD,
     TIGER,
     LION,
