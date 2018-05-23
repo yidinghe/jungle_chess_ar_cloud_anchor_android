@@ -21,20 +21,6 @@ import com.google.firebase.database.ValueEventListener
 internal class ChessStorageManager() {
     private val rootRef: DatabaseReference
 
-    /**
-     * Listener for a new Cloud Anchor ID from the Firebase Database.
-     */
-    internal interface CloudAnchorIdListener {
-        fun onCloudAnchorIdAvailable(cloudAnchorId: String?)
-    }
-
-    /**
-     * Listener for a new short code from the Firebase Database.
-     */
-    internal interface ShortCodeListener {
-        fun onShortCodeAvailable(shortCode: Int?)
-    }
-
     init {
         val rootDir = KEY_ROOT_DIR + ChessConstants.END_POINT.name
         rootRef = FirebaseDatabase.getInstance().reference.child(rootDir)
@@ -44,7 +30,7 @@ internal class ChessStorageManager() {
     /**
      * Gets a new short code that can be used to store the anchor ID.
      */
-    fun nextRoomId(listener: ShortCodeListener) {
+    fun nextRoomId(roomIdCallback: (roomId: Int?) -> Unit) {
         // Run a transaction on the node containing the next short code available. This increments the
         // value in the database and retrieves it in one atomic all-or-nothing operation.
         rootRef
@@ -65,13 +51,13 @@ internal class ChessStorageManager() {
                                     error: DatabaseError?, committed: Boolean, currentData: DataSnapshot?) {
                                 if (!committed) {
                                     Log.e(TAG, "Firebase Error", error?.toException())
-                                    listener.onShortCodeAvailable(null)
+                                    roomIdCallback(null)
                                 } else {
                                     if (currentData?.value == null) {
-                                        listener.onShortCodeAvailable(null)
+                                        roomIdCallback(null)
                                     } else {
                                         val roomId = currentData.value as Long
-                                        listener.onShortCodeAvailable(roomId.toInt())
+                                        roomIdCallback(roomId.toInt())
                                     }
 
                                 }
@@ -92,7 +78,7 @@ internal class ChessStorageManager() {
      * Retrieves the cloud anchor ID using a short code. Returns an empty string if a cloud anchor ID
      * was not stored for this short code.
      */
-    fun getCloudAnchorId(shortCode: Int, listener: CloudAnchorIdListener) {
+    fun getCloudAnchorId(shortCode: Int, getCloudAnchorIdCallback: (cloudAnchorId: String?) -> Unit) {
         rootRef
                 .child(shortCode.toString())
                 .addListenerForSingleValueEvent(
@@ -100,13 +86,13 @@ internal class ChessStorageManager() {
                             override fun onDataChange(dataSnapshot: DataSnapshot) {
                                 val chessDbModel = dataSnapshot.getValue(ChessDbModel::class.java)
                                 if (chessDbModel != null)
-                                    listener.onCloudAnchorIdAvailable(chessDbModel.config.cloudAnchorId)
+                                    getCloudAnchorIdCallback(chessDbModel.config.cloudAnchorId)
                             }
 
                             override fun onCancelled(error: DatabaseError) {
                                 Log.e(TAG, "The database operation for getCloudAnchorId was cancelled.",
                                         error.toException())
-                                listener.onCloudAnchorIdAvailable(null)
+                                getCloudAnchorIdCallback(null)
                             }
                         })
     }

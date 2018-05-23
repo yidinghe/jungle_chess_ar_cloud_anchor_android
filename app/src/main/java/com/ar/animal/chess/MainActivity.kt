@@ -540,13 +540,13 @@ class MainActivity : AppCompatActivity() {
                 Animal(0, 6, AnimalState.ALIVE, AnimalType.ELEPHANT),
                 playeAelephantRenderable!!)
         var wolfA = ChessmanNode(this,
-                Animal(2, 6, AnimalState.ALIVE, AnimalType.WOLVES),
+                Animal(2, 6, AnimalState.ALIVE, AnimalType.WOLF),
                 playeAwolveRenderable!!)
         var leopardA = ChessmanNode(this,
                 Animal(4, 6, AnimalState.ALIVE, AnimalType.LEOPARD),
                 playeAleopardRenderable!!)
         var mouseA = ChessmanNode(this,
-                Animal(6, 6, AnimalState.ALIVE, AnimalType.MOUSE),
+                Animal(6, 6, AnimalState.ALIVE, AnimalType.RAT),
                 playeAmouseRenderable!!)
 
         val chessmanArrayA = arrayOf(mouseA, catA, dogA, wolfA, leopardA, tigerA, lionA, elephantA)
@@ -567,13 +567,13 @@ class MainActivity : AppCompatActivity() {
                 playeBdogRenderable!!)
 
         var mouseB = ChessmanNode(this,
-                Animal(0, 2, AnimalState.ALIVE, AnimalType.MOUSE),
+                Animal(0, 2, AnimalState.ALIVE, AnimalType.RAT),
                 playeBmouseRenderable!!)
         var leopardB = ChessmanNode(this,
                 Animal(2, 2, AnimalState.ALIVE, AnimalType.LEOPARD),
                 playeBleopardRenderable!!)
         var wolfB: ChessmanNode = ChessmanNode(this,
-                Animal(4, 2, AnimalState.ALIVE, AnimalType.WOLVES),
+                Animal(4, 2, AnimalState.ALIVE, AnimalType.WOLF),
                 playeBwolveRenderable!!)
         var elephantB = ChessmanNode(this,
                 Animal(6, 2, AnimalState.ALIVE, AnimalType.ELEPHANT),
