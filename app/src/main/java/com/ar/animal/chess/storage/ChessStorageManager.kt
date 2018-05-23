@@ -98,8 +98,9 @@ internal class ChessStorageManager() {
                 .addListenerForSingleValueEvent(
                         object : ValueEventListener {
                             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                val chessDbModel = dataSnapshot.value as ChessDbModel
-                                listener.onCloudAnchorIdAvailable(chessDbModel.config.cloudAnchorId)
+                                val chessDbModel = dataSnapshot.getValue(ChessDbModel::class.java)
+                                if (chessDbModel != null)
+                                    listener.onCloudAnchorIdAvailable(chessDbModel.config.cloudAnchorId)
                             }
 
                             override fun onCancelled(error: DatabaseError) {
