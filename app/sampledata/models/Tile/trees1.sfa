@@ -139,7 +139,7 @@
       ],
       file: "sampledata/models/Tile/trees1.obj",
       name: "trees1",
-      scale: 0.0005,
+      scale: 0.00025,
       suggested_collision: {
          center: {
             x: 0,

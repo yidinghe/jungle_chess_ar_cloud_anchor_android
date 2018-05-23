@@ -32,7 +32,7 @@ class PointerDrawable : Drawable() {
             val cx = canvas.width / 2
             val cy = canvas.height / 2
             if (enabled) {
-                paint.color = Color.GREEN
+                paint.color = Color.GRAY
                 canvas.drawCircle(cx.toFloat(), cy.toFloat(), 10.0f, paint)
             } else {
                 paint.color = Color.GRAY

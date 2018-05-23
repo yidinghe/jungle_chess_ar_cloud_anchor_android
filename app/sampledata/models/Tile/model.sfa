@@ -243,7 +243,7 @@
       ],
       file: "sampledata/models/Tile/model.obj",
       name: "model",
-      scale: 0.2,
+      scale: 0.1,
       suggested_collision: {
          center: {
             x: 0,

@@ -622,12 +622,12 @@ class MainActivity : AppCompatActivity() {
                 if (row == 0 && col == 3) {
 
                     tile = TileNode(this, distanceToCenter.toFloat(), Tile(tileType = TileType.TILE_BASEMENT), tilesBasementRenderable!!)
-                    tile.localPosition = Vector3((col - 3).toFloat() / 4, 0.25F, (row - 4).toFloat() / 4)
+                    tile.localPosition = Vector3((col - 3).toFloat() / 8, 0.25F, (row - 4).toFloat() / 8)
                     tile.localRotation = Quaternion.axisAngle(Vector3(0.0f, 1.0f, 0.0f), 90f)
                     tile.renderable = tilesBasementRenderable
                 } else if (row == 8 && col == 3) {
                     tile = TileNode(this, distanceToCenter.toFloat(), Tile(tileType = TileType.TILE_BASEMENT), tilesBasementRenderable!!)
-                    tile.localPosition = Vector3((col - 3).toFloat() / 4, 0.25F, (row - 4).toFloat() / 4)
+                    tile.localPosition = Vector3((col - 3).toFloat() / 8, 0.25F, (row - 4).toFloat() / 8)
                     tile.localRotation = Quaternion.axisAngle(Vector3(0.0f, 1.0f, 0.0f), 270f)
                     tile.renderable = tilesBasementRenderable
                 } else if ((col == 2 && (row == 0 || row == 8)) ||
@@ -635,17 +635,17 @@ class MainActivity : AppCompatActivity() {
                         (col == 4 && (row == 0 || row == 8))) {
                     tile = TileNode(this, distanceToCenter.toFloat(), Tile(tileType = TileType.TILE_TRAP), tilesTrapRenderable!!)
                     tile.renderable = tilesTrapRenderable
-                    tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
+                    tile.localPosition = Vector3((col - 3).toFloat() / 8, 0F, (row - 4).toFloat() / 8)
                 } else if ((row == 3 && (col == 1 || col == 2 || col == 4 || col == 5)) ||
                            (row == 4 && (col == 1 || col == 2 || col == 4 || col == 5)) ||
                            (row == 5 && (col == 1 || col == 2 || col == 4 || col == 5))) {
                     tile = TileNode(this, distanceToCenter.toFloat(), Tile(tileType = TileType.TILE_RIVER), tilesRiverRenderable!!)
                     tile.renderable = tilesRiverRenderable
-                    tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
+                    tile.localPosition = Vector3((col - 3).toFloat() / 8, 0F, (row - 4).toFloat() / 8)
                 } else {
                     tile = TileNode(this, distanceToCenter.toFloat(), Tile(tileType = TileType.TILE_GRASS), tilesGrassRenderable!!)
                     tile.renderable = tilesGrassRenderable
-                    tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
+                    tile.localPosition = Vector3((col - 3).toFloat() / 8, 0F, (row - 4).toFloat() / 8)
                 }
                 tile.setParent(center)
             }

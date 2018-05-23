@@ -34,7 +34,7 @@
       ],
       file: "sampledata/models/Tile/Wave.obj",
       name: "Wave",
-      scale: 1.0000000000000001e-07,
+      scale: 0.5000000000000001e-07,
       suggested_collision: {
          center: {
             x: 0,
