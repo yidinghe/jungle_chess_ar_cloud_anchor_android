@@ -17,9 +17,8 @@ class ChessmanNode(var context: Context,
 }
 
 class TileNode(var context: Context,
-               var tileName: String,
                var distanceToCenter: Float,
-               var tileType: TileType,
+               var tile: Tile,
                var tileRenderable: ModelRenderable) : Node() {
 
     override fun onActivate() {

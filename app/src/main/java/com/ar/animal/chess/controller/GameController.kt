@@ -1,7 +1,8 @@
 package com.ar.animal.chess.controller
 
-import com.ar.animal.chess.model.AnimalTileDbModel
+import com.ar.animal.chess.model.Animal
 import com.ar.animal.chess.model.GameState
+import com.ar.animal.chess.model.Tile
 import com.ar.animal.chess.storage.ChessStorageManager
 
 
@@ -16,12 +17,14 @@ class GameController {
         val instance: GameController = GameController()
     }
 
-    fun initGame(isUserA: Boolean, cloudAnchorId: String) {
+    //FOR init game, User A needs to store
+    fun initGame(isUserA: Boolean, cloudAnchorId: String, tileList: List<Tile>,
+                 animalAList: List<Animal>, animalBList: List<Animal>) {
         //TODO
         mGameState = if (isUserA) GameState.USER_A_TURN else GameState.USER_B_TURN
     }
 
-    fun updateGameInfo(animalTileList: List<AnimalTileDbModel>) {
+    fun updateGameInfo() {
         //TODO
     }
 }
