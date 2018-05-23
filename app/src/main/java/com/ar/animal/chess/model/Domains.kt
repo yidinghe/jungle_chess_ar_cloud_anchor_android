@@ -10,6 +10,11 @@ data class Animal(var positionX: Int = 0, var positionY: Int = 0,
                   var state: AnimalState = AnimalState.ALIVE,
                   var animalType: AnimalType = AnimalType.MOUSE)
 
+enum class UserType {
+    USER_A,
+    USER_B
+}
+
 enum class GameState {
     USER_A_TURN,
     USER_B_TURN,
