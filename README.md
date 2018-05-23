@@ -12,9 +12,9 @@ Jungle Chess AR is an Android AR version Jungle Chess Game which created by usin
 - Scenefrom SDK 1.0.1
 
 ## Game Board Example
-[Jungle Board Game wiki documentation](https://en.wikipedia.org/wiki/Jungle_(board_game))
 ![Game_Board_Demo](Resources/example_board.png)
 ## Rules
+[Jungle Board Game wiki documentation](https://en.wikipedia.org/wiki/Jungle_(board_game))
 ### Objective
 The goal of the game is either to move a piece onto a special square, the den, on the opponent's side of the board, or capture all of the opponent's pieces.
 ### Board
