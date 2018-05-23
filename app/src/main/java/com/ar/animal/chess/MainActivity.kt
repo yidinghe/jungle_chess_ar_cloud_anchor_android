@@ -18,14 +18,14 @@ import com.ar.animal.chess.controller.GameController
 
 import com.ar.animal.chess.model.*
 
-import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.ErrorCodes
-import com.firebase.ui.auth.IdpResponse
 import com.ar.animal.chess.model.TileNode
 import com.ar.animal.chess.model.TileType
 import com.ar.animal.chess.util.Utils
 import com.ar.animal.chess.util.d
 import com.ar.animal.chess.util.e
+import com.google.android.gms.auth.api.Auth
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.GoogleApiClient
 import com.google.ar.core.*
 
 import com.google.ar.core.exceptions.CameraNotAvailableException
@@ -40,6 +40,7 @@ import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.TransformableNode
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 
@@ -50,8 +51,6 @@ class MainActivity : AppCompatActivity() {
 
     private val RC_PERMISSIONS = 0x123
     private val RC_SIGN_IN = 234
-
-    val providers: List<AuthUI.IdpConfig> = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
 
     private var installRequested: Boolean = false
 
@@ -64,12 +63,12 @@ class MainActivity : AppCompatActivity() {
      */
     private lateinit var gameController: GameController
     private var welcomeAnchor: Anchor? = null
-    private var controllerRenderable:ViewRenderable? = null
-    private var welcomeRenderable:ViewRenderable? = null
-    private var controllerNode:Node = Node()
-    private var welcomeNode:Node = Node()
+    private var controllerRenderable: ViewRenderable? = null
+    private var welcomeRenderable: ViewRenderable? = null
+    private var controllerNode: Node = Node()
+    private var welcomeNode: Node = Node()
     private val pointer = PointerDrawable()
-    private var needShowWelcomePanel:Boolean = true
+    private var needShowWelcomePanel: Boolean = true
     private var isTracking: Boolean = false
     private var isHitting: Boolean = false
 
@@ -113,10 +112,13 @@ class MainActivity : AppCompatActivity() {
     private var cloudAnchor: Anchor? = null
     private var arSession: Session? = null
     private val TAG = MainActivity::class.java.simpleName
-    private var mAuth = FirebaseAuth.getInstance()
     private val mGameController = GameController.instance
     private val mHandler = Handler()
     private val mCheckAnchorUpdateRunnable = Runnable { checkUpdatedAnchor() }
+
+    private var mFirebaseAuth: FirebaseAuth? = null
+    private var mFirebaseUser: FirebaseUser? = null
+    private var mGoogleApiClient: GoogleApiClient? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -125,21 +127,7 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
 
-        mAuth = FirebaseAuth.getInstance();
-        if (mAuth!!.currentUser != null) {
-
-            showSnackbar("Welcome back ${mAuth!!.currentUser!!.displayName}")
-        } else {
-            //Sign In
-            startActivityForResult(
-                    AuthUI.getInstance()
-                            .createSignInIntentBuilder()
-                            .setAvailableProviders(providers)
-                            .build(),
-                    RC_SIGN_IN)
-        }
-
-
+        mFirebaseAuth = FirebaseAuth.getInstance()
         gameController = GameController.instance
         arSceneView = findViewById(R.id.ar_scene_view)
 
@@ -267,7 +255,7 @@ class MainActivity : AppCompatActivity() {
                 .scene
                 .setOnUpdateListener { frameTime ->
 
-                    if (needShowWelcomePanel){
+                    if (needShowWelcomePanel) {
                         onUpdate()
                     }
 
@@ -344,7 +332,7 @@ class MainActivity : AppCompatActivity() {
             for (hit in hits) {
                 val trackable = hit.trackable
                 if (trackable is Plane && trackable.isPoseInPolygon(hit.hitPose)) {
-                    Log.d(TAG,"HIT CAPTURE")
+                    Log.d(TAG, "HIT CAPTURE")
                     welcomeAnchor = hit.createAnchor()
                     placeWelcomePanel()
                     needShowWelcomePanel = false
@@ -358,47 +346,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         if (requestCode == RC_SIGN_IN) {
 
-            var response = IdpResponse.fromResultIntent(data)
-
-            // Successfully signed in
-            if (resultCode == RESULT_OK) {
-                //continue
-                var metadata = mAuth!!.getCurrentUser()!!.getMetadata();
-                if (metadata!!.getCreationTimestamp() == metadata.getLastSignInTimestamp()) {
-                    // The user is new, show them a fancy intro screen!
-                } else {
-                    // This is an existing user, show them a welcome back screen.
+            val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
+            if (result.isSuccess) {
+                val account = result.signInAccount
+                if (account != null) {
+                    Snackbar.make(findViewById(android.R.id.content), "currentUser: ${account.displayName}", Snackbar.LENGTH_SHORT).show()
                 }
-            } else {
-                // Sign in failed
-                if (response == null) {
-                    // User pressed back button
-                    showSnackbar(R.string.sign_in_cancelled);
-                    return;
-                }
-
-                if (response.getError()?.getErrorCode() == ErrorCodes.NO_NETWORK) {
-                    showSnackbar(R.string.no_internet_connection);
-                    return;
-                }
-
-                showSnackbar(R.string.unknown_error);
-                Log.e(TAG, "Sign-in error: ", response.getError());
             }
+
         }
-    }
-
-    fun showSnackbar(string: Int) {
-        val snackbar = Snackbar.make(findViewById(android.R.id.content), string, Snackbar.LENGTH_LONG)
-        snackbar.show()
-    }
-
-    fun showSnackbar(string: String) {
-        val snackbar = Snackbar.make(findViewById(android.R.id.content), string, Snackbar.LENGTH_LONG)
-        snackbar.show()
     }
 
     override fun onResume() {
@@ -521,7 +479,7 @@ class MainActivity : AppCompatActivity() {
         return base
     }
 
-    private fun initChessmen(centerTile:Node) {
+    private fun initChessmen(centerTile: Node) {
         var tigerA = ChessmanNode(this,
                 Animal(0, 8, AnimalState.ALIVE, AnimalType.TIGER),
                 playeAtigerRenderable!!)
@@ -586,8 +544,8 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun placeChessmen(centerTile: Node){
-        for(chessmanNode in playeAChessmen){
+    private fun placeChessmen(centerTile: Node) {
+        for (chessmanNode in playeAChessmen) {
             var col = chessmanNode.animal.posCol
             var row = chessmanNode.animal.posRow
             chessmanNode.localPosition = Vector3((col - 3).toFloat() / 4, 0.25F, (row - 4).toFloat() / 4)
@@ -595,7 +553,7 @@ class MainActivity : AppCompatActivity() {
             chessmanNode.setParent(centerTile)
         }
 
-        for(chessmanNode in playeBChessmen){
+        for (chessmanNode in playeBChessmen) {
             var col = chessmanNode.animal.posCol
             var row = chessmanNode.animal.posRow
             chessmanNode.localPosition = Vector3((col - 3).toFloat() / 4, 0.25F, (row - 4).toFloat() / 4)
@@ -637,8 +595,8 @@ class MainActivity : AppCompatActivity() {
                     tile.renderable = tilesTrapRenderable
                     tile.localPosition = Vector3((col - 3).toFloat() / 8, 0F, (row - 4).toFloat() / 8)
                 } else if ((row == 3 && (col == 1 || col == 2 || col == 4 || col == 5)) ||
-                           (row == 4 && (col == 1 || col == 2 || col == 4 || col == 5)) ||
-                           (row == 5 && (col == 1 || col == 2 || col == 4 || col == 5))) {
+                        (row == 4 && (col == 1 || col == 2 || col == 4 || col == 5)) ||
+                        (row == 5 && (col == 1 || col == 2 || col == 4 || col == 5))) {
                     tile = TileNode(this, distanceToCenter.toFloat(), Tile(tileType = TileType.TILE_RIVER), tilesRiverRenderable!!)
                     tile.renderable = tilesRiverRenderable
                     tile.localPosition = Vector3((col - 3).toFloat() / 8, 0F, (row - 4).toFloat() / 8)
@@ -681,6 +639,26 @@ class MainActivity : AppCompatActivity() {
         loadingMessageSnackbar = null
     }
 
+    private fun signInGoogleAccount() {
+        if (mFirebaseAuth!!.currentUser != null) {
+            Snackbar.make(findViewById(android.R.id.content), "currentUser: ${mFirebaseAuth!!.currentUser!!.displayName}", Snackbar.LENGTH_SHORT).show()
+        } else {
+            //Sign In
+
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build()
+            mGoogleApiClient = GoogleApiClient.Builder(this)
+                    .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                    .build()
+            val signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient)
+            startActivityForResult(
+                    signInIntent,
+                    RC_SIGN_IN)
+        }
+    }
+
 
     private fun setNewAnchor(newAnchor: Anchor) {
         if (cloudAnchor != null) {
@@ -691,18 +669,20 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun placeWelcomePanel(){
+    private fun placeWelcomePanel() {
         welcomeNode?.renderable = welcomeRenderable
         welcomeNode?.localPosition = Vector3(0.0f, 0f, 0.0f)
 
-        var welcomeRenderableView = welcomeRenderable!!.view
-        var btn_new_game = welcomeRenderableView.findViewById<Button>(R.id.btn_new_game)
-        var btn_pair = welcomeRenderableView.findViewById<Button>(R.id.btn_pair)
+        val welcomeRenderableView = welcomeRenderable!!.view
+        val btn_new_game = welcomeRenderableView.findViewById<Button>(R.id.btn_new_game)
+        val btn_pair = welcomeRenderableView.findViewById<Button>(R.id.btn_pair)
         btn_new_game.setOnClickListener {
+            signInGoogleAccount()
             welcomeAnchor!!.detach()
         }
 
         btn_pair.setOnClickListener {
+            signInGoogleAccount()
             welcomeAnchor!!.detach()
 
         }
