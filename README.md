@@ -1,19 +1,19 @@
 <div align = "center">
-    <h1>Animal Chess AR Android</h1>
-    <p>An AR version Animal Chess Game<p>
+    <h1>Jungle Chess AR Android</h1>
+    <p>An AR version Jungle Chess Game<p>
     <a href="https://firebase.google.com/" target="_blank"><img src="https://img.shields.io/badge/Firebase-Cloud-orange.svg?longCache=true&style=for-the-badge" alt="Firebase"></a>
     <a href="https://gradle.org/" target="_blank"><img src="https://img.shields.io/badge/Gradle-4.4-green.svg?longCache=true&style=for-the-badge" alt="Gradle"></a>
 </div>
 
 ## Instructions
-Animal Chess AR is an Android AR version Animal Chess Game which created by using Google AR Core and CloudAnchor.
+Jungle Chess AR is an Android AR version Jungle Chess Game which created by using Google AR Core and CloudAnchor.
 #### To build this application, following techniques are used:  
 - AR Core 1.2.0
 - Scenefrom SDK 1.0.1
 
 ## Game Board Example
-![Game_Board_Demo](Resources/example_board.png)
 [Jungle Board Game wiki documentation](https://en.wikipedia.org/wiki/Jungle_(board_game))
+![Game_Board_Demo](Resources/example_board.png)
 ## Rules
 ### Objective
 The goal of the game is either to move a piece onto a special square, the den, on the opponent's side of the board, or capture all of the opponent's pieces.
