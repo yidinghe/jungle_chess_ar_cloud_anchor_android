@@ -3,6 +3,7 @@ package com.ar.animal.chess
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
@@ -99,6 +100,8 @@ class MainActivity : AppCompatActivity() {
     private val TAG = MainActivity::class.java.simpleName
     private var mAuth = FirebaseAuth.getInstance()
     private val mGameController = GameController.instance
+    private val mHandler = Handler()
+    private val mCheckAnchorUpdateRunnable = Runnable { checkUpdatedAnchor() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -148,12 +151,7 @@ class MainActivity : AppCompatActivity() {
         val playB_chessman_lion = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Lion.sfb")).build()
         val playB_chessman_elephant = ModelRenderable.builder().setSource(this, Uri.parse("Elephant.sfb")).build()
 
-        val checkAnchorButton = findViewById<Button>(R.id.btn_checkAnchor)
         val resolveAnchorButton = findViewById<Button>(R.id.btn_resolveAnchor)
-
-        checkAnchorButton.setOnClickListener {
-            checkUpdatedAnchor()
-        }
 
         resolveAnchorButton.setOnClickListener {
             resolveAnchor()
@@ -356,6 +354,7 @@ class MainActivity : AppCompatActivity() {
     public override fun onPause() {
         super.onPause()
         arSceneView!!.pause()
+        mHandler.removeCallbacksAndMessages(null)
     }
 
     public override fun onDestroy() {
@@ -593,6 +592,8 @@ class MainActivity : AppCompatActivity() {
         val newAnchor = session.hostCloudAnchor(anchor)
         setNewAnchor(newAnchor)
 
+        startCheckUpdatedAnchor()
+
         placeBoard()
         Snackbar.make(findViewById(android.R.id.content), "hostCloudAnchor", Snackbar.LENGTH_SHORT).show()
         d(TAG, "setNewAnchor: hostCloudAnchor HOSTING")
@@ -618,10 +619,17 @@ class MainActivity : AppCompatActivity() {
             } else {
                 val resolveAnchor = arSession!!.resolveCloudAnchor(cloudAnchorId)
                 setNewAnchor(resolveAnchor)
+                startCheckUpdatedAnchor()
                 d(TAG, "onResolveOkPressed: resolving anchor")
                 appAnchorState = AppAnchorState.RESOLVING
             }
         }
+    }
+
+    private fun startCheckUpdatedAnchor() {
+        d(TAG, "startCheckUpdatedAnchor")
+        mHandler.removeCallbacksAndMessages(null)
+        mHandler.postDelayed(mCheckAnchorUpdateRunnable, 2000)
     }
 
     private fun checkUpdatedAnchor() {
@@ -631,11 +639,13 @@ class MainActivity : AppCompatActivity() {
 
         if (appAnchorState == AppAnchorState.HOSTING) {
             if (cloudState.isError) {
+                mHandler.removeCallbacksAndMessages(null)
                 appAnchorState = AppAnchorState.NONE
                 Snackbar.make(findViewById(android.R.id.content), "Anchor hosted error:  state: $cloudState", Snackbar.LENGTH_SHORT).show()
                 e(TAG, "Anchor hosted error:  CloudId: $cloudState")
             } else if (cloudState == Anchor.CloudAnchorState.SUCCESS) {
                 appAnchorState = AppAnchorState.HOSTED
+                mHandler.removeCallbacksAndMessages(null)
                 mGameController.initGame(cloudAnchor!!.cloudAnchorId) { roomId ->
                     if (roomId == null) {
                         e(TAG, "Anchor hosted stored fail")
@@ -647,20 +657,24 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             } else {
-                d(TAG, "Host Anchor state: $cloudState")
+                startCheckUpdatedAnchor()
+                d(TAG, "Host Anchor state: $cloudState, start another check around")
             }
         } else if (appAnchorState == AppAnchorState.RESOLVING) {
             if (cloudState.isError) {
                 appAnchorState = AppAnchorState.NONE
+                mHandler.removeCallbacksAndMessages(null)
                 Snackbar.make(findViewById(android.R.id.content), "Anchor resolving error:  state: $cloudState", Snackbar.LENGTH_SHORT).show()
                 e(TAG, "Anchor hosted error:  CloudId: $cloudState")
             } else if (cloudState == Anchor.CloudAnchorState.SUCCESS) {
                 appAnchorState = AppAnchorState.RESOLVED
                 Snackbar.make(findViewById(android.R.id.content), "Anchor resolved successfully!", Snackbar.LENGTH_SHORT).show()
                 d(TAG, "Anchor resolved successfully!")
+                mHandler.removeCallbacksAndMessages(null)
                 placeBoard()
             } else {
-                d(TAG, "Resolve Anchor state: $cloudState")
+                startCheckUpdatedAnchor()
+                d(TAG, "Resolve Anchor state: $cloudState start another check around")
             }
         }
 
