@@ -1,18 +1,14 @@
 package com.ar.animal.chess.model
 
-data class ChessDbModel(var roomId: Int = 0,
-                        var config: ConfigDbModel = ConfigDbModel(),
-                        var animalTileList: List<AnimalTileDbModel> = listOf())
 
-data class ConfigDbModel(var cloudAnchorId: String = "", var currentRound: Int = 0,
-                         var gameState: Int = GameState.USER_A_TURN.ordinal,
-                         var timestamp: String = "")
+data class AnimalTile(var animal: Animal = Animal(), var tile: Tile = Tile())
 
-data class AnimalTileDbModel(var animalDbModel: AnimalDbModel = AnimalDbModel(),
-                             var tileType: Int = TileType.TILE_GRASS.ordinal)
+data class Tile(var positionX: Int = 0, var positionY: Int = 0,
+                var tileType: TileType = TileType.TILE_GRASS)
 
-data class AnimalDbModel(var positionX: Int = 0, var positionY: Int = 0, var state: AnimalState = AnimalState.ALIVE,
-                         var animalType: Int = AnimalType.MOUSE.ordinal)
+data class Animal(var positionX: Int = 0, var positionY: Int = 0,
+                  var state: AnimalState = AnimalState.ALIVE,
+                  var animalType: AnimalType = AnimalType.MOUSE)
 
 enum class GameState {
     USER_A_TURN,
@@ -41,4 +37,11 @@ enum class AnimalState {
 enum class EndPointType {
     DEVELOP,
     RELEASE
+}
+
+enum class TileType() {
+    TILE_GRASS,
+    TILE_TRAP,
+    TILE_RIVER,
+    TILE_BASEMENT
 }

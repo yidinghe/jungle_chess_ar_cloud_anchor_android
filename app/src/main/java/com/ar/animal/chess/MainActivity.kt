@@ -18,7 +18,7 @@ import com.ar.animal.chess.model.*
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
-import com.ar.animal.chess.model.Tile
+import com.ar.animal.chess.model.TileNode
 import com.ar.animal.chess.model.TileType
 import com.ar.animal.chess.storage.ChessStorageManager
 import com.ar.animal.chess.util.Utils
@@ -67,8 +67,8 @@ class MainActivity : AppCompatActivity() {
     /*
     Chessman
      */
-    private var playeAChessmen:MutableList<Chessman> = java.util.ArrayList<Chessman>()
-    private var playeBChessmen:MutableList<Chessman> = java.util.ArrayList<Chessman>()
+    private var playeAChessmen: MutableList<ChessmanNode> = java.util.ArrayList<ChessmanNode>()
+    private var playeBChessmen: MutableList<ChessmanNode> = java.util.ArrayList<ChessmanNode>()
     private var playeAmouseRenderable: ModelRenderable? = null
     private var playeAcatRenderable: ModelRenderable? = null
     private var playeAdogRenderable: ModelRenderable? = null
@@ -405,8 +405,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
-
     private fun tryPlaceTile(tap: MotionEvent?, frame: Frame): Boolean {
 
         if (cloudAnchor != null) {
@@ -438,69 +436,69 @@ class MainActivity : AppCompatActivity() {
         return base
     }
 
-    private fun createChessmen(tile: Tile){
+    private fun createChessmen(tile: TileNode) {
 
-        var mouseA:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
+        var mouseA = ChessmanNode(this,
+                Animal(0, 0, AnimalState.ALIVE, AnimalType.MOUSE),
                 playeAmouseRenderable!!)
-        var catA:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
+        var catA = ChessmanNode(this,
+                Animal(0, 0, AnimalState.ALIVE, AnimalType.MOUSE),
                 playeAcatRenderable!!)
-        var dogA:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
+        var dogA = ChessmanNode(this,
+                Animal(0, 0, AnimalState.ALIVE, AnimalType.MOUSE),
                 playeAdogRenderable!!)
-        var wolfA:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
+        var wolfA = ChessmanNode(this,
+                Animal(0, 0, AnimalState.ALIVE, AnimalType.MOUSE),
                 playeAwolveRenderable!!)
-        var leopardA:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
+        var leopardA = ChessmanNode(this,
+                Animal(0, 0, AnimalState.ALIVE, AnimalType.MOUSE),
                 playeAleopardRenderable!!)
-        var tigerA:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
+        var tigerA = ChessmanNode(this,
+                Animal(0, 0, AnimalState.ALIVE, AnimalType.MOUSE),
                 playeAtigerRenderable!!)
-        var lionA:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
+        var lionA = ChessmanNode(this,
+                Animal(0, 0, AnimalState.ALIVE, AnimalType.MOUSE),
                 playeAlionRenderable!!)
-        var elephantA:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
+        var elephantA: ChessmanNode = ChessmanNode(this,
+                Animal(0, 0, AnimalState.ALIVE, AnimalType.MOUSE),
                 playeAelephantRenderable!!)
 
-        val chessmanArrayA = arrayOf(mouseA,catA, dogA, wolfA, leopardA, tigerA, lionA, elephantA)
+        val chessmanArrayA = arrayOf(mouseA, catA, dogA, wolfA, leopardA, tigerA, lionA, elephantA)
         playeAChessmen = Arrays.asList(*chessmanArrayA)
 
-        var mouseB:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
+        var mouseB = ChessmanNode(this,
+                Animal(0, 0, AnimalState.ALIVE, AnimalType.MOUSE),
                 playeBmouseRenderable!!)
-        var catB:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
+        var catB = ChessmanNode(this,
+                Animal(0, 0, AnimalState.ALIVE, AnimalType.MOUSE),
                 playeBcatRenderable!!)
-        var dogB:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
+        var dogB = ChessmanNode(this,
+                Animal(0, 0, AnimalState.ALIVE, AnimalType.MOUSE),
                 playeBdogRenderable!!)
-        var wolfB:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
+        var wolfB: ChessmanNode = ChessmanNode(this,
+                Animal(0, 0, AnimalState.ALIVE, AnimalType.MOUSE),
                 playeBwolveRenderable!!)
-        var leopardB:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
+        var leopardB = ChessmanNode(this,
+                Animal(0, 0, AnimalState.ALIVE, AnimalType.MOUSE),
                 playeBleopardRenderable!!)
-        var tigerB:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
+        var tigerB = ChessmanNode(this,
+                Animal(0, 0, AnimalState.ALIVE, AnimalType.MOUSE),
                 playeBtigerRenderable!!)
-        var lionB:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
+        var lionB = ChessmanNode(this,
+                Animal(0, 0, AnimalState.ALIVE, AnimalType.MOUSE),
                 playeBlionRenderable!!)
-        var elephantB:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
+        var elephantB = ChessmanNode(this,
+                Animal(0, 0, AnimalState.ALIVE, AnimalType.MOUSE),
                 playeBelephantRenderable!!)
 
-        val chessmanArrayB = arrayOf(mouseB,catB, dogB, wolfB, leopardB, tigerB, lionB, elephantB)
+        val chessmanArrayB = arrayOf(mouseB, catB, dogB, wolfB, leopardB, tigerB, lionB, elephantB)
         playeBChessmen = Arrays.asList(*chessmanArrayB)
     }
 
     private fun createNeighbourTiles(center: Node) {
         var name: String
-        var tile: Tile
-        var tile2: Tile
+        var tile: TileNode
+        var tile2: TileNode
         var distanceToCenter: Double
         var test: String
 
@@ -511,27 +509,27 @@ class MainActivity : AppCompatActivity() {
 
                 if (row == 0 && col == 3) {
 
-                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_BASEMENT, tilesBasementRenderable!!)
+                    tile = TileNode(this, name, distanceToCenter.toFloat(), TileType.TILE_BASEMENT, tilesBasementRenderable!!)
                     tile.localPosition = Vector3((col - 3).toFloat() / 4, 0.25F, (row - 4).toFloat() / 4)
                     tile.localRotation = Quaternion.axisAngle(Vector3(0.0f, 1.0f, 0.0f), 90f)
                     tile.renderable = tilesBasementRenderable
-                } else if(row == 8 && col == 3){
-                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_BASEMENT, tilesBasementRenderable!!)
+                } else if (row == 8 && col == 3) {
+                    tile = TileNode(this, name, distanceToCenter.toFloat(), TileType.TILE_BASEMENT, tilesBasementRenderable!!)
                     tile.localPosition = Vector3((col - 3).toFloat() / 4, 0.25F, (row - 4).toFloat() / 4)
                     tile.localRotation = Quaternion.axisAngle(Vector3(0.0f, 1.0f, 0.0f), 270f)
                     tile.renderable = tilesBasementRenderable
                 } else if ((col == 2 && (row == 0 || row == 8)) ||
                         (col == 3 && (row == 1 || row == 7)) ||
                         (col == 4 && (row == 0 || row == 8))) {
-                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_TRAP, tilesTrapRenderable!!)
+                    tile = TileNode(this, name, distanceToCenter.toFloat(), TileType.TILE_TRAP, tilesTrapRenderable!!)
                     tile.renderable = tilesTrapRenderable
                     tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
                 } else if (row == 4) {
-                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_RIVER, tilesRiverRenderable!!)
+                    tile = TileNode(this, name, distanceToCenter.toFloat(), TileType.TILE_RIVER, tilesRiverRenderable!!)
                     tile.renderable = tilesRiverRenderable
                     tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
                 } else {
-                    tile = Tile(this, name, distanceToCenter.toFloat(), TileType.TILE_GRASS, tilesGrassRenderable!!)
+                    tile = TileNode(this, name, distanceToCenter.toFloat(), TileType.TILE_GRASS, tilesGrassRenderable!!)
                     tile.renderable = tilesGrassRenderable
                     tile.localPosition = Vector3((col - 3).toFloat() / 4, 0F, (row - 4).toFloat() / 4)
                 }
