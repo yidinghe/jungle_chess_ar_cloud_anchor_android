@@ -21,7 +21,7 @@ class GameController {
 
     //FOR init game, User A needs to store
     fun initGame(cloudAnchorId: String, initGameCallback: (roomId: String?) -> Unit) {
-        //TODO
+        //TODO added User A info to submit to network
         mStorageManager.nextRoomId { roomId ->
             if (roomId == null) {
                 e(TAG, "Could not obtain a short code.")
@@ -43,6 +43,7 @@ class GameController {
 
     //USER B needs to pairGame with a valid roomId
     fun pairGame(roomId: Int, pairGameCallback: (cloudAnchorId: String?) -> Unit) {
+        //TODO added UserB info to submit to network
         mStorageManager.getCloudAnchorId(roomId) { cloudAnchorId ->
             mRoomId = roomId
             if (cloudAnchorId == null) {
