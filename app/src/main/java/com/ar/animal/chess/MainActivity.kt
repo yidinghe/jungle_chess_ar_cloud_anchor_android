@@ -37,10 +37,8 @@ import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import kotlinx.android.synthetic.main.content_main.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
-import com.google.ar.sceneform.ux.RotationController
 
 import kotlinx.android.synthetic.main.content_main.*
 import java.util.*
@@ -127,7 +125,7 @@ class MainActivity : AppCompatActivity() {
 
 
         arSceneView = findViewById(R.id.ar_scene_view)
-        storageManager = ChessStorageManager(this)
+        storageManager = ChessStorageManager()
 
         val tiles_grass = ModelRenderable.builder().setSource(this, Uri.parse("trees1.sfb")).build()
         val tiles_river = ModelRenderable.builder().setSource(this, Uri.parse("Wave.sfb")).build()
@@ -443,56 +441,56 @@ class MainActivity : AppCompatActivity() {
     private fun createChessmen(tile: Tile){
 
         var mouseA:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
                 playeAmouseRenderable!!)
         var catA:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
                 playeAcatRenderable!!)
         var dogA:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
                 playeAdogRenderable!!)
         var wolfA:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
                 playeAwolveRenderable!!)
         var leopardA:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
                 playeAleopardRenderable!!)
         var tigerA:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
                 playeAtigerRenderable!!)
         var lionA:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
                 playeAlionRenderable!!)
         var elephantA:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
                 playeAelephantRenderable!!)
 
         val chessmanArrayA = arrayOf(mouseA,catA, dogA, wolfA, leopardA, tigerA, lionA, elephantA)
         playeAChessmen = Arrays.asList(*chessmanArrayA)
 
         var mouseB:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
                 playeBmouseRenderable!!)
         var catB:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
                 playeBcatRenderable!!)
         var dogB:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
                 playeBdogRenderable!!)
         var wolfB:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
                 playeBwolveRenderable!!)
         var leopardB:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
                 playeBleopardRenderable!!)
         var tigerB:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
                 playeBtigerRenderable!!)
         var lionB:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
                 playeBlionRenderable!!)
         var elephantB:Chessman = Chessman(this,
-                AnimalDbModel(0,0, AnimalStats.ALIVE, AnimalType.MOUSE.ordinal),
+                AnimalDbModel(0,0, AnimalState.ALIVE, AnimalType.MOUSE.ordinal),
                 playeBelephantRenderable!!)
 
         val chessmanArrayB = arrayOf(mouseB,catB, dogB, wolfB, leopardB, tigerB, lionB, elephantB)

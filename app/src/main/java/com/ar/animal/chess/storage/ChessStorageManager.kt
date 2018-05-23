@@ -18,7 +18,7 @@ import com.google.firebase.database.ValueEventListener
 /**
  * Helper class for Firebase storage of cloud anchor IDs.
  */
-internal class ChessStorageManager(context: Context) {
+internal class ChessStorageManager() {
     private val rootRef: DatabaseReference
 
     /**

@@ -2,13 +2,16 @@ package com.ar.animal.chess.model
 
 data class ChessDbModel(var roomId: Int = 0,
                         var config: ConfigDbModel = ConfigDbModel(),
-                        var animalList: List<AnimalDbModel> = listOf())
+                        var animalTileList: List<AnimalTileDbModel> = listOf())
 
 data class ConfigDbModel(var cloudAnchorId: String = "", var currentRound: Int = 0,
                          var gameState: Int = GameState.USER_A_TURN.ordinal,
                          var timestamp: String = "")
 
-data class AnimalDbModel(var positionX: Int = 0, var positionY: Int = 0, var stats: AnimalStats = AnimalStats.ALIVE,
+data class AnimalTileDbModel(var animalDbModel: AnimalDbModel = AnimalDbModel(),
+                             var tileType: Int = TileType.TILE_GRASS.ordinal)
+
+data class AnimalDbModel(var positionX: Int = 0, var positionY: Int = 0, var state: AnimalState = AnimalState.ALIVE,
                          var animalType: Int = AnimalType.MOUSE.ordinal)
 
 enum class GameState {
@@ -30,7 +33,7 @@ enum class AnimalType {
     ELEPHANT
 }
 
-enum class AnimalStats{
+enum class AnimalState {
     ALIVE,
     DEAD
 }
