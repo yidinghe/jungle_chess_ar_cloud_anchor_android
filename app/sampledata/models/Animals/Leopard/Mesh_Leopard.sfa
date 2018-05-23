@@ -35,7 +35,7 @@
       ],
       file: "sampledata/models/Animals/Leopard/Mesh_Leopard.obj",
       name: "Mesh_Leopard",
-      scale: 0.023254,
+      scale: 0.0023254,
       suggested_collision: {
          center: {
             x: 0,

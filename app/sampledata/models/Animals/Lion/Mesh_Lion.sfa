@@ -35,7 +35,7 @@
       ],
       file: "sampledata/models/Animals/Lion/Mesh_Lion.obj",
       name: "Mesh_Lion",
-      scale: 0.01545,
+      scale: 0.001545,
       suggested_collision: {
          center: {
             x: 0,

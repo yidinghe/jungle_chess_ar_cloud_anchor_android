@@ -35,7 +35,7 @@
       ],
       file: "sampledata/models/Animals/Cat/Mesh_Cat.obj",
       name: "Mesh_Cat",
-      scale: 0.057182999999999998,
+      scale: 0.0057182999999999998,
       suggested_collision: {
          center: {
             x: 0,

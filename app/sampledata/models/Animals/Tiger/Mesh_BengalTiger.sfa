@@ -35,7 +35,7 @@
       ],
       file: "sampledata/models/Animals/Tiger/Mesh_BengalTiger.obj",
       name: "Mesh_BengalTiger",
-      scale: 0.022169999999999999,
+      scale: 0.0022169999999999999,
       suggested_collision: {
          center: {
             x: 0,

@@ -35,7 +35,7 @@
       ],
       file: "sampledata/models/Animals/Mouse/Mesh_Hamster.obj",
       name: "Mesh_Hamster",
-      scale: 0.027109000000000001,
+      scale: 0.0027109000000000001,
       suggested_collision: {
          center: {
             x: 0,

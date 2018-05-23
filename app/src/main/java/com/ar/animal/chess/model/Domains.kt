@@ -3,10 +3,10 @@ package com.ar.animal.chess.model
 
 data class AnimalTile(var animal: Animal = Animal(), var tile: Tile = Tile())
 
-data class Tile(var positionX: Int = 0, var positionY: Int = 0,
+data class Tile(var posCol: Int = 0, var posRow: Int = 0,
                 var tileType: TileType = TileType.TILE_GRASS)
 
-data class Animal(var positionX: Int = 0, var positionY: Int = 0,
+data class Animal(var posCol: Int = 0, var posRow: Int = 0,
                   var state: AnimalState = AnimalState.ALIVE,
                   var animalType: AnimalType = AnimalType.MOUSE)
 
