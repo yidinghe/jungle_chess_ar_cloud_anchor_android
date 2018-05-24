@@ -21,7 +21,7 @@ class GameController {
 
     //FOR init game, User A needs to store
     fun initGame(cloudAnchorId: String, onInitGame: (roomId: String?) -> Unit) {
-        //TODO added User A info to submit to network
+
         mStorageManager.nextRoomId { roomId ->
             if (roomId == null) {
                 e(TAG, "Could not obtain a short code.")
@@ -85,9 +85,14 @@ class GameController {
         val isNeedGetUserA = mCurrentUser!!.userType != UserType.USER_A
 
         mStorageManager.readUserInfo(mRoomId, isNeedGetUserA) {
-            mOtherUser = it
-            if (mCurrentUser != null && mOtherUser != null)
-                onReadUserInfo(mCurrentUser!!, mOtherUser!!)
+            if (isNeedGetUserA && it.userType == UserType.USER_A || (!isNeedGetUserA && it.userType == UserType.USER_B)) {
+                e(TAG, "onReadUserInfo data is not needed, no need to notify UI")
+            }else {
+                mOtherUser = it
+                if (mCurrentUser != null && mOtherUser != null)
+                    onReadUserInfo(mCurrentUser!!, mOtherUser!!)
+            }
+
         }
     }
 }

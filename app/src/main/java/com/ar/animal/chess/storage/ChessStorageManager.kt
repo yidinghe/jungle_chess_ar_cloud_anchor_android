@@ -34,6 +34,10 @@ internal class ChessStorageManager {
         d(TAG, "nextRoomId")
         // Run a transaction on the node containing the next short code available. This increments the
         // value in the database and retrieves it in one atomic all-or-nothing operation.
+//
+//        rootRef.child(KEY_NEXT_ROOM_ID).setValue(1)
+//        onReadroomId(1)
+
         rootRef
                 .child(KEY_NEXT_ROOM_ID)
                 .runTransaction(
@@ -72,7 +76,6 @@ internal class ChessStorageManager {
     fun writeCloudAnchorIdUsingRoomId(shortCode: Int, cloudAnchorId: String) {
         d(TAG, "writeCloudAnchorIdUsingRoomId")
         val configDbModel = ConfigDbModel(cloudAnchorId, timestamp = System.currentTimeMillis().toString())
-        rootRef.child(shortCode.toString()).child("config").setValue(configDbModel)
     }
 
     /**
