@@ -1,11 +1,14 @@
 package com.ar.animal.chess.controller
 
+import android.net.Uri
 import com.ar.animal.chess.model.Animal
+import com.ar.animal.chess.model.ChessUserInfo
 import com.ar.animal.chess.model.GameState
 import com.ar.animal.chess.model.Tile
 import com.ar.animal.chess.storage.ChessStorageManager
 import com.ar.animal.chess.util.d
 import com.ar.animal.chess.util.e
+import com.firebase.ui.auth.data.model.User
 
 
 class GameController {
@@ -14,6 +17,8 @@ class GameController {
     private var mGameState = GameState.NO_WIN_USER
     private var mCloudAnchorId: String = ""
     private var mRoomId = 0
+    private var mCurrentUser: ChessUserInfo? = null
+    private var mOtherUser: ChessUserInfo? = null
 
     companion object {
         val instance: GameController = GameController()
@@ -61,7 +66,8 @@ class GameController {
         //TODO
     }
 
-    fun storeUserInfo(){
+    fun storeUserInfo(isUserA: Boolean, uid: String, displayName: String?, photoUrl: Uri?) {
         //TODO  store user info
+
     }
 }
