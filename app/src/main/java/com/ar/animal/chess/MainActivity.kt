@@ -129,10 +129,12 @@ class MainActivity : AppCompatActivity() {
     private var mGoogleApiClient: GoogleApiClient? = null
     private var mIsUserA = true
 
+    private var toolbar: Toolbar? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
+        toolbar = findViewById<View>(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
 
 
@@ -276,12 +278,9 @@ class MainActivity : AppCompatActivity() {
                         return@setOnUpdateListener
                     }
 
-                    val frame = arSceneView!!.arFrame
-                    if (frame == null) {
-                        return@setOnUpdateListener
-                    }
+                    val frame = arSceneView!!.arFrame ?: return@setOnUpdateListener
 
-                    if (frame!!.camera.trackingState != TrackingState.TRACKING) {
+                    if (frame.camera.trackingState != TrackingState.TRACKING) {
                         return@setOnUpdateListener
                     }
 
@@ -329,7 +328,7 @@ class MainActivity : AppCompatActivity() {
     private fun updateTracking(): Boolean {
         val frame = arSceneView!!.getArFrame()
         val wasTracking = isTracking
-        isTracking = frame.getCamera().getTrackingState() == TrackingState.TRACKING
+        isTracking = frame.camera.trackingState == TrackingState.TRACKING
         return isTracking !== wasTracking
     }
 
@@ -341,12 +340,13 @@ class MainActivity : AppCompatActivity() {
         val wasHitting = isHitting
         isHitting = false
         if (frame != null) {
-            hits = frame!!.hitTest(pt.x.toFloat(), pt.y.toFloat())
+            hits = frame.hitTest(pt.x.toFloat(), pt.y.toFloat())
             for (hit in hits) {
                 val trackable = hit.trackable
                 if (trackable is Plane && trackable.isPoseInPolygon(hit.hitPose)) {
                     Log.d(TAG, "HIT CAPTURE")
                     welcomeAnchor = hit.createAnchor()
+                    hideLoadingMessage()
                     placeWelcomePanel()
                     needShowWelcomePanel = false
                     isHitting = true
@@ -411,7 +411,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (arSceneView!!.session != null) {
-            //showLoadingMessage()
+            showLoadingMessage()
         }
     }
 
@@ -666,25 +666,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showLoadingMessage() {
-        if (loadingMessageSnackbar != null && loadingMessageSnackbar!!.isShownOrQueued) {
-            return
-        }
-
-        loadingMessageSnackbar = Snackbar.make(
-                this@MainActivity.findViewById(android.R.id.content),
-                "Searching for surfaces...",
-                Snackbar.LENGTH_INDEFINITE)
-        loadingMessageSnackbar!!.view.setBackgroundColor(-0x40cdcdce)
-        loadingMessageSnackbar!!.show()
+        toolbar!!.title = "Searching for surfaces..."
     }
 
     private fun hideLoadingMessage() {
-        if (loadingMessageSnackbar == null) {
-            return
-        }
-
-        loadingMessageSnackbar!!.dismiss()
-        loadingMessageSnackbar = null
+        toolbar!!.visibility = View.GONE
     }
 
     private fun setNewAnchor(newAnchor: Anchor) {
