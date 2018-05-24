@@ -35,7 +35,7 @@
       ],
       file: "sampledata/models/Animals/Dog/Mesh_Beagle.obj",
       name: "Mesh_Beagle",
-      scale: 0.0033135999999999999,
+      scale: 0.001,
       suggested_collision: {
          center: {
             x: 0,

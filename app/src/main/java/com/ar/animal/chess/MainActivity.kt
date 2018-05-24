@@ -81,6 +81,7 @@ class MainActivity : AppCompatActivity() {
     private var tilesRiverRenderable: ModelRenderable? = null
     private var tilesTrapRenderable: ModelRenderable? = null
     private var tilesBasementRenderable: ModelRenderable? = null
+    private var tilesSplierator: ViewRenderable? = null
 
     /*
     Chessman
@@ -137,27 +138,28 @@ class MainActivity : AppCompatActivity() {
         arSceneView = findViewById(R.id.ar_scene_view)
 
         val panel_welcome = ViewRenderable.builder().setView(this, R.layout.panel_welcome).build();
+        val tile_split = ViewRenderable.builder().setView(this, R.layout.spliter_tiles).build();
 
         val tiles_grass = ModelRenderable.builder().setSource(this, Uri.parse("trees1.sfb")).build()
         val tiles_river = ModelRenderable.builder().setSource(this, Uri.parse("Wave.sfb")).build()
-        val tiles_trap = ModelRenderable.builder().setSource(this, Uri.parse("Field_1268.sfb")).build()
+        val tiles_trap = ModelRenderable.builder().setSource(this, Uri.parse("SM_Castle.sfb")).build()
         val tiles_basement = ModelRenderable.builder().setSource(this, Uri.parse("model.sfb")).build()
 
         val playA_chessman_mouse = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Hamster.sfb")).build()
         val playA_chessman_cat = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Cat.sfb")).build()
-        val playA_chessman_dog = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Wolf.sfb")).build()
-        val playA_chessman_wolf = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Hamster.sfb")).build()
+        val playA_chessman_dog = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Beagle.sfb")).build()
+        val playA_chessman_wolf = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Wolf.sfb")).build()
         val playA_chessman_leopard = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Leopard.sfb")).build()
-        val playA_chessman_tiger = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Hamster.sfb")).build()
+        val playA_chessman_tiger = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_BengalTiger.sfb")).build()
         val playA_chessman_lion = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Lion.sfb")).build()
         val playA_chessman_elephant = ModelRenderable.builder().setSource(this, Uri.parse("Elephant.sfb")).build()
 
         val playB_chessman_mouse = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Hamster.sfb")).build()
         val playB_chessman_cat = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Cat.sfb")).build()
-        val playB_chessman_dog = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Wolf.sfb")).build()
-        val playB_chessman_wolf = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Hamster.sfb")).build()
+        val playB_chessman_dog = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Beagle.sfb")).build()
+        val playB_chessman_wolf = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Wolf.sfb")).build()
         val playB_chessman_leopard = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Leopard.sfb")).build()
-        val playB_chessman_tiger = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Hamster.sfb")).build()
+        val playB_chessman_tiger = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_BengalTiger.sfb")).build()
         val playB_chessman_lion = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Lion.sfb")).build()
         val playB_chessman_elephant = ModelRenderable.builder().setSource(this, Uri.parse("Elephant.sfb")).build()
 
@@ -194,7 +196,7 @@ class MainActivity : AppCompatActivity() {
 
             try {
                 welcomeRenderable = panel_welcome.get()
-
+                tilesSplierator = tile_split.get()
                 tilesGrassRenderable = tiles_grass.get()
                 tilesRiverRenderable = tiles_river.get()
                 tilesTrapRenderable = tiles_trap.get()
@@ -561,7 +563,7 @@ class MainActivity : AppCompatActivity() {
         for (chessmanNode in playeAChessmen) {
             var col = chessmanNode.animal.posCol
             var row = chessmanNode.animal.posRow
-            chessmanNode.localPosition = Vector3((col - 3).toFloat() / 4, 0.25F, (row - 4).toFloat() / 4)
+            chessmanNode.localPosition = Vector3((col - 3).toFloat() / 8, 0.05F, (row - 4).toFloat() / 8)
             chessmanNode.localRotation = Quaternion.axisAngle(Vector3(0.0f, 1.0f, 0.0f), 180f)
             chessmanNode.setParent(centerTile)
         }
@@ -569,7 +571,7 @@ class MainActivity : AppCompatActivity() {
         for (chessmanNode in playeBChessmen) {
             var col = chessmanNode.animal.posCol
             var row = chessmanNode.animal.posRow
-            chessmanNode.localPosition = Vector3((col - 3).toFloat() / 4, 0.25F, (row - 4).toFloat() / 4)
+            chessmanNode.localPosition = Vector3((col - 3).toFloat() / 8, 0.05F, (row - 4).toFloat() / 8)
             chessmanNode.setParent(centerTile)
         }
     }
@@ -588,17 +590,29 @@ class MainActivity : AppCompatActivity() {
                 name = row.toString() + "_" + col.toString()
                 distanceToCenter = Math.sqrt(Math.pow((row - 4).toDouble(), 2.0) + Math.pow((col - 3).toDouble(), 2.0))
                 /*
+                Place splitters
+                 */
+                var splitColNode = Node()
+                var splitRowNode = Node()
+                splitColNode.renderable = tilesSplierator
+                splitRowNode.renderable = tilesSplierator
+                splitColNode.localRotation = Quaternion.axisAngle(Vector3(0.0f, 1.0f, 0.0f), 90f)
+                splitRowNode.localPosition = Vector3((col - 3).toFloat() / 8, 0F, (row - 3.5).toFloat() / 8)
+                splitColNode.localPosition = Vector3((col - 2.625).toFloat() / 8, 0F, (row - 4).toFloat() / 8)
+                splitRowNode.setParent(center)
+                splitColNode.setParent(center)
+                /*
                Place tiles
                 */
                 if (row == 0 && col == 3) {
 
                     tile = TileNode(this, distanceToCenter.toFloat(), Tile(tileType = TileType.TILE_BASEMENT), tilesBasementRenderable!!)
-                    tile.localPosition = Vector3((col - 3).toFloat() / 8, 0.25F, (row - 4).toFloat() / 8)
+                    tile.localPosition = Vector3((col - 3).toFloat() / 8, 0.05F, (row - 4).toFloat() / 8)
                     tile.localRotation = Quaternion.axisAngle(Vector3(0.0f, 1.0f, 0.0f), 90f)
                     tile.renderable = tilesBasementRenderable
                 } else if (row == 8 && col == 3) {
                     tile = TileNode(this, distanceToCenter.toFloat(), Tile(tileType = TileType.TILE_BASEMENT), tilesBasementRenderable!!)
-                    tile.localPosition = Vector3((col - 3).toFloat() / 8, 0.25F, (row - 4).toFloat() / 8)
+                    tile.localPosition = Vector3((col - 3).toFloat() / 8, 0.05F, (row - 4).toFloat() / 8)
                     tile.localRotation = Quaternion.axisAngle(Vector3(0.0f, 1.0f, 0.0f), 270f)
                     tile.renderable = tilesBasementRenderable
                 } else if ((col == 2 && (row == 0 || row == 8)) ||
@@ -606,6 +620,7 @@ class MainActivity : AppCompatActivity() {
                         (col == 4 && (row == 0 || row == 8))) {
                     tile = TileNode(this, distanceToCenter.toFloat(), Tile(tileType = TileType.TILE_TRAP), tilesTrapRenderable!!)
                     tile.renderable = tilesTrapRenderable
+                    tile.localScale = Vector3(1f, 0.2f, 1f)
                     tile.localPosition = Vector3((col - 3).toFloat() / 8, 0F, (row - 4).toFloat() / 8)
                 } else if ((row == 3 && (col == 1 || col == 2 || col == 4 || col == 5)) ||
                         (row == 4 && (col == 1 || col == 2 || col == 4 || col == 5)) ||

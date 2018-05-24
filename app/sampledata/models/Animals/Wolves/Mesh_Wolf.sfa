@@ -35,7 +35,7 @@
       ],
       file: "sampledata/models/Animals/Wolves/Mesh_Wolf.obj",
       name: "Mesh_Wolf",
-      scale: 0.0019989,
+      scale: 0.0007,
       suggested_collision: {
          center: {
             x: 0,
