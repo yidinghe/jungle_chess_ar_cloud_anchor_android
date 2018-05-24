@@ -756,8 +756,14 @@ class MainActivity : AppCompatActivity() {
             Snackbar.make(findViewById(android.R.id.content),
                     "Welcome currentUser: ${mFirebaseUser!!.displayName}, Please input roomNumber to pair into game.",
                     Snackbar.LENGTH_SHORT).show()
+            mGameController.storeUserInfo(mIsUserA, mFirebaseUser!!.uid, mFirebaseUser!!.displayName, mFirebaseUser!!.photoUrl!!.path)
             showResolveAnchorPanel()
         }
+    }
+
+    private fun onReadUserInfo(currentUserInfo: ChessUserInfo, otherUserInfo: ChessUserInfo) {
+        d(TAG, "currentUserInfo: $currentUserInfo")
+        d(TAG, "otherUserInfo: $otherUserInfo")
     }
 
     private fun hostCloudAnchor(anchor: Anchor) {
@@ -829,6 +835,8 @@ class MainActivity : AppCompatActivity() {
                         mGameController.storeUserInfo(mIsUserA, mFirebaseUser!!.uid, mFirebaseUser!!.displayName, mFirebaseUser!!.photoUrl!!.path)
                         Snackbar.make(findViewById(android.R.id.content), "Anchor hosted stored" +
                                 " CloudId: ${cloudAnchor!!.cloudAnchorId}", Snackbar.LENGTH_SHORT).show()
+
+                        mGameController.getUserInfo(this::onReadUserInfo)
                     }
                 }
             } else {
@@ -845,6 +853,7 @@ class MainActivity : AppCompatActivity() {
                 appAnchorState = AppAnchorState.RESOLVED
                 Snackbar.make(findViewById(android.R.id.content), "Anchor resolved successfully!", Snackbar.LENGTH_SHORT).show()
                 d(TAG, "Anchor resolved successfully!")
+                mGameController.getUserInfo(this::onReadUserInfo)
                 mHandler.removeCallbacksAndMessages(null)
                 placeBoard()
             } else {

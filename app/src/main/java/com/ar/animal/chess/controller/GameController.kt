@@ -62,6 +62,7 @@ class GameController {
     }
 
     fun storeUserInfo(isUserA: Boolean, uid: String, displayName: String?, photoUrl: String?) {
+        d(TAG, "storeUserInfo")
         val userInfo = ChessUserInfo(uid)
         displayName?.let {
             userInfo.displayName = it
@@ -72,5 +73,21 @@ class GameController {
         userInfo.userType = if (isUserA) UserType.USER_A else UserType.USER_B
         mCurrentUser = userInfo
         mStorageManager.writeUserInfo(mRoomId, userInfo)
+    }
+
+    fun getUserInfo(onReadUserInfo: (currentUserInfo: ChessUserInfo, otherUserInfo: ChessUserInfo) -> Unit) {
+        d(TAG, "getUserInfo")
+        if (mCurrentUser == null) {
+            e(TAG, "getUserInfo, init current user First")
+            return
+        }
+
+        val isNeedGetUserA = mCurrentUser!!.userType != UserType.USER_A
+
+        mStorageManager.readUserInfo(mRoomId, isNeedGetUserA) {
+            mOtherUser = it
+            if (mCurrentUser != null && mOtherUser != null)
+                onReadUserInfo(mCurrentUser!!, mOtherUser!!)
+        }
     }
 }
