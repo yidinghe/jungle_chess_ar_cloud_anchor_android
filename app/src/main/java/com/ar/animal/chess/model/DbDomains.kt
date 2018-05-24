@@ -12,7 +12,9 @@ data class GameInfoDbModel(var currentRound: Int = 0,
                            var animalAList: List<AnimalDbModel> = listOf(),
                            var animalBList: List<AnimalDbModel> = listOf())
 
-data class ConfigDbModel(var cloudAnchorId: String = "", var timestamp: String = "",
+data class CloudAnchorDbModel(var roomId: Int = 0, var cloudAnchorId: String = "", var timestamp: String = "")
+
+data class ConfigDbModel(var cloudAnchorConfig: CloudAnchorDbModel = CloudAnchorDbModel(),
                          var userA: UserDbModel = UserDbModel(), var userB: UserDbModel = UserDbModel())
 
 data class UserDbModel(var userId: String = "", var userType: Int = UserType.USER_A.ordinal,

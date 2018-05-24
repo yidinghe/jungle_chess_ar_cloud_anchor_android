@@ -75,7 +75,8 @@ internal class ChessStorageManager {
      */
     fun writeCloudAnchorIdUsingRoomId(shortCode: Int, cloudAnchorId: String) {
         d(TAG, "writeCloudAnchorIdUsingRoomId")
-        val configDbModel = ConfigDbModel(cloudAnchorId, timestamp = System.currentTimeMillis().toString())
+        val cloudAnchorDbModel = CloudAnchorDbModel(shortCode, cloudAnchorId, System.currentTimeMillis().toString())
+        rootRef.child(shortCode.toString()).child("config").child("cloudAnchorConfig").setValue(cloudAnchorDbModel)
     }
 
     /**
@@ -87,13 +88,14 @@ internal class ChessStorageManager {
         rootRef
                 .child(shortCode.toString())
                 .child("config")
+                .child("cloudAnchorConfig")
                 .addListenerForSingleValueEvent(
                         object : ValueEventListener {
                             override fun onDataChange(dataSnapshot: DataSnapshot) {
                                 d(TAG, "readCloudAnchorId onDataChange")
-                                val configDbModel = dataSnapshot.getValue(ConfigDbModel::class.java)
-                                if (configDbModel != null)
-                                    onReadCloudAnchorId(configDbModel.cloudAnchorId)
+                                val cloudAnchorDbModel = dataSnapshot.getValue(CloudAnchorDbModel::class.java)
+                                if (cloudAnchorDbModel != null)
+                                    onReadCloudAnchorId(cloudAnchorDbModel.cloudAnchorId)
                             }
 
                             override fun onCancelled(error: DatabaseError) {
