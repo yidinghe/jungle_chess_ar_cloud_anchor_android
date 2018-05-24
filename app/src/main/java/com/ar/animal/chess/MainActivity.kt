@@ -457,6 +457,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onSingleTap(tap: MotionEvent) {
+        if (welcomeAnchor != null) {
+            d(TAG, "welcomeAnchor is still alive. destroy first.")
+            return
+        }
+
         if (!hasFinishedLoading) {
             return
         }
@@ -502,28 +507,28 @@ class MainActivity : AppCompatActivity() {
         return base
     }
 
-    private fun initControllerPanel(center: Node){
+    private fun initControllerPanel(center: Node) {
         controllerNode = Node()
         controllerNode.renderable = controllerRenderable
         controllerNode.localPosition = Vector3(0f, 0.5f, 0f)
         val controllerRenderableView = controllerRenderable!!.view
         val p1_name = controllerRenderableView.findViewById<TextView>(R.id.p1_name)
         val p1_photo = controllerRenderableView.findViewById<ImageView>(R.id.p1_photo)
-        if(mFirebaseUser != null){
+        if (mFirebaseUser != null) {
             p1_name.text = mFirebaseUser!!.displayName
             DownloadImageTask(p1_photo).execute(mFirebaseUser!!.photoUrl.toString())
         }
         controllerNode.setParent(center)
     }
 
-    private fun updateControllerPanel(otherUserInfo: ChessUserInfo){
+    private fun updateControllerPanel(otherUserInfo: ChessUserInfo) {
         val controllerRenderableView = controllerRenderable!!.view
         val p2_name = controllerRenderableView.findViewById<TextView>(R.id.p2_name)
         val p2_photo = controllerRenderableView.findViewById<ImageView>(R.id.p2_photo)
-        if(otherUserInfo != null){
+        if (otherUserInfo != null) {
             p2_name.text = otherUserInfo!!.displayName
-            DownloadImageTask(p2_photo).execute("https://lh6.googleusercontent.com"+otherUserInfo!!.photoUrl.toString())
-           // controllerNode.renderable = controllerRenderable
+            DownloadImageTask(p2_photo).execute("https://lh6.googleusercontent.com" + otherUserInfo!!.photoUrl.toString())
+            // controllerNode.renderable = controllerRenderable
         }
     }
 
@@ -718,12 +723,14 @@ class MainActivity : AppCompatActivity() {
             mIsUserA = true
             signInGoogleAccount()
             welcomeAnchor!!.detach()
+            welcomeAnchor = null
         }
 
         btn_pair.setOnClickListener {
             mIsUserA = false
             signInGoogleAccount()
             welcomeAnchor!!.detach()
+            welcomeAnchor = null
 
         }
 
@@ -898,7 +905,7 @@ class MainActivity : AppCompatActivity() {
 
     private inner class DownloadImageTask(internal var bmImage: ImageView) : AsyncTask<String, Void, Bitmap>() {
 
-         override fun doInBackground(vararg urls: String): Bitmap? {
+        override fun doInBackground(vararg urls: String): Bitmap? {
             val urldisplay = urls[0]
             var mIcon11: Bitmap? = null
             try {
@@ -912,7 +919,7 @@ class MainActivity : AppCompatActivity() {
             return mIcon11
         }
 
-         override fun onPostExecute(result: Bitmap) {
+        override fun onPostExecute(result: Bitmap) {
             bmImage.setImageBitmap(result)
         }
     }
