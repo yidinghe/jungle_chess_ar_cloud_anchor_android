@@ -1,7 +1,10 @@
 package com.ar.animal.chess
 
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
 import android.support.design.widget.FloatingActionButton
@@ -14,6 +17,8 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import com.ar.animal.chess.controller.GameController
 
@@ -138,6 +143,7 @@ class MainActivity : AppCompatActivity() {
         arSceneView = findViewById(R.id.ar_scene_view)
 
         val panel_welcome = ViewRenderable.builder().setView(this, R.layout.panel_welcome).build();
+        val panel_controller = ViewRenderable.builder().setView(this, R.layout.panel_controller).build();
         val tile_split = ViewRenderable.builder().setView(this, R.layout.spliter_tiles).build();
 
         val tiles_grass = ModelRenderable.builder().setSource(this, Uri.parse("trees1.sfb")).build()
@@ -196,6 +202,7 @@ class MainActivity : AppCompatActivity() {
 
             try {
                 welcomeRenderable = panel_welcome.get()
+                controllerRenderable = panel_controller.get()
                 tilesSplierator = tile_split.get()
                 tilesGrassRenderable = tiles_grass.get()
                 tilesRiverRenderable = tiles_river.get()
@@ -356,7 +363,7 @@ class MainActivity : AppCompatActivity() {
             val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
             if (result.isSuccess) {
                 val account = result.signInAccount
-                mFirebaseUser = mFirebaseAuth!!.currentUser
+
                 if (account != null) {
                     d(TAG, "currentUser: ${account.displayName}, start authenticate")
                     val credential = GoogleAuthProvider.getCredential(account.idToken, null)
@@ -491,7 +498,23 @@ class MainActivity : AppCompatActivity() {
         centerTile.renderable = tilesRiverRenderable
         initNeighbourTiles(centerTile)
         initChessmen(centerTile)
+        initControllerPanel(centerTile)
         return base
+    }
+
+
+    private fun initControllerPanel(center: Node){
+        controllerNode = Node()
+        controllerNode.renderable = controllerRenderable
+        controllerNode.localPosition = Vector3(0f, 0.5f, 0f)
+        val controllerRenderableView = controllerRenderable!!.view
+        val p1_name = controllerRenderableView.findViewById<TextView>(R.id.p1_name)
+        val p1_photo = controllerRenderableView.findViewById<ImageView>(R.id.p1_photo)
+        if(mFirebaseUser != null){
+            p1_name.text = mFirebaseUser!!.displayName
+            DownloadImageTask(p1_photo).execute(mFirebaseUser!!.photoUrl.toString())
+        }
+        controllerNode.setParent(center)
     }
 
     private fun initChessmen(centerTile: Node) {
@@ -556,24 +579,6 @@ class MainActivity : AppCompatActivity() {
         playeBChessmen = Arrays.asList(*chessmanArrayB)
 
         placeChessmen(centerTile)
-    }
-
-
-    private fun placeChessmen(centerTile: Node) {
-        for (chessmanNode in playeAChessmen) {
-            var col = chessmanNode.animal.posCol
-            var row = chessmanNode.animal.posRow
-            chessmanNode.localPosition = Vector3((col - 3).toFloat() / 8, 0.05F, (row - 4).toFloat() / 8)
-            chessmanNode.localRotation = Quaternion.axisAngle(Vector3(0.0f, 1.0f, 0.0f), 180f)
-            chessmanNode.setParent(centerTile)
-        }
-
-        for (chessmanNode in playeBChessmen) {
-            var col = chessmanNode.animal.posCol
-            var row = chessmanNode.animal.posRow
-            chessmanNode.localPosition = Vector3((col - 3).toFloat() / 8, 0.05F, (row - 4).toFloat() / 8)
-            chessmanNode.setParent(centerTile)
-        }
     }
 
     private fun initNeighbourTiles(center: Node) {
@@ -675,6 +680,22 @@ class MainActivity : AppCompatActivity() {
         appAnchorState = AppAnchorState.NONE
     }
 
+    private fun placeChessmen(centerTile: Node) {
+        for (chessmanNode in playeAChessmen) {
+            var col = chessmanNode.animal.posCol
+            var row = chessmanNode.animal.posRow
+            chessmanNode.localPosition = Vector3((col - 3).toFloat() / 8, 0.05F, (row - 4).toFloat() / 8)
+            chessmanNode.localRotation = Quaternion.axisAngle(Vector3(0.0f, 1.0f, 0.0f), 180f)
+            chessmanNode.setParent(centerTile)
+        }
+
+        for (chessmanNode in playeBChessmen) {
+            var col = chessmanNode.animal.posCol
+            var row = chessmanNode.animal.posRow
+            chessmanNode.localPosition = Vector3((col - 3).toFloat() / 8, 0.05F, (row - 4).toFloat() / 8)
+            chessmanNode.setParent(centerTile)
+        }
+    }
 
     private fun placeWelcomePanel() {
         welcomeNode?.renderable = welcomeRenderable
@@ -742,6 +763,7 @@ class MainActivity : AppCompatActivity() {
                         //TODO add error handle logic
                         e(TAG, "signInWithCredential fail need retry")
                     } else {
+                        mFirebaseUser = mFirebaseAuth!!.currentUser
                         welcomeUserAndStoreUserInfo()
                     }
                 }
@@ -784,7 +806,6 @@ class MainActivity : AppCompatActivity() {
         dialogFragment.setOkListener(this::onResolveOkPressed)
         dialogFragment.showNow(supportFragmentManager, "Resolve")
     }
-
 
     private fun onResolveOkPressed(dialogValue: String) {
         val roomId = dialogValue.toInt()
@@ -855,5 +876,24 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private inner class DownloadImageTask(internal var bmImage: ImageView) : AsyncTask<String, Void, Bitmap>() {
 
+         override fun doInBackground(vararg urls: String): Bitmap? {
+            val urldisplay = urls[0]
+            var mIcon11: Bitmap? = null
+            try {
+                val `in` = java.net.URL(urldisplay).openStream()
+                mIcon11 = BitmapFactory.decodeStream(`in`)
+            } catch (e: Exception) {
+                Log.e("Error", e.message)
+                e.printStackTrace()
+            }
+
+            return mIcon11
+        }
+
+         override fun onPostExecute(result: Bitmap) {
+            bmImage.setImageBitmap(result)
+        }
+    }
 }
