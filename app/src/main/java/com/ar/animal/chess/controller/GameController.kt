@@ -60,4 +60,8 @@ class GameController {
     fun updateGameInfo() {
         //TODO
     }
+
+    fun storeUserInfo(){
+        //TODO  store user info
+    }
 }
