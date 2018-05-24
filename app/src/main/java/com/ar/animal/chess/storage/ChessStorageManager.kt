@@ -138,7 +138,10 @@ internal class ChessStorageManager {
     fun writeUserInfo(roomId: Int, userInfo: ChessUserInfo) {
         d(TAG, "writeUserInfo")
         val userRoot = if (userInfo.userType == UserType.USER_A) "userA" else "userB"
-        rootRef.child(roomId.toString()).child("config").child(userRoot).setValue(userInfo)
+        with(userInfo) {
+            val userDbModel = UserDbModel(uid, userType.ordinal, photoUrl, displayName)
+            rootRef.child(roomId.toString()).child("config").child(userRoot).setValue(userDbModel)
+        }
     }
 
     companion object {
