@@ -770,7 +770,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun welcomeUserAndStoreUserInfo() {
-        mGameController.storeUserInfo(mIsUserA, mFirebaseUser!!.uid, mFirebaseUser!!.displayName, mFirebaseUser!!.photoUrl)
         if (mIsUserA) {
             Snackbar.make(findViewById(android.R.id.content),
                     "Welcome currentUser: ${mFirebaseUser!!.displayName}, Please place the board and create room.",
@@ -848,6 +847,7 @@ class MainActivity : AppCompatActivity() {
                         Snackbar.make(findViewById(android.R.id.content), "Anchor hosted stored fail", Snackbar.LENGTH_SHORT).show()
                     } else {
                         d(TAG, "Anchor hosted stored CloudId:  ${cloudAnchor!!.cloudAnchorId}, roomId: $roomId")
+                        mGameController.storeUserInfo(mIsUserA, mFirebaseUser!!.uid, mFirebaseUser!!.displayName, mFirebaseUser!!.photoUrl!!.path)
                         Snackbar.make(findViewById(android.R.id.content), "Anchor hosted stored" +
                                 " CloudId: ${cloudAnchor!!.cloudAnchorId}", Snackbar.LENGTH_SHORT).show()
                     }

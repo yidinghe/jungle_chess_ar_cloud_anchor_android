@@ -1,14 +1,9 @@
 package com.ar.animal.chess.controller
 
-import android.net.Uri
-import com.ar.animal.chess.model.Animal
-import com.ar.animal.chess.model.ChessUserInfo
-import com.ar.animal.chess.model.GameState
-import com.ar.animal.chess.model.Tile
+import com.ar.animal.chess.model.*
 import com.ar.animal.chess.storage.ChessStorageManager
 import com.ar.animal.chess.util.d
 import com.ar.animal.chess.util.e
-import com.firebase.ui.auth.data.model.User
 
 
 class GameController {
@@ -25,18 +20,18 @@ class GameController {
     }
 
     //FOR init game, User A needs to store
-    fun initGame(cloudAnchorId: String, initGameCallback: (roomId: String?) -> Unit) {
+    fun initGame(cloudAnchorId: String, onInitGame: (roomId: String?) -> Unit) {
         //TODO added User A info to submit to network
         mStorageManager.nextRoomId { roomId ->
             if (roomId == null) {
                 e(TAG, "Could not obtain a short code.")
-                initGameCallback(null)
+                onInitGame(null)
             } else {
                 mRoomId = roomId
-                mStorageManager.storeCloudAnchorIdUsingRoomId(roomId, cloudAnchorId)
+                mStorageManager.writeCloudAnchorIdUsingRoomId(roomId, cloudAnchorId)
                 d(TAG, "Anchor hosted stored shortCode: $roomId" +
                         " CloudId: $cloudAnchorId")
-                initGameCallback(roomId.toString())
+                onInitGame(roomId.toString())
             }
         }
     }
@@ -47,17 +42,17 @@ class GameController {
     }
 
     //USER B needs to pairGame with a valid roomId
-    fun pairGame(roomId: Int, pairGameCallback: (cloudAnchorId: String?) -> Unit) {
+    fun pairGame(roomId: Int, onPairGame: (cloudAnchorId: String?) -> Unit) {
         //TODO added UserB info to submit to network
-        mStorageManager.getCloudAnchorId(roomId) { cloudAnchorId ->
+        mStorageManager.readCloudAnchorId(roomId) { cloudAnchorId ->
             mRoomId = roomId
             if (cloudAnchorId == null) {
                 e(TAG, "Could not obtain a cloudAnchorId.")
-                pairGameCallback(null)
+                onPairGame(null)
             } else {
                 d(TAG, "Obtain cloudAnchorId success" +
                         " CloudId: $cloudAnchorId")
-                pairGameCallback(cloudAnchorId)
+                onPairGame(cloudAnchorId)
             }
         }
     }
@@ -66,8 +61,16 @@ class GameController {
         //TODO
     }
 
-    fun storeUserInfo(isUserA: Boolean, uid: String, displayName: String?, photoUrl: Uri?) {
-        //TODO  store user info
-
+    fun storeUserInfo(isUserA: Boolean, uid: String, displayName: String?, photoUrl: String?) {
+        val userInfo = ChessUserInfo(uid)
+        displayName?.let {
+            userInfo.displayName = it
+        }
+        photoUrl?.let {
+            userInfo.photoUrl = it
+        }
+        userInfo.userType = if (isUserA) UserType.USER_A else UserType.USER_B
+        mCurrentUser = userInfo
+        mStorageManager.writeUserInfo(mRoomId, userInfo)
     }
 }

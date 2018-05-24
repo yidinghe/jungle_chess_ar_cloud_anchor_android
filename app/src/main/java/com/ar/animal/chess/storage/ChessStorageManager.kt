@@ -1,12 +1,12 @@
 package com.ar.animal.chess.storage
 
-import android.content.Context
 import android.util.Log
 import com.ar.animal.chess.model.ChessDbModel
+import com.ar.animal.chess.model.ChessUserInfo
 import com.ar.animal.chess.model.ConfigDbModel
+import com.ar.animal.chess.model.UserType
 import com.ar.animal.chess.util.ChessConstants
 
-import com.google.firebase.FirebaseApp
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -30,7 +30,7 @@ internal class ChessStorageManager() {
     /**
      * Gets a new short code that can be used to store the anchor ID.
      */
-    fun nextRoomId(roomIdCallback: (roomId: Int?) -> Unit) {
+    fun nextRoomId(onReadroomId: (roomId: Int?) -> Unit) {
         // Run a transaction on the node containing the next short code available. This increments the
         // value in the database and retrieves it in one atomic all-or-nothing operation.
         rootRef
@@ -51,13 +51,13 @@ internal class ChessStorageManager() {
                                     error: DatabaseError?, committed: Boolean, currentData: DataSnapshot?) {
                                 if (!committed) {
                                     Log.e(TAG, "Firebase Error", error?.toException())
-                                    roomIdCallback(null)
+                                    onReadroomId(null)
                                 } else {
                                     if (currentData?.value == null) {
-                                        roomIdCallback(null)
+                                        onReadroomId(null)
                                     } else {
                                         val roomId = currentData.value as Long
-                                        roomIdCallback(roomId.toInt())
+                                        onReadroomId(roomId.toInt())
                                     }
 
                                 }
@@ -68,17 +68,16 @@ internal class ChessStorageManager() {
     /**
      * Stores the cloud anchor ID in the configured Firebase Database.
      */
-    fun storeCloudAnchorIdUsingRoomId(shortCode: Int, cloudAnchorId: String) {
+    fun writeCloudAnchorIdUsingRoomId(shortCode: Int, cloudAnchorId: String) {
         val configDbModel = ConfigDbModel(cloudAnchorId, timestamp = System.currentTimeMillis().toString())
-        val chessDbModel = ChessDbModel(shortCode, configDbModel)
-        rootRef.child(shortCode.toString()).setValue(chessDbModel)
+        rootRef.child(shortCode.toString()).child("config").setValue(configDbModel)
     }
 
     /**
      * Retrieves the cloud anchor ID using a short code. Returns an empty string if a cloud anchor ID
      * was not stored for this short code.
      */
-    fun getCloudAnchorId(shortCode: Int, getCloudAnchorIdCallback: (cloudAnchorId: String?) -> Unit) {
+    fun readCloudAnchorId(shortCode: Int, onReadCloudAnchorId: (cloudAnchorId: String?) -> Unit) {
         rootRef
                 .child(shortCode.toString())
                 .addListenerForSingleValueEvent(
@@ -86,15 +85,40 @@ internal class ChessStorageManager() {
                             override fun onDataChange(dataSnapshot: DataSnapshot) {
                                 val chessDbModel = dataSnapshot.getValue(ChessDbModel::class.java)
                                 if (chessDbModel != null)
-                                    getCloudAnchorIdCallback(chessDbModel.config.cloudAnchorId)
+                                    onReadCloudAnchorId(chessDbModel.config.cloudAnchorId)
                             }
 
                             override fun onCancelled(error: DatabaseError) {
-                                Log.e(TAG, "The database operation for getCloudAnchorId was cancelled.",
+                                Log.e(TAG, "The database operation for readCloudAnchorId was cancelled.",
                                         error.toException())
-                                getCloudAnchorIdCallback(null)
+                                onReadCloudAnchorId(null)
                             }
                         })
+    }
+
+    // this function for UserA listen UserB online event to start Game, and UserB grab UserA info to show the board
+
+    fun readUserInfo(roomId: Int, isUserA: Boolean, onReadUserInfo: (userInfo: ChessUserInfo) -> Unit) {
+        val userRoot = if (isUserA) "userA" else "userB"
+        rootRef
+                .child(roomId.toString())
+                .child("config")
+                .child(userRoot)
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+
+                    }
+
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+
+                    }
+
+                })
+    }
+
+    fun writeUserInfo(roomId: Int, userInfo: ChessUserInfo) {
+        val userRoot = if (userInfo.userType == UserType.USER_A) "userA" else "userB"
+        rootRef.child(roomId.toString()).child("config").child(userRoot).setValue(userInfo)
     }
 
     companion object {
