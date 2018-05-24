@@ -84,7 +84,7 @@ internal class ChessStorageManager {
      * was not stored for this short code.
      */
     fun readCloudAnchorId(shortCode: Int, onReadCloudAnchorId: (cloudAnchorId: String?) -> Unit) {
-        d(TAG, "readCloudAnchorId")
+        d(TAG, "readCloudAnchorId: $shortCode")
         rootRef
                 .child(shortCode.toString())
                 .child("config")
