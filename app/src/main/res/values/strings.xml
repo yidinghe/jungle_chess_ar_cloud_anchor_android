@@ -4,8 +4,8 @@
 
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
-    <string name="resolve_dialog_title">Resolve Anchor</string>
-    <string name="resolve_button_text">Resolve</string>
+    <string name="resolve_dialog_title">Join the room</string>
+    <string name="resolve_button_text">Pair</string>
 
     <string name="title_activity_login">Sign in</string>
 

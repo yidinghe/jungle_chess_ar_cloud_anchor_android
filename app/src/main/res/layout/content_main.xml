@@ -27,13 +27,6 @@
         app:layout_constraintVertical_chainStyle="spread"
         app:layout_constraintVertical_weight="1">
 
-            <Button
-                android:id="@+id/btn_resolveAnchor"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:text="RESOLVE" />
-
     </LinearLayout>
 
 

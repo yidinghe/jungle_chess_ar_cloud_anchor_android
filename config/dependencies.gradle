@@ -1,0 +1,41 @@
+ext {
+
+    supportLibVersion = "27.1.1"
+    googleServiceVersion = "11.6.0"
+    rxjava2Version = "2.1.6"
+    rxAndroid2Version = "2.0.1"
+    jUnitVersion = "4.12"
+    constraintVersion = "1.1.0"
+    firebaseDataBaseVersion = "15.0.1"
+    firebaseAuthVersion = "15.1.0"
+    authUIVersion  = "3.3.1"
+    sceneformVersion = "1.0.0"
+    kotlinVersion = "1.2.41"
+
+    dependencies = [
+            // support
+            appcompatV7 : "com.android.support:appcompat-v7:$supportLibVersion",
+            design      : "com.android.support:design:$supportLibVersion",
+
+            // constraint
+            constraint  : "com.android.support.constraint:constraint-layout:$constraintVersion",
+
+            // jUnit
+            jUnit       : "junit:junit:$jUnitVersion",
+
+            // RxJava2
+            rxandroid2  : "io.reactivex.rxjava2:rxandroid:$rxAndroid2Version",
+            rxjava2     : "io.reactivex.rxjava2:rxjava:$rxjava2Version",
+
+            // firebase
+            firebaseDb  : "com.google.firebase:firebase-database:$firebaseDataBaseVersion",
+            firebaseAuth: "com.google.firebase:firebase-auth:$firebaseAuthVersion",
+            authUI      : "com.firebaseui:firebase-ui-auth:$authUIVersion",
+
+            // sceneform
+            sceneform   : "com.google.ar.sceneform.ux:sceneform-ux:$sceneformVersion",
+
+            // Kotlin
+            kotlinStdlib: "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion",
+    ]
+}

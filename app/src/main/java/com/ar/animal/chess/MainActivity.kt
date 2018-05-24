@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
@@ -38,9 +39,10 @@ import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.rendering.ViewRenderable
-import com.google.ar.sceneform.ux.TransformableNode
+import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.GoogleAuthProvider
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 
@@ -120,6 +122,7 @@ class MainActivity : AppCompatActivity() {
     private var mFirebaseAuth: FirebaseAuth? = null
     private var mFirebaseUser: FirebaseUser? = null
     private var mGoogleApiClient: GoogleApiClient? = null
+    private var mIsUserA = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -129,6 +132,8 @@ class MainActivity : AppCompatActivity() {
 
 
         mFirebaseAuth = FirebaseAuth.getInstance()
+        mFirebaseUser = mFirebaseAuth!!.currentUser
+
         gameController = GameController.instance
         arSceneView = findViewById(R.id.ar_scene_view)
 
@@ -158,10 +163,9 @@ class MainActivity : AppCompatActivity() {
         val playB_chessman_lion = ModelRenderable.builder().setSource(this, Uri.parse("Mesh_Lion.sfb")).build()
         val playB_chessman_elephant = ModelRenderable.builder().setSource(this, Uri.parse("Elephant.sfb")).build()
 
-        val resolveAnchorButton = findViewById<Button>(R.id.btn_resolveAnchor)
-
-        resolveAnchorButton.setOnClickListener {
-            resolveAnchor()
+        val fab = findViewById<FloatingActionButton>(R.id.fab)
+        fab.setOnClickListener {
+            signInGoogleAccount()
         }
 
         CompletableFuture.allOf(
@@ -349,15 +353,24 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_SIGN_IN) {
-
             val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)
             if (result.isSuccess) {
                 val account = result.signInAccount
+                mFirebaseUser = mFirebaseAuth!!.currentUser
                 if (account != null) {
-                    Snackbar.make(findViewById(android.R.id.content), "currentUser: ${account.displayName}", Snackbar.LENGTH_SHORT).show()
+                    d(TAG, "currentUser: ${account.displayName}, start authenticate")
+                    val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+                    firebaseAuthWithGoogle(credential)
+                } else {
+                    //TODO add error handle logic
+                    e(TAG, "google signIn fail need retry")
+                    Snackbar.make(findViewById(android.R.id.content), "google signIn fail need retry", Snackbar.LENGTH_SHORT).show()
                 }
+            } else {
+                //TODO add error handle logic
+                e(TAG, "google signIn fail need retry")
+                Snackbar.make(findViewById(android.R.id.content), "google signIn fail need retry", Snackbar.LENGTH_SHORT).show()
             }
-
         }
     }
 
@@ -391,7 +404,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (arSceneView!!.session != null) {
-            showLoadingMessage()
+            //showLoadingMessage()
         }
     }
 
@@ -654,27 +667,6 @@ class MainActivity : AppCompatActivity() {
         loadingMessageSnackbar = null
     }
 
-    private fun signInGoogleAccount() {
-        if (mFirebaseAuth!!.currentUser != null) {
-            Snackbar.make(findViewById(android.R.id.content), "currentUser: ${mFirebaseAuth!!.currentUser!!.displayName}", Snackbar.LENGTH_SHORT).show()
-        } else {
-            //Sign In
-
-            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(getString(R.string.default_web_client_id))
-                    .requestEmail()
-                    .build()
-            mGoogleApiClient = GoogleApiClient.Builder(this)
-                    .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                    .build()
-            val signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient)
-            startActivityForResult(
-                    signInIntent,
-                    RC_SIGN_IN)
-        }
-    }
-
-
     private fun setNewAnchor(newAnchor: Anchor) {
         if (cloudAnchor != null) {
             cloudAnchor!!.detach()
@@ -692,11 +684,13 @@ class MainActivity : AppCompatActivity() {
         val btn_new_game = welcomeRenderableView.findViewById<Button>(R.id.btn_new_game)
         val btn_pair = welcomeRenderableView.findViewById<Button>(R.id.btn_pair)
         btn_new_game.setOnClickListener {
+            mIsUserA = true
             signInGoogleAccount()
             welcomeAnchor!!.detach()
         }
 
         btn_pair.setOnClickListener {
+            mIsUserA = false
             signInGoogleAccount()
             welcomeAnchor!!.detach()
 
@@ -718,6 +712,54 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun signInGoogleAccount() {
+        if (mFirebaseUser != null) {
+            welcomeUserAndStoreUserInfo()
+        } else {
+            //Sign In
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build()
+            mGoogleApiClient = GoogleApiClient.Builder(this)
+                    .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                    .build()
+            val signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient)
+            startActivityForResult(
+                    signInIntent,
+                    RC_SIGN_IN)
+        }
+    }
+
+    private fun firebaseAuthWithGoogle(credential: AuthCredential) {
+        d(TAG, "firebaseAuthWithGoogle: ${credential.provider}")
+
+        mFirebaseAuth
+                ?.signInWithCredential(credential)
+                ?.addOnCompleteListener(this) {
+                    d(TAG, "signInWithCredential: ${it.isSuccessful}")
+                    if (!it.isSuccessful) {
+                        //TODO add error handle logic
+                        e(TAG, "signInWithCredential fail need retry")
+                    } else {
+                        welcomeUserAndStoreUserInfo()
+                    }
+                }
+    }
+
+    private fun welcomeUserAndStoreUserInfo() {
+        mGameController.storeUserInfo(mIsUserA, mFirebaseUser!!.uid, mFirebaseUser!!.displayName, mFirebaseUser!!.photoUrl)
+        if (mIsUserA) {
+            Snackbar.make(findViewById(android.R.id.content),
+                    "Welcome currentUser: ${mFirebaseUser!!.displayName}, Please place the board and create room.",
+                    Snackbar.LENGTH_SHORT).show()
+        } else {
+            Snackbar.make(findViewById(android.R.id.content),
+                    "Welcome currentUser: ${mFirebaseUser!!.displayName}, Please input roomNumber to pair into game.",
+                    Snackbar.LENGTH_SHORT).show()
+            showResolveAnchorPanel()
+        }
+    }
 
     private fun hostCloudAnchor(anchor: Anchor) {
         val session = arSceneView!!.session
@@ -733,7 +775,7 @@ class MainActivity : AppCompatActivity() {
         appAnchorState = AppAnchorState.HOSTING
     }
 
-    private fun resolveAnchor() {
+    private fun showResolveAnchorPanel() {
         if (cloudAnchor != null) {
             e(TAG, "Already had cloud anchor, need clear anchor first.")
             return

@@ -10,6 +10,9 @@ data class Animal(var posCol: Int = 0, var posRow: Int = 0,
                   var state: AnimalState = AnimalState.ALIVE,
                   var animalType: AnimalType = AnimalType.RAT)
 
+data class ChessUserInfo(var uid: String = "", var displayName: String = "",
+                         var photoUrl: String = "", var userType: UserType = UserType.USER_A)
+
 enum class UserType {
     USER_A,
     USER_B
