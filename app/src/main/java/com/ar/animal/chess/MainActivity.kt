@@ -502,7 +502,6 @@ class MainActivity : AppCompatActivity() {
         return base
     }
 
-
     private fun initControllerPanel(center: Node){
         controllerNode = Node()
         controllerNode.renderable = controllerRenderable
@@ -515,6 +514,17 @@ class MainActivity : AppCompatActivity() {
             DownloadImageTask(p1_photo).execute(mFirebaseUser!!.photoUrl.toString())
         }
         controllerNode.setParent(center)
+    }
+
+    private fun updateControllerPanel(otherUserInfo: ChessUserInfo){
+        val controllerRenderableView = controllerRenderable!!.view
+        val p2_name = controllerRenderableView.findViewById<TextView>(R.id.p2_name)
+        val p2_photo = controllerRenderableView.findViewById<ImageView>(R.id.p2_photo)
+        if(otherUserInfo != null){
+            p2_name.text = otherUserInfo!!.displayName
+            DownloadImageTask(p2_photo).execute("https://lh6.googleusercontent.com"+otherUserInfo!!.photoUrl.toString())
+           // controllerNode.renderable = controllerRenderable
+        }
     }
 
     private fun initChessmen(centerTile: Node) {
@@ -786,6 +796,7 @@ class MainActivity : AppCompatActivity() {
     private fun onReadUserInfo(currentUserInfo: ChessUserInfo, otherUserInfo: ChessUserInfo) {
         d(TAG, "currentUserInfo: $currentUserInfo")
         d(TAG, "otherUserInfo: $otherUserInfo")
+        updateControllerPanel(otherUserInfo)
     }
 
     private fun hostCloudAnchor(anchor: Anchor) {

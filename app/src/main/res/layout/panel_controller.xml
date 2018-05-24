@@ -61,7 +61,7 @@
                 android:id="@+id/p2_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Player2 Name"/>
+                android:text="Searching..."/>
 
             <ImageView
                 android:id="@+id/p2_photo"
