@@ -35,7 +35,7 @@
       ],
       file: "sampledata/models/Animals/Elephant/Elephant.obj",
       name: "Elephant",
-      scale: 0.013414899999999999,
+      scale: 0.013,
       suggested_collision: {
          center: {
             x: 0,

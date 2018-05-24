@@ -125,3 +125,8 @@ sceneform.asset('sampledata/models/Tile/grass/model-triangulated.obj',
         'default',
         'sampledata/models/Tile/grass/model-triangulated.sfa',
         'src/main/assets/model-triangulated')
+
+sceneform.asset('sampledata/models/Tile/trap/SM_Castle.obj',
+        'default',
+        'sampledata/models/Tile/trap/SM_Castle.sfa',
+        'src/main/assets/SM_Castle')
