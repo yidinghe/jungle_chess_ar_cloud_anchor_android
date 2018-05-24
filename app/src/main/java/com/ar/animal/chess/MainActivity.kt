@@ -781,7 +781,7 @@ class MainActivity : AppCompatActivity() {
             Snackbar.make(findViewById(android.R.id.content),
                     "Welcome currentUser: ${mFirebaseUser!!.displayName}, Please input roomNumber to pair into game.",
                     Snackbar.LENGTH_SHORT).show()
-            mGameController.storeUserInfo(mIsUserA, mFirebaseUser!!.uid, mFirebaseUser!!.displayName, mFirebaseUser!!.photoUrl!!.path)
+
             showResolveAnchorPanel()
         }
     }
@@ -819,6 +819,7 @@ class MainActivity : AppCompatActivity() {
     private fun onResolveOkPressed(dialogValue: String) {
         val roomId = dialogValue.toInt()
         mGameController.pairGame(roomId) { cloudAnchorId ->
+            mGameController.storeUserInfo(mIsUserA, mFirebaseUser!!.uid, mFirebaseUser!!.displayName, mFirebaseUser!!.photoUrl!!.path)
             if (arSession == null) {
                 e(TAG, "onResolveOkPressed failed due to arSession is null")
             } else {
@@ -861,7 +862,7 @@ class MainActivity : AppCompatActivity() {
                         Snackbar.make(findViewById(android.R.id.content), "Anchor hosted stored" +
                                 " CloudId: ${cloudAnchor!!.cloudAnchorId}", Snackbar.LENGTH_SHORT).show()
 
-                        mGameController.getUserInfo(this::onReadUserInfo)
+                        mGameController.getUserInfo(false, this::onReadUserInfo)
                     }
                 }
             } else {
@@ -878,7 +879,7 @@ class MainActivity : AppCompatActivity() {
                 appAnchorState = AppAnchorState.RESOLVED
                 Snackbar.make(findViewById(android.R.id.content), "Anchor resolved successfully!", Snackbar.LENGTH_SHORT).show()
                 d(TAG, "Anchor resolved successfully!")
-                mGameController.getUserInfo(this::onReadUserInfo)
+                mGameController.getUserInfo(true, this::onReadUserInfo)
                 mHandler.removeCallbacksAndMessages(null)
                 placeBoard()
             } else {

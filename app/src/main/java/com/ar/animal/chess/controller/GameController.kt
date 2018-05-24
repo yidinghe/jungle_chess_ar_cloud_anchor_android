@@ -75,22 +75,23 @@ class GameController {
         mStorageManager.writeUserInfo(mRoomId, userInfo)
     }
 
-    fun getUserInfo(onReadUserInfo: (currentUserInfo: ChessUserInfo, otherUserInfo: ChessUserInfo) -> Unit) {
-        d(TAG, "getUserInfo")
+    fun getUserInfo(isNeedUserA: Boolean, onReadUserInfo: (currentUserInfo: ChessUserInfo, otherUserInfo: ChessUserInfo) -> Unit) {
+        d(TAG, "getUserInfo: $isNeedUserA")
         if (mCurrentUser == null) {
             e(TAG, "getUserInfo, init current user First")
             return
         }
 
-        val isNeedGetUserA = mCurrentUser!!.userType != UserType.USER_A
-
-        mStorageManager.readUserInfo(mRoomId, isNeedGetUserA) {
-            if (isNeedGetUserA && it.userType == UserType.USER_A || (!isNeedGetUserA && it.userType == UserType.USER_B)) {
+        mStorageManager.readUserInfo(mRoomId, isNeedUserA) {
+            d(TAG, "onReadUserInfo: $it")
+            if (isNeedUserA && it.userType == UserType.USER_B || ((!isNeedUserA) && it.userType == UserType.USER_A)) {
                 e(TAG, "onReadUserInfo data is not needed, no need to notify UI")
-            }else {
+            } else {
                 mOtherUser = it
                 if (mCurrentUser != null && mOtherUser != null)
                     onReadUserInfo(mCurrentUser!!, mOtherUser!!)
+                else
+                    e(TAG, "currentUser is null or otherUser is null")
             }
 
         }

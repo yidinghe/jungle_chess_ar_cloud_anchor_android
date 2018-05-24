@@ -108,8 +108,9 @@ internal class ChessStorageManager {
     // this function for UserA listen UserB online event to start Game, and UserB grab UserA info to show the board
 
     fun readUserInfo(roomId: Int, isNeedGetUserA: Boolean, onReadUserInfo: (userInfo: ChessUserInfo) -> Unit) {
-        d(TAG, "readUserInfo")
         val userRoot = if (isNeedGetUserA) "userA" else "userB"
+        d(TAG, "readUserInfo: $userRoot")
+
         rootRef
                 .child(roomId.toString())
                 .child("config")
@@ -136,8 +137,9 @@ internal class ChessStorageManager {
     }
 
     fun writeUserInfo(roomId: Int, userInfo: ChessUserInfo) {
-        d(TAG, "writeUserInfo")
         val userRoot = if (userInfo.userType == UserType.USER_A) "userA" else "userB"
+        d(TAG, "writeUserInfo, userRoot: $userRoot roomId: $roomId, userInfo: $userInfo")
+
         with(userInfo) {
             val userDbModel = UserDbModel(uid, userType.ordinal, photoUrl, displayName)
             rootRef.child(roomId.toString()).child("config").child(userRoot).setValue(userDbModel)
