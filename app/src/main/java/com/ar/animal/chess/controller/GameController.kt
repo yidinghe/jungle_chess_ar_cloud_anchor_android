@@ -86,6 +86,12 @@ class GameController {
         }
     }
 
+    fun test (){
+        mStorageManager.readGameStart(11) { isUserAReady, isUserBReady ->
+            d(TAG, "confirmGameStart: isUserAReady: $isUserAReady, isUserBReady: $isUserBReady")
+        }
+    }
+
     /**
      *  Every User finish his turn, call updateGameInfo, other User will receive onUserTurn callback
      *  then UI needs to redraw and start another round

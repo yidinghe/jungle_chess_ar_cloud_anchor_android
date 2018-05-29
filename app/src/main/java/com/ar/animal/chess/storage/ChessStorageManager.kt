@@ -12,6 +12,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.MutableData
 import com.google.firebase.database.Transaction
 import com.google.firebase.database.ValueEventListener
+import java.util.HashMap
 
 /**
  * Helper class for Firebase storage of cloud anchor IDs.
@@ -166,10 +167,13 @@ internal class ChessStorageManager {
 
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         d(TAG, "readGameStart onDataChange")
-                        val userConfirmStartDbModel = dataSnapshot.getValue(UserConfirmStartDbModel::class.java)
-                        if (userConfirmStartDbModel != null) {
-                            d(TAG, "readGameStart onDataChange : $userConfirmStartDbModel")
-                            onReadGameStart(userConfirmStartDbModel.isUserAConfirm, userConfirmStartDbModel.isUserBConfirm)
+                        val values = dataSnapshot.value
+                        if (values != null) {
+                            d(TAG, "readGameStart onDataChange : $values")
+                            values as HashMap<String, Boolean>
+                            val isUserAConfirm = values["isUserAConfirm"] ?: false
+                            val isUserBConfirm = values["isUserBConfirm"] ?: false
+                            onReadGameStart(isUserAConfirm, isUserBConfirm)
                         }
                     }
 

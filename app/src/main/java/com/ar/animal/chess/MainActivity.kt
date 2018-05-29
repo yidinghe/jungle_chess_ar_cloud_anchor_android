@@ -173,7 +173,7 @@ class MainActivity : AppCompatActivity() {
 
         val fab = findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener {
-            signInGoogleAccount()
+            mGameController.test()
         }
 
         CompletableFuture.allOf(
