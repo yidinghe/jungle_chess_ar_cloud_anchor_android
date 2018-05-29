@@ -531,7 +531,7 @@ class MainActivity : AppCompatActivity() {
             // controllerNode.renderable = controllerRenderable
 
         val ll_start_game = controllerRenderableView.findViewById<LinearLayout>(R.id.ll_start_game)
-        val btn_start_game = controllerRenderableView.findViewById<LinearLayout>(R.id.btn_start_game)
+        val btn_start_game = controllerRenderableView.findViewById<Button>(R.id.btn_start_game)
         btn_start_game.setOnClickListener{
             gameController.confirmGameStart{ _, _ ->
                 ll_start_game.visibility = GONE
