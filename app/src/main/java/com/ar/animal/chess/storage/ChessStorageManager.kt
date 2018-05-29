@@ -16,8 +16,11 @@ import com.google.firebase.database.ValueEventListener
 /**
  * Helper class for Firebase storage of cloud anchor IDs.
  */
+
 internal class ChessStorageManager {
     private val rootRef: DatabaseReference
+    private val mAnimalEventListenerA = AnimalInfoUpdateListener()
+    private val mAnimalEventListenerB = AnimalInfoUpdateListener()
 
     init {
         val rootDir = KEY_ROOT_DIR + ChessConstants.END_POINT.name
@@ -175,6 +178,60 @@ internal class ChessStorageManager {
                 })
     }
 
+    fun readAnimalInfo(roomId: Int, onReadAnimalInfo: () -> Unit) {
+
+        d(TAG, "readAnimalInfo, roomId: $roomId")
+
+        rootRef
+                .child(roomId.toString())
+                .child(KEY_ANIMAL_INFO_A)
+                .child(KEY_RAT)
+                .addValueEventListener(mAnimalEventListenerA)
+
+        rootRef
+                .child(roomId.toString())
+                .child(KEY_ANIMAL_INFO_A)
+                .child(KEY_CAT)
+                .addValueEventListener(mAnimalEventListenerA)
+
+        rootRef
+                .child(roomId.toString())
+                .child(KEY_ANIMAL_INFO_A)
+                .child(KEY_DOG)
+                .addValueEventListener(mAnimalEventListenerA)
+
+        rootRef
+                .child(roomId.toString())
+                .child(KEY_ANIMAL_INFO_A)
+                .child(KEY_WOLF)
+                .addValueEventListener(mAnimalEventListenerA)
+
+        rootRef
+                .child(roomId.toString())
+                .child(KEY_ANIMAL_INFO_A)
+                .child(KEY_LEOPARD)
+                .addValueEventListener(mAnimalEventListenerA)
+
+        rootRef
+                .child(roomId.toString())
+                .child(KEY_ANIMAL_INFO_A)
+                .child(KEY_TIGER)
+                .addValueEventListener(mAnimalEventListenerA)
+
+        rootRef
+                .child(roomId.toString())
+                .child(KEY_ANIMAL_INFO_A)
+                .child(KEY_LION)
+                .addValueEventListener(mAnimalEventListenerA)
+
+        rootRef
+                .child(roomId.toString())
+                .child(KEY_ANIMAL_INFO_A)
+                .child(KEY_ELEPHANT)
+                .addValueEventListener(mAnimalEventListenerA)
+    }
+
+
     companion object {
         private val TAG = ChessStorageManager::class.java.simpleName
         private const val KEY_ROOT_DIR = "animal_chess_table_"
@@ -194,10 +251,38 @@ internal class ChessStorageManager {
         private const val KEY_RAT = "rat"
         private const val KEY_CAT = "cat"
         private const val KEY_DOG = "dog"
+        private const val KEY_WOLF = "wolf"
         private const val KEY_LEOPARD = "leopard"
         private const val KEY_TIGER = "tiger"
         private const val KEY_LION = "lion"
         private const val KEY_ELEPHANT = "elephant"
 
     }
+}
+
+class AnimalInfoUpdateListener : ValueEventListener {
+
+    private val TAG = AnimalInfoUpdateListener::class.java.simpleName
+
+    private lateinit var onAnimalUpdate: (isFromA: Boolean, animal: Animal) -> Unit
+
+    fun setReadAnimalInfoListener(onReadAnimalInfo: (isFromA: Boolean, animal: Animal) -> Unit) {
+        onAnimalUpdate = onReadAnimalInfo
+    }
+
+    override fun onCancelled(error: DatabaseError) {
+        d(TAG, "AnimalInfoUpdateListener onCancelled")
+    }
+
+    override fun onDataChange(dataSnapshot: DataSnapshot) {
+        d(TAG, "AnimalInfoUpdateListener onDataChange")
+        val userConfirmStartDbModel = dataSnapshot.getValue(UserConfirmStartDbModel::class.java)
+        if (userConfirmStartDbModel != null) {
+            with(userConfirmStartDbModel) {
+               // onAnimalUpdate(userConfirmStartDbModel.isUserAConfirm, userConfirmStartDbModel.isUserBConfirm)
+            }
+
+        }
+    }
+
 }

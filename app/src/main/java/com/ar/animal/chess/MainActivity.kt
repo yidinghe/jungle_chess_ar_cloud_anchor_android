@@ -526,9 +526,9 @@ class MainActivity : AppCompatActivity() {
         val p2_name = controllerRenderableView.findViewById<TextView>(R.id.p2_name)
         val p2_photo = controllerRenderableView.findViewById<ImageView>(R.id.p2_photo)
 
-            p2_name.text = otherUserInfo.displayName
-            DownloadImageTask(p2_photo).execute("https://lh6.googleusercontent.com" + otherUserInfo.photoUrl)
-            // controllerNode.renderable = controllerRenderable
+        p2_name.text = otherUserInfo.displayName
+        DownloadImageTask(p2_photo).execute("https://lh6.googleusercontent.com" + otherUserInfo.photoUrl)
+        // controllerNode.renderable = controllerRenderable
 
         val ll_start_game = controllerRenderableView.findViewById<LinearLayout>(R.id.ll_start_game)
         val btn_start_game = controllerRenderableView.findViewById<Button>(R.id.btn_start_game)
@@ -761,6 +761,9 @@ class MainActivity : AppCompatActivity() {
 
         val tilesAndChessmen = initTilesAndChessmen()
         anchorNode.addChild(tilesAndChessmen)
+
+        // setOnAnimalUpdateListener after place board
+        mGameController.setOnAnimalUpdateListener(this::onAnimalUpdate)
     }
 
     private fun signInGoogleAccount() {
@@ -811,6 +814,10 @@ class MainActivity : AppCompatActivity() {
 
             showResolveAnchorPanel()
         }
+    }
+
+    private fun onAnimalUpdate(isFromA: Boolean, updatedAnimal: Animal) {
+
     }
 
     private fun onReadUserInfo(currentUserInfo: ChessUserInfo, otherUserInfo: ChessUserInfo) {
