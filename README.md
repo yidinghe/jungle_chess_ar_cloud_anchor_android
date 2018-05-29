@@ -54,7 +54,6 @@ Animals capture the opponent pieces by "eating" them. A piece can capture any en
 - Define Game Win/Lose logic
 - Implement All the UIs including launch page and setting page
 - Integrate with Google SignIn to get user info
-- Use Resonance Audio SDK to do 3D sound
 
 ## backend logic design (draft 2)
 Use Google Firebase Realtime Db to avoid server development.
@@ -62,12 +61,15 @@ Use Google Firebase Realtime Db to avoid server development.
 - roomId(Int) couldAnchorId, user1Id, user2Id, current board
 - data class ChessDbModel(var roomId: Int = 0,
                          var config: ConfigDbModel = ConfigDbModel(),
-                         var animalList: List<AnimalDbModel> = listOf())
-- data class ConfigDbModel(var cloudAnchorId: String = "", var currentRound: Int = 0,
-                           var gameState: Int = GameState.USER_A_TURN.ordinal,
-                           var timestamp: String = "")
-- data class AnimalDbModel(var positionX: Int = 0, var positionY: Int = 0,
-                           var animalType: Int = AnimalType.MOUSE.ordinal)
+                         var gameInfo: GameInfoDbModel = GameInfoDbModel())
+- data class GameInfoDbModel(var currentRound: Int = 0,
+                             var gameState: Int = GameState.USER_A_TURN.ordinal,
+                             var timestamp: String = "",
+                             var tileList: List<TileDbModel> = listOf(),
+                             var animalAList: List<AnimalDbModel> = listOf(),
+                             var animalBList: List<AnimalDbModel> = listOf())
+- data class ConfigDbModel(var cloudAnchorConfig: CloudAnchorDbModel = CloudAnchorDbModel(),
+                           var userA: UserDbModel = UserDbModel(), var userB: UserDbModel = UserDbModel())
 
 ## game logic design (draft 1)
 - UserA login game，create room，generate roomId，host CloudAnchor and generate cloudAnchorId

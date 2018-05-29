@@ -36,11 +36,6 @@ class GameController {
         }
     }
 
-    fun initGameBoard(tileList: List<Tile>,
-                      animalAList: List<Animal>, animalBList: List<Animal>) {
-        //TODO
-    }
-
     //USER B needs to pairGame with a valid roomId
     fun pairGame(roomId: Int, onPairGame: (cloudAnchorId: String?) -> Unit) {
         //TODO added UserB info to submit to network
@@ -57,6 +52,18 @@ class GameController {
         }
     }
 
+    /**
+     *  Both UserA and UserB confirm GameStart then UI will receive the onGameStart callback
+     *  Start UserA round first
+     */
+    fun confirmGameStart() {
+        //TODO
+    }
+
+    /**
+     *  Every User finish his turn, call updateGameInfo, other User will receive onUserTurn callback
+     *  then UI needs to redraw and start another round
+     */
     fun updateGameInfo() {
         //TODO
     }
