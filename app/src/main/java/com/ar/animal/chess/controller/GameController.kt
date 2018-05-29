@@ -38,7 +38,6 @@ class GameController {
 
     //USER B needs to pairGame with a valid roomId
     fun pairGame(roomId: Int, onPairGame: (cloudAnchorId: String?) -> Unit) {
-        //TODO added UserB info to submit to network
         mStorageManager.readCloudAnchorId(roomId) { cloudAnchorId ->
             mRoomId = roomId
             if (cloudAnchorId == null) {
@@ -56,7 +55,8 @@ class GameController {
      *  Both UserA and UserB confirm GameStart then UI will receive the onGameStart callback
      *  Start UserA round first
      */
-    fun confirmGameStart() {
+    fun confirmGameStart(onGameStart: (isUserAconfirm: Boolean, isUserBconfirm: Boolean) -> Unit) {
+        d(TAG, "confirmGameStart")
         //TODO
     }
 
@@ -65,7 +65,8 @@ class GameController {
      *  then UI needs to redraw and start another round
      */
     fun updateGameInfo() {
-        //TODO
+        d(TAG, "updateGameInfo")
+        //TODO Define callback
     }
 
     fun storeUserInfo(isUserA: Boolean, uid: String, displayName: String?, photoUrl: String?) {
@@ -100,7 +101,6 @@ class GameController {
                 else
                     e(TAG, "currentUser is null or otherUser is null")
             }
-
         }
     }
 }

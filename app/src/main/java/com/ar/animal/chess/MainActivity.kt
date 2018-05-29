@@ -525,68 +525,68 @@ class MainActivity : AppCompatActivity() {
         val controllerRenderableView = controllerRenderable!!.view
         val p2_name = controllerRenderableView.findViewById<TextView>(R.id.p2_name)
         val p2_photo = controllerRenderableView.findViewById<ImageView>(R.id.p2_photo)
-        if (otherUserInfo != null) {
-            p2_name.text = otherUserInfo!!.displayName
-            DownloadImageTask(p2_photo).execute("https://lh6.googleusercontent.com" + otherUserInfo!!.photoUrl.toString())
+
+            p2_name.text = otherUserInfo.displayName
+            DownloadImageTask(p2_photo).execute("https://lh6.googleusercontent.com" + otherUserInfo.photoUrl)
             // controllerNode.renderable = controllerRenderable
-        }
+
     }
 
     private fun initChessmen(centerTile: Node) {
-        var tigerA = ChessmanNode(this,
+        val tigerA = ChessmanNode(this,
                 Animal(0, 8, AnimalState.ALIVE, AnimalType.TIGER),
                 playeAtigerRenderable!!)
-        var lionA = ChessmanNode(this,
+        val lionA = ChessmanNode(this,
                 Animal(6, 8, AnimalState.ALIVE, AnimalType.LION),
                 playeAlionRenderable!!)
 
-        var catA = ChessmanNode(this,
+        val catA = ChessmanNode(this,
                 Animal(1, 7, AnimalState.ALIVE, AnimalType.CAT),
                 playeAcatRenderable!!)
-        var dogA = ChessmanNode(this,
+        val dogA = ChessmanNode(this,
                 Animal(5, 7, AnimalState.ALIVE, AnimalType.DOG),
                 playeAdogRenderable!!)
 
-        var elephantA: ChessmanNode = ChessmanNode(this,
+        val elephantA: ChessmanNode = ChessmanNode(this,
                 Animal(0, 6, AnimalState.ALIVE, AnimalType.ELEPHANT),
                 playeAelephantRenderable!!)
-        var wolfA = ChessmanNode(this,
+        val wolfA = ChessmanNode(this,
                 Animal(2, 6, AnimalState.ALIVE, AnimalType.WOLF),
                 playeAwolveRenderable!!)
-        var leopardA = ChessmanNode(this,
+        val leopardA = ChessmanNode(this,
                 Animal(4, 6, AnimalState.ALIVE, AnimalType.LEOPARD),
                 playeAleopardRenderable!!)
-        var mouseA = ChessmanNode(this,
+        val mouseA = ChessmanNode(this,
                 Animal(6, 6, AnimalState.ALIVE, AnimalType.RAT),
                 playeAmouseRenderable!!)
 
         val chessmanArrayA = arrayOf(mouseA, catA, dogA, wolfA, leopardA, tigerA, lionA, elephantA)
         playeAChessmen = Arrays.asList(*chessmanArrayA)
 
-        var tigerB = ChessmanNode(this,
+        val tigerB = ChessmanNode(this,
                 Animal(6, 0, AnimalState.ALIVE, AnimalType.TIGER),
                 playeBtigerRenderable!!)
-        var lionB = ChessmanNode(this,
+        val lionB = ChessmanNode(this,
                 Animal(0, 0, AnimalState.ALIVE, AnimalType.LION),
                 playeBlionRenderable!!)
 
-        var catB = ChessmanNode(this,
+        val catB = ChessmanNode(this,
                 Animal(5, 1, AnimalState.ALIVE, AnimalType.CAT),
                 playeBcatRenderable!!)
-        var dogB = ChessmanNode(this,
+        val dogB = ChessmanNode(this,
                 Animal(1, 1, AnimalState.ALIVE, AnimalType.DOG),
                 playeBdogRenderable!!)
 
-        var mouseB = ChessmanNode(this,
+        val mouseB = ChessmanNode(this,
                 Animal(0, 2, AnimalState.ALIVE, AnimalType.RAT),
                 playeBmouseRenderable!!)
-        var leopardB = ChessmanNode(this,
+        val leopardB = ChessmanNode(this,
                 Animal(2, 2, AnimalState.ALIVE, AnimalType.LEOPARD),
                 playeBleopardRenderable!!)
-        var wolfB: ChessmanNode = ChessmanNode(this,
+        val wolfB: ChessmanNode = ChessmanNode(this,
                 Animal(4, 2, AnimalState.ALIVE, AnimalType.WOLF),
                 playeBwolveRenderable!!)
-        var elephantB = ChessmanNode(this,
+        val elephantB = ChessmanNode(this,
                 Animal(6, 2, AnimalState.ALIVE, AnimalType.ELEPHANT),
                 playeBelephantRenderable!!)
 
@@ -612,8 +612,8 @@ class MainActivity : AppCompatActivity() {
                 /*
                 Place splitters
                  */
-                var splitColNode = Node()
-                var splitRowNode = Node()
+                val splitColNode = Node()
+                val splitRowNode = Node()
                 splitColNode.renderable = tilesSplierator
                 splitRowNode.renderable = tilesSplierator
                 splitColNode.localRotation = Quaternion.axisAngle(Vector3(0.0f, 1.0f, 0.0f), 90f)
@@ -683,24 +683,24 @@ class MainActivity : AppCompatActivity() {
 
     private fun placeChessmen(centerTile: Node) {
         for (chessmanNode in playeAChessmen) {
-            var col = chessmanNode.animal.posCol
-            var row = chessmanNode.animal.posRow
+            val col = chessmanNode.animal.posCol
+            val row = chessmanNode.animal.posRow
             chessmanNode.localPosition = Vector3((col - 3).toFloat() / 8, 0.05F, (row - 4).toFloat() / 8)
             chessmanNode.localRotation = Quaternion.axisAngle(Vector3(0.0f, 1.0f, 0.0f), 180f)
             chessmanNode.setParent(centerTile)
         }
 
         for (chessmanNode in playeBChessmen) {
-            var col = chessmanNode.animal.posCol
-            var row = chessmanNode.animal.posRow
+            val col = chessmanNode.animal.posCol
+            val row = chessmanNode.animal.posRow
             chessmanNode.localPosition = Vector3((col - 3).toFloat() / 8, 0.05F, (row - 4).toFloat() / 8)
             chessmanNode.setParent(centerTile)
         }
     }
 
     private fun placeWelcomePanel() {
-        welcomeNode?.renderable = welcomeRenderable
-        welcomeNode?.localPosition = Vector3(0.0f, 0f, 0.0f)
+        welcomeNode.renderable = welcomeRenderable
+        welcomeNode.localPosition = Vector3(0.0f, 0f, 0.0f)
 
         val welcomeRenderableView = welcomeRenderable!!.view
         val btn_new_game = welcomeRenderableView.findViewById<Button>(R.id.btn_new_game)
@@ -731,9 +731,6 @@ class MainActivity : AppCompatActivity() {
 
         val tilesAndChessmen = initTilesAndChessmen()
         anchorNode.addChild(tilesAndChessmen)
-
-        //TODO for userA call  mGameController.initGameBoard()
-
     }
 
     private fun signInGoogleAccount() {

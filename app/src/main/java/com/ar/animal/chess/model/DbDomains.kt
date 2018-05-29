@@ -13,7 +13,11 @@ data class GameInfoDbModel(var currentRound: Int = 0,
                            var animalBList: List<AnimalDbModel> = listOf())
 
 data class ConfigDbModel(var cloudAnchorConfig: CloudAnchorDbModel = CloudAnchorDbModel(),
+                         var userConfirmStart: UserConfirmStartDbModel = UserConfirmStartDbModel(),
                          var userA: UserDbModel = UserDbModel(), var userB: UserDbModel = UserDbModel())
+
+data class UserConfirmStartDbModel(var isUserAConfirm: Boolean = false,
+                                   var isUserBConfirm: Boolean = false)
 
 data class CloudAnchorDbModel(var roomId: Int = 0, var cloudAnchorId: String = "", var timestamp: String = "")
 

@@ -1,11 +1,9 @@
 package com.ar.animal.chess.storage
 
-import android.util.Log
 import com.ar.animal.chess.model.*
 import com.ar.animal.chess.util.ChessConstants
 import com.ar.animal.chess.util.d
 import com.ar.animal.chess.util.e
-import com.google.firebase.auth.UserInfo
 
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -46,7 +44,7 @@ internal class ChessStorageManager {
                             override fun doTransaction(currentData: MutableData): Transaction.Result {
                                 var shortCode = currentData.getValue(Int::class.java)
                                 if (shortCode == null) {
-                                    shortCode = INITIAL_SHORT_CODE - 1
+                                    shortCode = INITIAL_ROOM_ID - 1
                                 }
                                 currentData.value = shortCode + 1
                                 return Transaction.success(currentData)
@@ -76,7 +74,7 @@ internal class ChessStorageManager {
     fun writeCloudAnchorIdUsingRoomId(shortCode: Int, cloudAnchorId: String) {
         d(TAG, "writeCloudAnchorIdUsingRoomId")
         val cloudAnchorDbModel = CloudAnchorDbModel(shortCode, cloudAnchorId, System.currentTimeMillis().toString())
-        rootRef.child(shortCode.toString()).child("config").child("cloudAnchorConfig").setValue(cloudAnchorDbModel)
+        rootRef.child(shortCode.toString()).child(KEY_CONFIG).child(KEY_CLOUD_ANCHOR_CONFIG).setValue(cloudAnchorDbModel)
     }
 
     /**
@@ -87,8 +85,8 @@ internal class ChessStorageManager {
         d(TAG, "readCloudAnchorId: $shortCode")
         rootRef
                 .child(shortCode.toString())
-                .child("config")
-                .child("cloudAnchorConfig")
+                .child(KEY_CONFIG)
+                .child(KEY_CLOUD_ANCHOR_CONFIG)
                 .addListenerForSingleValueEvent(
                         object : ValueEventListener {
                             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -108,12 +106,12 @@ internal class ChessStorageManager {
     // this function for UserA listen UserB online event to start Game, and UserB grab UserA info to show the board
 
     fun readUserInfo(roomId: Int, isNeedGetUserA: Boolean, onReadUserInfo: (userInfo: ChessUserInfo) -> Unit) {
-        val userRoot = if (isNeedGetUserA) "userA" else "userB"
+        val userRoot = if (isNeedGetUserA) KEY_USER_A else KEY_USER_B
         d(TAG, "readUserInfo: $userRoot")
 
         rootRef
                 .child(roomId.toString())
-                .child("config")
+                .child(KEY_CONFIG)
                 .child(userRoot)
                 .addValueEventListener(object : ValueEventListener {
                     override fun onCancelled(error: DatabaseError) {
@@ -137,12 +135,12 @@ internal class ChessStorageManager {
     }
 
     fun writeUserInfo(roomId: Int, userInfo: ChessUserInfo) {
-        val userRoot = if (userInfo.userType == UserType.USER_A) "userA" else "userB"
+        val userRoot = if (userInfo.userType == UserType.USER_A) KEY_USER_A else KEY_USER_B
         d(TAG, "writeUserInfo, userRoot: $userRoot roomId: $roomId, userInfo: $userInfo")
 
         with(userInfo) {
             val userDbModel = UserDbModel(uid, userType.ordinal, photoUrl, displayName)
-            rootRef.child(roomId.toString()).child("config").child(userRoot).setValue(userDbModel)
+            rootRef.child(roomId.toString()).child(KEY_CONFIG).child(userRoot).setValue(userDbModel)
         }
     }
 
@@ -150,6 +148,13 @@ internal class ChessStorageManager {
         private val TAG = ChessStorageManager::class.java.simpleName
         private val KEY_ROOT_DIR = "animal_chess_table_"
         private val KEY_NEXT_ROOM_ID = "next_room_id"
-        private val INITIAL_SHORT_CODE = 1
+        private val INITIAL_ROOM_ID = 1
+        private val KEY_CLOUD_ANCHOR_CONFIG = "cloudAnchorConfig"
+        private val KEY_USER_A = "userA"
+        private val KEY_USER_B = "userB"
+        private val KEY_USER_CONFIRM_START = "userConfirmStart"
+        private val KEY_CONFIG = "config"
+        private val KEY_ROOM_ID = "roomId"
+        private val KEY_GAME_INFO = "gameInfo"
     }
 }
