@@ -10,10 +10,12 @@ class GameController {
     private val TAG = GameController::class.java.simpleName
     private val mStorageManager = ChessStorageManager()
     private var mGameState = GameState.NO_WIN_USER
-    private var mCloudAnchorId: String = ""
     private var mRoomId = 0
     private var mCurrentUser: ChessUserInfo? = null
     private var mOtherUser: ChessUserInfo? = null
+    private var mIsGameStarted = false
+
+    private lateinit var onAnimalUpdate: (isFromA: Boolean, animal: Animal) -> Unit
 
     companion object {
         val instance: GameController = GameController()
@@ -69,8 +71,12 @@ class GameController {
             d(TAG, "confirmGameStart: isUserAReady: $isUserAReady, isUserBReady: $isUserBReady")
 
             if ((isCurrentUserA && isUserBReady) || (!isCurrentUserA && isUserAReady)) {
-                d(TAG, "confirmGameStart, mark current game state to USER_A_TURN")
-                mGameState = GameState.USER_A_TURN
+                if (!mIsGameStarted) {
+                    d(TAG, "GameStart, mark current game state to USER_A_TURN, start to listen animal update")
+                    mGameState = GameState.USER_A_TURN
+                    mIsGameStarted = true
+                    //startListenAnimalUpdate()
+                }
             }
 
             onGameStart(isUserAReady, isUserBReady)
@@ -85,6 +91,25 @@ class GameController {
         d(TAG, "updateGameInfo")
         //TODO Define callback
     }
+
+    fun setOnAnimalUpdateListener(onAnimalUpdate: (isFromA: Boolean, animal: Animal) -> Unit) {
+        d(TAG, "setOnAnimalUpdateListener")
+        this.onAnimalUpdate = onAnimalUpdate
+    }
+
+//    fun startListenAnimalAUpdate() {
+//        d(TAG, "startListenAnimalAUpdate")
+//        mStorageManager.readAnimalInfo(mRoomId, true){
+//
+//        }
+//    }
+//
+//    fun startListenAnimalBUpdate() {
+//        d(TAG, "startListenAnimalBUpdate")
+//        mStorageManager.readAnimalInfo(mRoomId, false){
+//
+//        }
+//    }
 
     fun storeUserInfo(isUserA: Boolean, uid: String, displayName: String?, photoUrl: String?) {
         d(TAG, "storeUserInfo")
