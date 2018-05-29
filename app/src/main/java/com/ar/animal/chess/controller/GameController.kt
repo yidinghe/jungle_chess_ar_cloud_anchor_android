@@ -55,9 +55,26 @@ class GameController {
      *  Both UserA and UserB confirm GameStart then UI will receive the onGameStart callback
      *  Start UserA round first
      */
-    fun confirmGameStart(onGameStart: (isUserAconfirm: Boolean, isUserBconfirm: Boolean) -> Unit) {
+    fun confirmGameStart(onGameStart: (isUserAConfirm: Boolean, isUserBConfirm: Boolean) -> Unit) {
         d(TAG, "confirmGameStart")
         //TODO
+        if (mCurrentUser == null) {
+            return
+        }
+
+        val isCurrentUserA = mCurrentUser!!.userType == UserType.USER_A
+
+        mStorageManager.writeGameStart(mRoomId, isCurrentUserA)
+        mStorageManager.readGameStart(mRoomId) { isUserAReady, isUserBReady ->
+            d(TAG, "confirmGameStart: isUserAReady: $isUserAReady, isUserBReady: $isUserBReady")
+
+            if ((isCurrentUserA && isUserBReady) || (!isCurrentUserA && isUserAReady)) {
+                d(TAG, "confirmGameStart, mark current game state to USER_A_TURN")
+                mGameState = GameState.USER_A_TURN
+            }
+
+            onGameStart(isUserAReady, isUserBReady)
+        }
     }
 
     /**
@@ -90,12 +107,12 @@ class GameController {
             return
         }
 
-        mStorageManager.readUserInfo(mRoomId, isNeedUserA) {
-            d(TAG, "onReadUserInfo: $it")
-            if (isNeedUserA && it.userType == UserType.USER_B || ((!isNeedUserA) && it.userType == UserType.USER_A)) {
+        mStorageManager.readUserInfo(mRoomId, isNeedUserA) { chessUserInfo ->
+            d(TAG, "onReadUserInfo: $chessUserInfo")
+            if (isNeedUserA && chessUserInfo.userType == UserType.USER_B || ((!isNeedUserA) && chessUserInfo.userType == UserType.USER_A)) {
                 e(TAG, "onReadUserInfo data is not needed, no need to notify UI")
             } else {
-                mOtherUser = it
+                mOtherUser = chessUserInfo
                 if (mCurrentUser != null && mOtherUser != null)
                     onReadUserInfo(mCurrentUser!!, mOtherUser!!)
                 else

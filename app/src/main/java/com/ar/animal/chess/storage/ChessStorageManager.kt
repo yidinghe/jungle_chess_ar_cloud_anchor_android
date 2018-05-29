@@ -144,6 +144,37 @@ internal class ChessStorageManager {
         }
     }
 
+    fun writeGameStart(roomId: Int, isUserAStart: Boolean) {
+        val gameStartRoot = if (isUserAStart) KEY_IS_USER_A_CONFIRM else KEY_IS_USER_B_CONFIRM
+        d(TAG, "writeGameStart, roomId: $roomId, gameStartRoot: $gameStartRoot")
+        rootRef.child(roomId.toString()).child(KEY_CONFIG).child(KEY_USER_CONFIRM_START).child(gameStartRoot).setValue(true)
+    }
+
+    fun readGameStart(roomId: Int, onReadGameStart: (isUserAReady: Boolean, isUserBReady: Boolean) -> Unit) {
+        d(TAG, "readGameStart, roomId: $roomId")
+        rootRef
+                .child(roomId.toString())
+                .child(KEY_CONFIG)
+                .child(KEY_USER_CONFIRM_START)
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        d(TAG, "readGameStart onCancelled")
+                    }
+
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        d(TAG, "readGameStart onDataChange")
+                        val userConfirmStartDbModel = dataSnapshot.getValue(UserConfirmStartDbModel::class.java)
+                        if (userConfirmStartDbModel != null) {
+                            with(userConfirmStartDbModel) {
+                                onReadGameStart(userConfirmStartDbModel.isUserAConfirm, userConfirmStartDbModel.isUserBConfirm)
+                            }
+
+                        }
+                    }
+
+                })
+    }
+
     companion object {
         private val TAG = ChessStorageManager::class.java.simpleName
         private val KEY_ROOT_DIR = "animal_chess_table_"
@@ -156,5 +187,7 @@ internal class ChessStorageManager {
         private val KEY_CONFIG = "config"
         private val KEY_ROOM_ID = "roomId"
         private val KEY_GAME_INFO = "gameInfo"
+        private val KEY_IS_USER_A_CONFIRM = "isUserAConfirm"
+        private val KEY_IS_USER_B_CONFIRM = "isUserBConfirm"
     }
 }
