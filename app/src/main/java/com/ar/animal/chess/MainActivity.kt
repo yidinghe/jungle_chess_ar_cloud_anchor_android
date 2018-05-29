@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.os.Handler
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
@@ -15,11 +16,10 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.ar.animal.chess.controller.GameController
 
 import com.ar.animal.chess.model.*
@@ -530,6 +530,36 @@ class MainActivity : AppCompatActivity() {
             DownloadImageTask(p2_photo).execute("https://lh6.googleusercontent.com" + otherUserInfo.photoUrl)
             // controllerNode.renderable = controllerRenderable
 
+        val ll_start_game = controllerRenderableView.findViewById<LinearLayout>(R.id.ll_start_game)
+        val btn_start_game = controllerRenderableView.findViewById<LinearLayout>(R.id.btn_start_game)
+        btn_start_game.setOnClickListener{
+            gameController.confirmGameStart{ _, _ ->
+                ll_start_game.visibility = GONE
+                initTimingPanel()
+            }
+        }
+        ll_start_game.visibility = VISIBLE
+    }
+
+    private fun initTimingPanel(){
+        val controllerRenderableView = controllerRenderable!!.view
+        val rl_time_board = controllerRenderableView.findViewById<RelativeLayout>(R.id.rl_time_board)
+        val tv_turn = controllerRenderableView.findViewById<TextView>(R.id.tv_turn)
+        val tv_time = controllerRenderableView.findViewById<TextView>(R.id.tv_time)
+
+        val countDownTimer = object : CountDownTimer(30*1000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                var secs =  millisUntilFinished/1000
+                tv_time.text = "Time Remaining: 00:$secs"
+            }
+
+            override fun onFinish() {
+                tv_time.text = "Time Remaining: : 00:00"
+                cancel()
+            }
+        }
+        rl_time_board.visibility = VISIBLE
+        countDownTimer.start()
     }
 
     private fun initChessmen(centerTile: Node) {
