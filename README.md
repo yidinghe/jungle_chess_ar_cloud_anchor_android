@@ -60,8 +60,10 @@ Use Google Firebase Realtime Db to avoid server development.
 - db primary key is roomId
 - roomId(Int) couldAnchorId, user1Id, user2Id, current board
 - data class ChessDbModel(var roomId: Int = 0,
-                         var config: ConfigDbModel = ConfigDbModel(),
-                         var gameInfo: GameInfoDbModel = GameInfoDbModel())
+                          var config: ConfigDbModel = ConfigDbModel(),
+                          var gameInfo: GameInfoDbModel = GameInfoDbModel(),
+                          var animalInfoA: AnimalInfoDbModel,
+                          var animalInfoB: AnimalInfoDbModel)
 - data class GameInfoDbModel(var currentRound: Int = 0,
                              var gameState: Int = GameState.USER_A_TURN.ordinal,
                              var timestamp: String = "",
@@ -70,6 +72,9 @@ Use Google Firebase Realtime Db to avoid server development.
                              var animalBList: List<AnimalDbModel> = listOf())
 - data class ConfigDbModel(var cloudAnchorConfig: CloudAnchorDbModel = CloudAnchorDbModel(),
                            var userA: UserDbModel = UserDbModel(), var userB: UserDbModel = UserDbModel())
+- data class AnimalInfoDbModel(var rat: AnimalDbModel, var cat: AnimalDbModel, var dog: AnimalDbModel,
+                               var wolf: AnimalDbModel, var leopard: AnimalDbModel, var tiger: AnimalDbModel,
+                               var lion: AnimalDbModel, var elephant: AnimalDbModel)
 
 ## game logic design (draft 1)
 - UserA login game，create room，generate roomId，host CloudAnchor and generate cloudAnchorId
