@@ -177,17 +177,27 @@ internal class ChessStorageManager {
 
     companion object {
         private val TAG = ChessStorageManager::class.java.simpleName
-        private val KEY_ROOT_DIR = "animal_chess_table_"
-        private val KEY_NEXT_ROOM_ID = "next_room_id"
-        private val INITIAL_ROOM_ID = 1
-        private val KEY_CLOUD_ANCHOR_CONFIG = "cloudAnchorConfig"
-        private val KEY_USER_A = "userA"
-        private val KEY_USER_B = "userB"
-        private val KEY_USER_CONFIRM_START = "userConfirmStart"
-        private val KEY_CONFIG = "config"
-        private val KEY_ROOM_ID = "roomId"
-        private val KEY_GAME_INFO = "gameInfo"
-        private val KEY_IS_USER_A_CONFIRM = "isUserAConfirm"
-        private val KEY_IS_USER_B_CONFIRM = "isUserBConfirm"
+        private const val KEY_ROOT_DIR = "animal_chess_table_"
+        private const val KEY_NEXT_ROOM_ID = "next_room_id"
+        private const val INITIAL_ROOM_ID = 1
+        private const val KEY_CLOUD_ANCHOR_CONFIG = "cloudAnchorConfig"
+        private const val KEY_USER_A = "userA"
+        private const val KEY_USER_B = "userB"
+        private const val KEY_USER_CONFIRM_START = "userConfirmStart"
+        private const val KEY_CONFIG = "config"
+        private const val KEY_ROOM_ID = "roomId"
+        private const val KEY_GAME_INFO = "gameInfo"
+        private const val KEY_IS_USER_A_CONFIRM = "isUserAConfirm"
+        private const val KEY_IS_USER_B_CONFIRM = "isUserBConfirm"
+        private const val KEY_ANIMAL_INFO_A = "animalInfoA"
+        private const val KEY_ANIMAL_INFO_B = "animalInfoB"
+        private const val KEY_RAT = "rat"
+        private const val KEY_CAT = "cat"
+        private const val KEY_DOG = "dog"
+        private const val KEY_LEOPARD = "leopard"
+        private const val KEY_TIGER = "tiger"
+        private const val KEY_LION = "lion"
+        private const val KEY_ELEPHANT = "elephant"
+
     }
 }

@@ -3,14 +3,18 @@ package com.ar.animal.chess.model
 
 data class ChessDbModel(var roomId: Int = 0,
                         var config: ConfigDbModel = ConfigDbModel(),
-                        var gameInfo: GameInfoDbModel = GameInfoDbModel())
+                        var gameInfo: GameInfoDbModel = GameInfoDbModel(),
+                        var animalInfoA: AnimalInfoDbModel,
+                        var animalInfoB: AnimalInfoDbModel)
 
 data class GameInfoDbModel(var currentRound: Int = 0,
                            var gameState: Int = GameState.USER_A_TURN.ordinal,
                            var timestamp: String = "",
-                           var tileList: List<TileDbModel> = listOf(),
-                           var animalAList: List<AnimalDbModel> = listOf(),
-                           var animalBList: List<AnimalDbModel> = listOf())
+                           var tileList: List<TileDbModel> = listOf())
+
+data class AnimalInfoDbModel(var rat: AnimalDbModel, var cat: AnimalDbModel, var dog: AnimalDbModel,
+                             var wolf: AnimalDbModel, var leopard: AnimalDbModel, var tiger: AnimalDbModel,
+                             var lion: AnimalDbModel, var elephant: AnimalDbModel)
 
 data class ConfigDbModel(var cloudAnchorConfig: CloudAnchorDbModel = CloudAnchorDbModel(),
                          var userConfirmStart: UserConfirmStartDbModel = UserConfirmStartDbModel(),
