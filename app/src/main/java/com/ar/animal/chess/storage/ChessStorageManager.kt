@@ -168,10 +168,8 @@ internal class ChessStorageManager {
                         d(TAG, "readGameStart onDataChange")
                         val userConfirmStartDbModel = dataSnapshot.getValue(UserConfirmStartDbModel::class.java)
                         if (userConfirmStartDbModel != null) {
-                            with(userConfirmStartDbModel) {
-                                onReadGameStart(userConfirmStartDbModel.isUserAConfirm, userConfirmStartDbModel.isUserBConfirm)
-                            }
-
+                            d(TAG, "readGameStart onDataChange : $userConfirmStartDbModel")
+                            onReadGameStart(userConfirmStartDbModel.isUserAConfirm, userConfirmStartDbModel.isUserBConfirm)
                         }
                     }
 
@@ -279,7 +277,7 @@ class AnimalInfoUpdateListener : ValueEventListener {
         val userConfirmStartDbModel = dataSnapshot.getValue(UserConfirmStartDbModel::class.java)
         if (userConfirmStartDbModel != null) {
             with(userConfirmStartDbModel) {
-               // onAnimalUpdate(userConfirmStartDbModel.isUserAConfirm, userConfirmStartDbModel.isUserBConfirm)
+                // onAnimalUpdate(userConfirmStartDbModel.isUserAConfirm, userConfirmStartDbModel.isUserBConfirm)
             }
 
         }
