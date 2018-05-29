@@ -765,6 +765,7 @@ class MainActivity : AppCompatActivity() {
 
         // setOnAnimalUpdateListener after place board
         mGameController.setOnAnimalUpdateListener(this::onAnimalUpdate)
+        mGameController.setOnGameFinishListener(this::onGameFinish)
     }
 
     private fun signInGoogleAccount() {
@@ -817,7 +818,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun onAnimalUpdate(isFromA: Boolean, updatedAnimal: Animal) {
+    /**
+     * onAnimalUpdated received when User turn changed
+     * Also, updatedAnimalB can be null since there maybe only one animal moving
+     */
+    private fun onAnimalUpdate(updatedAnimalA : Animal, updatedAnimalB: Animal?) {
+
+    }
+
+    private fun onGameFinish(gameState: GameState, currentRound: Int) {
 
     }
 

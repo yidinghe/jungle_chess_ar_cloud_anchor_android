@@ -8,7 +8,8 @@ data class Tile(var posCol: Int = 0, var posRow: Int = 0,
 
 data class Animal(var posCol: Int = 0, var posRow: Int = 0,
                   var state: AnimalState = AnimalState.ALIVE,
-                  var animalType: AnimalType = AnimalType.RAT)
+                  var animalType: AnimalType = AnimalType.RAT,
+                  var animalDrawType: AnimalDrawType = AnimalDrawType.TYPE_A)
 
 data class ChessUserInfo(var uid: String = "", var displayName: String = "",
                          var photoUrl: String = "", var userType: UserType = UserType.USER_A)
@@ -35,6 +36,11 @@ enum class AnimalType {
     TIGER,
     LION,
     ELEPHANT
+}
+
+enum class AnimalDrawType {
+    TYPE_A,
+    TYPE_B
 }
 
 enum class AnimalState {

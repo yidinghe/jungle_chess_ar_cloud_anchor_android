@@ -20,8 +20,6 @@ import java.util.HashMap
 
 internal class ChessStorageManager {
     private val rootRef: DatabaseReference
-    private val mAnimalEventListenerA = AnimalInfoUpdateListener()
-    private val mAnimalEventListenerB = AnimalInfoUpdateListener()
 
     init {
         val rootDir = KEY_ROOT_DIR + ChessConstants.END_POINT.name
@@ -180,57 +178,24 @@ internal class ChessStorageManager {
                 })
     }
 
-    fun readAnimalInfo(roomId: Int, onReadAnimalInfo: () -> Unit) {
-
+    fun readAnimalInfo(roomId: Int, onReadAnimalInfo: (updatedAnimalList: List<Animal>) -> Unit) {
         d(TAG, "readAnimalInfo, roomId: $roomId")
+        //TODO
 
         rootRef
                 .child(roomId.toString())
-                .child(KEY_ANIMAL_INFO_A)
-                .child(KEY_RAT)
-                .addValueEventListener(mAnimalEventListenerA)
+                .child(KEY_ANIMAL_INFO_LIST)
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        d(TAG, "readAnimalInfo onCancelled")
+                    }
 
-        rootRef
-                .child(roomId.toString())
-                .child(KEY_ANIMAL_INFO_A)
-                .child(KEY_CAT)
-                .addValueEventListener(mAnimalEventListenerA)
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        d(TAG, "readAnimalInfo onDataChange")
 
-        rootRef
-                .child(roomId.toString())
-                .child(KEY_ANIMAL_INFO_A)
-                .child(KEY_DOG)
-                .addValueEventListener(mAnimalEventListenerA)
+                    }
 
-        rootRef
-                .child(roomId.toString())
-                .child(KEY_ANIMAL_INFO_A)
-                .child(KEY_WOLF)
-                .addValueEventListener(mAnimalEventListenerA)
-
-        rootRef
-                .child(roomId.toString())
-                .child(KEY_ANIMAL_INFO_A)
-                .child(KEY_LEOPARD)
-                .addValueEventListener(mAnimalEventListenerA)
-
-        rootRef
-                .child(roomId.toString())
-                .child(KEY_ANIMAL_INFO_A)
-                .child(KEY_TIGER)
-                .addValueEventListener(mAnimalEventListenerA)
-
-        rootRef
-                .child(roomId.toString())
-                .child(KEY_ANIMAL_INFO_A)
-                .child(KEY_LION)
-                .addValueEventListener(mAnimalEventListenerA)
-
-        rootRef
-                .child(roomId.toString())
-                .child(KEY_ANIMAL_INFO_A)
-                .child(KEY_ELEPHANT)
-                .addValueEventListener(mAnimalEventListenerA)
+                })
     }
 
 
@@ -248,43 +213,6 @@ internal class ChessStorageManager {
         private const val KEY_GAME_INFO = "gameInfo"
         private const val KEY_IS_USER_A_CONFIRM = "isUserAConfirm"
         private const val KEY_IS_USER_B_CONFIRM = "isUserBConfirm"
-        private const val KEY_ANIMAL_INFO_A = "animalInfoA"
-        private const val KEY_ANIMAL_INFO_B = "animalInfoB"
-        private const val KEY_RAT = "rat"
-        private const val KEY_CAT = "cat"
-        private const val KEY_DOG = "dog"
-        private const val KEY_WOLF = "wolf"
-        private const val KEY_LEOPARD = "leopard"
-        private const val KEY_TIGER = "tiger"
-        private const val KEY_LION = "lion"
-        private const val KEY_ELEPHANT = "elephant"
-
+        private const val KEY_ANIMAL_INFO_LIST = "animalInfoList"
     }
-}
-
-class AnimalInfoUpdateListener : ValueEventListener {
-
-    private val TAG = AnimalInfoUpdateListener::class.java.simpleName
-
-    private lateinit var onAnimalUpdate: (isFromA: Boolean, animal: Animal) -> Unit
-
-    fun setReadAnimalInfoListener(onReadAnimalInfo: (isFromA: Boolean, animal: Animal) -> Unit) {
-        onAnimalUpdate = onReadAnimalInfo
-    }
-
-    override fun onCancelled(error: DatabaseError) {
-        d(TAG, "AnimalInfoUpdateListener onCancelled")
-    }
-
-    override fun onDataChange(dataSnapshot: DataSnapshot) {
-        d(TAG, "AnimalInfoUpdateListener onDataChange")
-        val userConfirmStartDbModel = dataSnapshot.getValue(UserConfirmStartDbModel::class.java)
-        if (userConfirmStartDbModel != null) {
-            with(userConfirmStartDbModel) {
-                // onAnimalUpdate(userConfirmStartDbModel.isUserAConfirm, userConfirmStartDbModel.isUserBConfirm)
-            }
-
-        }
-    }
-
 }

@@ -9,13 +9,15 @@ import com.ar.animal.chess.util.e
 class GameController {
     private val TAG = GameController::class.java.simpleName
     private val mStorageManager = ChessStorageManager()
-    private var mGameState = GameState.NO_WIN_USER
+    private var mCurrentGameState = GameState.NO_WIN_USER
     private var mRoomId = 0
     private var mCurrentUser: ChessUserInfo? = null
     private var mOtherUser: ChessUserInfo? = null
     private var mIsGameStarted = false
+    private var mCurrentRound = 0
 
-    private lateinit var onAnimalUpdate: (isFromA: Boolean, animal: Animal) -> Unit
+    private lateinit var onAnimalUpdate: (updatedAnimalA: Animal, updatedAnimalB: Animal?) -> Unit
+    private lateinit var onGameFinish: (gameState: GameState, currentRound: Int) -> Unit
 
     companion object {
         val instance: GameController = GameController()
@@ -73,9 +75,9 @@ class GameController {
             if ((isCurrentUserA && isUserBReady) || (!isCurrentUserA && isUserAReady)) {
                 if (!mIsGameStarted) {
                     d(TAG, "GameStart, mark current game state to USER_A_TURN, start to listen animal update")
-                    mGameState = GameState.USER_A_TURN
+                    mCurrentGameState = GameState.USER_A_TURN
                     mIsGameStarted = true
-                    //startListenAnimalUpdate()
+                    //TODO read animal info change and return to UI
                 }
             }
 
@@ -86,7 +88,7 @@ class GameController {
         }
     }
 
-    fun test (){
+    fun test() {
         mStorageManager.readGameStart(11) { isUserAReady, isUserBReady ->
             d(TAG, "confirmGameStart: isUserAReady: $isUserAReady, isUserBReady: $isUserBReady")
         }
@@ -96,29 +98,34 @@ class GameController {
      *  Every User finish his turn, call updateGameInfo, other User will receive onUserTurn callback
      *  then UI needs to redraw and start another round
      */
-    fun updateGameInfo() {
+    fun updateGameInfo(updatedAnimal1: Animal, updatedAnimal2: Animal?) {
+        //TODO
         d(TAG, "updateGameInfo")
-        //TODO Define callback
+        mCurrentRound++
+        when (mCurrentGameState) {
+
+            GameState.USER_A_TURN -> TODO()
+            GameState.USER_B_TURN -> TODO()
+            GameState.USER_A_WIN -> TODO()
+            GameState.USER_B_WIN -> TODO()
+            GameState.NO_WIN_USER -> TODO()
+        }
+
     }
 
-    fun setOnAnimalUpdateListener(onAnimalUpdate: (isFromA: Boolean, animal: Animal) -> Unit) {
+    fun initGameBoard(animalList: List<Animal>) {
+        //TODO
+    }
+
+    fun setOnAnimalUpdateListener(onAnimalUpdate: (updatedAnimalA: Animal, updatedAnimalB: Animal?) -> Unit) {
         d(TAG, "setOnAnimalUpdateListener")
         this.onAnimalUpdate = onAnimalUpdate
     }
 
-//    fun startListenAnimalAUpdate() {
-//        d(TAG, "startListenAnimalAUpdate")
-//        mStorageManager.readAnimalInfo(mRoomId, true){
-//
-//        }
-//    }
-//
-//    fun startListenAnimalBUpdate() {
-//        d(TAG, "startListenAnimalBUpdate")
-//        mStorageManager.readAnimalInfo(mRoomId, false){
-//
-//        }
-//    }
+    fun setOnGameFinishListener(onGameFinish: (gameState: GameState, currentRound: Int) -> Unit) {
+        d(TAG, "setOnGameFinishListener")
+        this.onGameFinish = onGameFinish
+    }
 
     fun storeUserInfo(isUserA: Boolean, uid: String, displayName: String?, photoUrl: String?) {
         d(TAG, "storeUserInfo")
