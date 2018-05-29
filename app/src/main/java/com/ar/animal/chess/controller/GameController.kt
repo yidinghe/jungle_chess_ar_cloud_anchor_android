@@ -79,7 +79,10 @@ class GameController {
                 }
             }
 
-            onGameStart(isUserAReady, isUserBReady)
+            if (isUserAReady && isUserBReady) {
+                d(TAG, "isUserAReady, isUserBReady, start game, now UserA turn")
+                onGameStart(isUserAReady, isUserBReady)
+            }
         }
     }
 
