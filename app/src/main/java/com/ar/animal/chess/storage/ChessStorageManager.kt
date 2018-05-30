@@ -203,12 +203,12 @@ internal class ChessStorageManager {
                         d(TAG, "readAnimalInfo onDataChange : $values")
                         val animalList = values.map {
                             val animal = Animal()
-                            animal.posCol = (it["positionX"] as Long).toInt()
-                            animal.posRow = (it["positionY"] as Long).toInt()
+                            animal.posCol = (it[KEY_ANIMAL_POSITION_X] as Long).toInt()
+                            animal.posRow = (it[KEY_ANIMAL_POSITION_Y] as Long).toInt()
 
-                            val state = (it["state"] as Long).toInt()
-                            val animalDrawType = (it["animalDrawType"] as Long).toInt()
-                            val animalType = (it["animalType"] as Long).toInt()
+                            val state = (it[KEY_ANIMAL_STATE] as Long).toInt()
+                            val animalDrawType = (it[KEY_ANIMAL_DRAW_TYPE] as Long).toInt()
+                            val animalType = (it[KEY_ANIMAL_TYPE] as Long).toInt()
 
                             when (state) {
                                 AnimalState.ALIVE.ordinal -> animal.state = AnimalState.ALIVE
@@ -256,5 +256,10 @@ internal class ChessStorageManager {
         private const val KEY_IS_USER_A_CONFIRM = "isUserAConfirm"
         private const val KEY_IS_USER_B_CONFIRM = "isUserBConfirm"
         private const val KEY_ANIMAL_INFO_LIST = "animalInfoList"
+        private const val KEY_ANIMAL_POSITION_X = "positionX"
+        private const val KEY_ANIMAL_POSITION_Y = "positionY"
+        private const val KEY_ANIMAL_STATE = "state"
+        private const val KEY_ANIMAL_DRAW_TYPE = "animalDrawType"
+        private const val KEY_ANIMAL_TYPE = "animalType"
     }
 }
