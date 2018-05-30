@@ -27,4 +27,5 @@ data class TileDbModel(var positionX: Int = 0, var positionY: Int = 0,
 
 data class AnimalDbModel(var positionX: Int = 0, var positionY: Int = 0,
                          var state: Int = AnimalState.ALIVE.ordinal,
-                         var animalType: Int = AnimalType.RAT.ordinal)
+                         var animalType: Int = AnimalType.RAT.ordinal,
+                         var animalDrawType: Int = AnimalDrawType.TYPE_A.ordinal)

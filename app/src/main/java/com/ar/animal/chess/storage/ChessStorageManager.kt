@@ -178,12 +178,18 @@ internal class ChessStorageManager {
                 })
     }
 
+    fun writeAnimalInfo(roomId: Int, animalList: List<Animal>) {
+        d(TAG, "writeAnimalInfo, roomId: $roomId")
+        val animalDbList = animalList.map { AnimalDbModel(it.posCol, it.posRow, it.state.ordinal, it.animalType.ordinal, it.animalDrawType.ordinal) }
+        rootRef.child(roomId.toString()).child(KEY_GAME_INFO).child(KEY_ANIMAL_INFO_LIST).setValue(animalDbList)
+    }
+
     fun readAnimalInfo(roomId: Int, onReadAnimalInfo: (updatedAnimalList: List<Animal>) -> Unit) {
         d(TAG, "readAnimalInfo, roomId: $roomId")
-        //TODO
 
         rootRef
                 .child(roomId.toString())
+                .child(KEY_GAME_INFO)
                 .child(KEY_ANIMAL_INFO_LIST)
                 .addValueEventListener(object : ValueEventListener {
                     override fun onCancelled(error: DatabaseError) {
@@ -192,6 +198,42 @@ internal class ChessStorageManager {
 
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         d(TAG, "readAnimalInfo onDataChange")
+                        val values = dataSnapshot.value as ArrayList<HashMap<String, Any>>
+
+                        d(TAG, "readAnimalInfo onDataChange : $values")
+                        val animalList = values.map {
+                            val animal = Animal()
+                            animal.posCol = (it[KEY_ANIMAL_POSITION_X] as Long).toInt()
+                            animal.posRow = (it[KEY_ANIMAL_POSITION_Y] as Long).toInt()
+
+                            val state = (it[KEY_ANIMAL_STATE] as Long).toInt()
+                            val animalDrawType = (it[KEY_ANIMAL_DRAW_TYPE] as Long).toInt()
+                            val animalType = (it[KEY_ANIMAL_TYPE] as Long).toInt()
+
+                            when (state) {
+                                AnimalState.ALIVE.ordinal -> animal.state = AnimalState.ALIVE
+                                AnimalState.DEAD.ordinal -> animal.state = AnimalState.DEAD
+                            }
+
+                            when (animalDrawType) {
+                                AnimalDrawType.TYPE_A.ordinal -> animal.animalDrawType = AnimalDrawType.TYPE_A
+                                AnimalDrawType.TYPE_B.ordinal -> animal.animalDrawType = AnimalDrawType.TYPE_B
+                            }
+
+                            when (animalType) {
+                                AnimalType.RAT.ordinal -> animal.animalType = AnimalType.RAT
+                                AnimalType.CAT.ordinal -> animal.animalType = AnimalType.CAT
+                                AnimalType.DOG.ordinal -> animal.animalType = AnimalType.DOG
+                                AnimalType.WOLF.ordinal -> animal.animalType = AnimalType.WOLF
+                                AnimalType.LEOPARD.ordinal -> animal.animalType = AnimalType.LEOPARD
+                                AnimalType.TIGER.ordinal -> animal.animalType = AnimalType.TIGER
+                                AnimalType.LION.ordinal -> animal.animalType = AnimalType.LION
+                                AnimalType.ELEPHANT.ordinal -> animal.animalType = AnimalType.ELEPHANT
+                            }
+
+                            animal
+                        }
+                        onReadAnimalInfo(animalList)
 
                     }
 
@@ -214,5 +256,10 @@ internal class ChessStorageManager {
         private const val KEY_IS_USER_A_CONFIRM = "isUserAConfirm"
         private const val KEY_IS_USER_B_CONFIRM = "isUserBConfirm"
         private const val KEY_ANIMAL_INFO_LIST = "animalInfoList"
+        private const val KEY_ANIMAL_POSITION_X = "positionX"
+        private const val KEY_ANIMAL_POSITION_Y = "positionY"
+        private const val KEY_ANIMAL_STATE = "state"
+        private const val KEY_ANIMAL_DRAW_TYPE = "animalDrawType"
+        private const val KEY_ANIMAL_TYPE = "animalType"
     }
 }
