@@ -532,9 +532,9 @@ class MainActivity : AppCompatActivity() {
 
         val ll_start_game = controllerRenderableView.findViewById<LinearLayout>(R.id.ll_start_game)
         val btn_start_game = controllerRenderableView.findViewById<Button>(R.id.btn_start_game)
-        btn_start_game.setOnClickListener{
-            btn_start_game.text = "waiting for "+otherUserInfo.displayName
-            gameController.confirmGameStart{ _, _ ->
+        btn_start_game.setOnClickListener {
+            btn_start_game.text = "waiting for " + otherUserInfo.displayName
+            gameController.confirmGameStart { _, _ ->
                 ll_start_game.visibility = GONE
                 initTimingPanel()
             }
@@ -542,15 +542,15 @@ class MainActivity : AppCompatActivity() {
         ll_start_game.visibility = VISIBLE
     }
 
-    private fun initTimingPanel(){
+    private fun initTimingPanel() {
         val controllerRenderableView = controllerRenderable!!.view
         val rl_time_board = controllerRenderableView.findViewById<RelativeLayout>(R.id.rl_time_board)
         val tv_turn = controllerRenderableView.findViewById<TextView>(R.id.tv_turn)
         val tv_time = controllerRenderableView.findViewById<TextView>(R.id.tv_time)
 
-        val countDownTimer = object : CountDownTimer(30*1000, 1000) {
+        val countDownTimer = object : CountDownTimer(30 * 1000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                var secs =  millisUntilFinished/1000
+                var secs = millisUntilFinished / 1000
                 tv_time.text = "Time Remaining: 00:$secs"
             }
 
@@ -822,12 +822,13 @@ class MainActivity : AppCompatActivity() {
      * onAnimalUpdated received when User turn changed
      * Also, updatedAnimalB can be null since there maybe only one animal moving
      */
-    private fun onAnimalUpdate(updatedAnimalA : Animal, updatedAnimalB: Animal?) {
+    private fun onAnimalUpdate(updatedAnimalList: List<Animal>) {
+        d(TAG, "onAnimalUpdate: $updatedAnimalList")
 
     }
 
     private fun onGameFinish(gameState: GameState, currentRound: Int) {
-
+        d(TAG, "onGameFinish: gameState $gameState, currentRound: $currentRound ")
     }
 
     private fun onReadUserInfo(currentUserInfo: ChessUserInfo, otherUserInfo: ChessUserInfo) {

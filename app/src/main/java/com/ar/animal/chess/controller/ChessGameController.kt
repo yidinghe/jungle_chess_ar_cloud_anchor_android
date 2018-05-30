@@ -17,7 +17,7 @@ class ChessGameController {
     private var mCurrentRound = 0
     private var mAnimalList: List<Animal>? = null
 
-    private lateinit var onAnimalUpdate: (updatedAnimalA: Animal, updatedAnimalB: Animal?) -> Unit
+    private lateinit var onAnimalUpdate: (updatedAnimalList: List<Animal>) -> Unit
     private lateinit var onGameFinish: (gameState: GameState, currentRound: Int) -> Unit
 
     companion object {
@@ -78,7 +78,9 @@ class ChessGameController {
                     d(TAG, "GameStart, mark current game state to USER_A_TURN, start to listen animal update")
                     mCurrentGameState = GameState.USER_A_TURN
                     mIsGameStarted = true
-                    //TODO read animal info change and return to UI
+                    mStorageManager.readAnimalInfo(mRoomId) {
+                        handleReceiveAnimalListUpdate(it)
+                    }
                 }
             }
 
@@ -89,30 +91,51 @@ class ChessGameController {
         }
     }
 
-    fun test() {
-//        val animalList = listOf(
-//                Animal(0, 8, AnimalState.ALIVE, AnimalType.RAT, AnimalDrawType.TYPE_A),
-//                Animal(0, 8, AnimalState.ALIVE, AnimalType.CAT, AnimalDrawType.TYPE_A),
-//                Animal(0, 8, AnimalState.ALIVE, AnimalType.DOG, AnimalDrawType.TYPE_A),
-//                Animal(0, 8, AnimalState.ALIVE, AnimalType.WOLF, AnimalDrawType.TYPE_A),
-//                Animal(0, 8, AnimalState.ALIVE, AnimalType.LEOPARD, AnimalDrawType.TYPE_A),
-//                Animal(0, 8, AnimalState.ALIVE, AnimalType.TIGER, AnimalDrawType.TYPE_A),
-//                Animal(0, 8, AnimalState.ALIVE, AnimalType.LION, AnimalDrawType.TYPE_A),
-//                Animal(0, 8, AnimalState.ALIVE, AnimalType.ELEPHANT, AnimalDrawType.TYPE_A),
-//                Animal(0, 8, AnimalState.ALIVE, AnimalType.RAT, AnimalDrawType.TYPE_B),
-//                Animal(0, 8, AnimalState.ALIVE, AnimalType.CAT, AnimalDrawType.TYPE_B),
-//                Animal(0, 8, AnimalState.ALIVE, AnimalType.DOG, AnimalDrawType.TYPE_B),
-//                Animal(0, 8, AnimalState.ALIVE, AnimalType.WOLF, AnimalDrawType.TYPE_B),
-//                Animal(0, 8, AnimalState.ALIVE, AnimalType.LEOPARD, AnimalDrawType.TYPE_B),
-//                Animal(0, 8, AnimalState.ALIVE, AnimalType.TIGER, AnimalDrawType.TYPE_B),
-//                Animal(0, 8, AnimalState.ALIVE, AnimalType.LION, AnimalDrawType.TYPE_B),
-//                Animal(0, 8, AnimalState.ALIVE, AnimalType.ELEPHANT, AnimalDrawType.TYPE_B)
-//        )
-//        mStorageManager.writeAnimalInfo(7, animalList)
-
-        mStorageManager.readAnimalInfo(7) { animalList ->
-            d(TAG, "animalList: $animalList")
+    private fun handleReceiveAnimalListUpdate(updatedAnimalList: List<Animal>) {
+        d(TAG, "handleReceiveAnimalListUpdate")
+        if (updatedAnimalList.size != 16) {
+            e(TAG, "animal List size is not 16, no need to convert")
+            return
         }
+
+        val needToNotifyUIList = updatedAnimalList.minus(mAnimalList!!)
+        d(TAG, "needToNotifyUIList: $needToNotifyUIList")
+        mAnimalList = updatedAnimalList
+
+        onAnimalUpdate(needToNotifyUIList)
+    }
+
+    fun test() {
+        val animalList = mutableListOf<Animal>(
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.RAT, AnimalDrawType.TYPE_A),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.CAT, AnimalDrawType.TYPE_A),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.DOG, AnimalDrawType.TYPE_A),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.WOLF, AnimalDrawType.TYPE_A),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.LEOPARD, AnimalDrawType.TYPE_A),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.TIGER, AnimalDrawType.TYPE_A),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.LION, AnimalDrawType.TYPE_A),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.ELEPHANT, AnimalDrawType.TYPE_A),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.RAT, AnimalDrawType.TYPE_B),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.CAT, AnimalDrawType.TYPE_B),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.DOG, AnimalDrawType.TYPE_B),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.WOLF, AnimalDrawType.TYPE_B),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.LEOPARD, AnimalDrawType.TYPE_B),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.TIGER, AnimalDrawType.TYPE_B),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.LION, AnimalDrawType.TYPE_B),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.ELEPHANT, AnimalDrawType.TYPE_B)
+        )
+
+        val animal1 = Animal(1, 8, AnimalState.ALIVE, AnimalType.RAT, AnimalDrawType.TYPE_A)
+
+        val animal2 = Animal(1, 8, AnimalState.ALIVE, AnimalType.WOLF, AnimalDrawType.TYPE_A)
+
+        animalList.remove(animalList.find { it.animalDrawType == animal1.animalDrawType && it.animalType == animal1.animalType })
+
+        d(TAG, "mergeList: ${animalList.size}")
+        animalList.remove(animalList.find { it.animalDrawType == animal2.animalDrawType && it.animalType == animal2.animalType })
+        d(TAG, "mergeList2: ${animalList.size}")
+        val mergeList = animalList.plus(animal1).plus(animal2)
+        d(TAG, "mergeList: ${mergeList.size},  $mergeList")
     }
 
     /**
@@ -123,15 +146,16 @@ class ChessGameController {
         //TODO
         d(TAG, "updateGameInfo")
         mCurrentRound++
-        when (mCurrentGameState) {
 
-            GameState.USER_A_TURN -> TODO()
-            GameState.USER_B_TURN -> TODO()
-            GameState.USER_A_WIN -> TODO()
-            GameState.USER_B_WIN -> TODO()
-            GameState.NO_WIN_USER -> TODO()
+        mAnimalList!!.toMutableList().remove(mAnimalList!!.find { it.animalDrawType == updatedAnimal1.animalDrawType && it.animalType == updatedAnimal1.animalType })
+        mAnimalList!!.plus(updatedAnimal1)
+        updatedAnimal2?.let {
+            mAnimalList!!.toMutableList().remove(mAnimalList!!.find { it.animalDrawType == updatedAnimal2.animalDrawType && it.animalType == updatedAnimal2.animalType })
+            mAnimalList!!.plus(it)
         }
+        d(TAG, "mergeList: ${mAnimalList!!.size},  $mAnimalList")
 
+        mStorageManager.writeAnimalInfo(mRoomId, mAnimalList!!)
     }
 
     fun initGameBoard(animalList: List<Animal>) {
@@ -149,7 +173,7 @@ class ChessGameController {
 
     }
 
-    fun setOnAnimalUpdateListener(onAnimalUpdate: (updatedAnimalA: Animal, updatedAnimalB: Animal?) -> Unit) {
+    fun setOnAnimalUpdateListener(onAnimalUpdate: (updatedAnimalList: List<Animal>) -> Unit) {
         d(TAG, "setOnAnimalUpdateListener")
         this.onAnimalUpdate = onAnimalUpdate
     }
