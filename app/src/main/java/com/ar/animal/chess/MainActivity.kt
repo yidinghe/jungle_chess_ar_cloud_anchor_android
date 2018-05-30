@@ -20,7 +20,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.WindowManager
 import android.widget.*
-import com.ar.animal.chess.controller.GameController
+import com.ar.animal.chess.controller.ChessGameController
 
 import com.ar.animal.chess.model.*
 
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
     /*
     Game controller
      */
-    private lateinit var gameController: GameController
+    private lateinit var gameController: ChessGameController
     private var welcomeAnchor: Anchor? = null
     private var controllerRenderable: ViewRenderable? = null
     private var welcomeRenderable: ViewRenderable? = null
@@ -120,7 +120,7 @@ class MainActivity : AppCompatActivity() {
     private var cloudAnchor: Anchor? = null
     private var arSession: Session? = null
     private val TAG = MainActivity::class.java.simpleName
-    private val mGameController = GameController.instance
+    private val mGameController = ChessGameController.instance
     private val mHandler = Handler()
     private val mCheckAnchorUpdateRunnable = Runnable { checkUpdatedAnchor() }
 
@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity() {
         mFirebaseAuth = FirebaseAuth.getInstance()
         mFirebaseUser = mFirebaseAuth!!.currentUser
 
-        gameController = GameController.instance
+        gameController = ChessGameController.instance
         arSceneView = findViewById(R.id.ar_scene_view)
 
         val panel_welcome = ViewRenderable.builder().setView(this, R.layout.panel_welcome).build();

@@ -6,8 +6,8 @@ import com.ar.animal.chess.util.d
 import com.ar.animal.chess.util.e
 
 
-class GameController {
-    private val TAG = GameController::class.java.simpleName
+class ChessGameController {
+    private val TAG = ChessGameController::class.java.simpleName
     private val mStorageManager = ChessStorageManager()
     private var mCurrentGameState = GameState.NO_WIN_USER
     private var mRoomId = 0
@@ -21,7 +21,7 @@ class GameController {
     private lateinit var onGameFinish: (gameState: GameState, currentRound: Int) -> Unit
 
     companion object {
-        val instance: GameController = GameController()
+        val instance: ChessGameController = ChessGameController()
     }
 
     //FOR init game, User A needs to store
@@ -90,8 +90,28 @@ class GameController {
     }
 
     fun test() {
-        mStorageManager.readGameStart(11) { isUserAReady, isUserBReady ->
-            d(TAG, "confirmGameStart: isUserAReady: $isUserAReady, isUserBReady: $isUserBReady")
+//        val animalList = listOf(
+//                Animal(0, 8, AnimalState.ALIVE, AnimalType.RAT, AnimalDrawType.TYPE_A),
+//                Animal(0, 8, AnimalState.ALIVE, AnimalType.CAT, AnimalDrawType.TYPE_A),
+//                Animal(0, 8, AnimalState.ALIVE, AnimalType.DOG, AnimalDrawType.TYPE_A),
+//                Animal(0, 8, AnimalState.ALIVE, AnimalType.WOLF, AnimalDrawType.TYPE_A),
+//                Animal(0, 8, AnimalState.ALIVE, AnimalType.LEOPARD, AnimalDrawType.TYPE_A),
+//                Animal(0, 8, AnimalState.ALIVE, AnimalType.TIGER, AnimalDrawType.TYPE_A),
+//                Animal(0, 8, AnimalState.ALIVE, AnimalType.LION, AnimalDrawType.TYPE_A),
+//                Animal(0, 8, AnimalState.ALIVE, AnimalType.ELEPHANT, AnimalDrawType.TYPE_A),
+//                Animal(0, 8, AnimalState.ALIVE, AnimalType.RAT, AnimalDrawType.TYPE_B),
+//                Animal(0, 8, AnimalState.ALIVE, AnimalType.CAT, AnimalDrawType.TYPE_B),
+//                Animal(0, 8, AnimalState.ALIVE, AnimalType.DOG, AnimalDrawType.TYPE_B),
+//                Animal(0, 8, AnimalState.ALIVE, AnimalType.WOLF, AnimalDrawType.TYPE_B),
+//                Animal(0, 8, AnimalState.ALIVE, AnimalType.LEOPARD, AnimalDrawType.TYPE_B),
+//                Animal(0, 8, AnimalState.ALIVE, AnimalType.TIGER, AnimalDrawType.TYPE_B),
+//                Animal(0, 8, AnimalState.ALIVE, AnimalType.LION, AnimalDrawType.TYPE_B),
+//                Animal(0, 8, AnimalState.ALIVE, AnimalType.ELEPHANT, AnimalDrawType.TYPE_B)
+//        )
+//        mStorageManager.writeAnimalInfo(7, animalList)
+
+        mStorageManager.readAnimalInfo(7) { animalList ->
+            d(TAG, "animalList: $animalList")
         }
     }
 
