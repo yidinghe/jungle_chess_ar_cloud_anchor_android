@@ -27,6 +27,18 @@ enum class GameState {
     NO_WIN_USER
 }
 
+enum class MoveAnimeType {
+    STILL,
+    FORWARD,
+    BACK,
+    LEFT,
+    RIGHT,
+    JUMP_FORWARD,
+    JUMP_BACK,
+    JUMP_LEFT,
+    JUMP_RIGHT
+}
+
 enum class AnimalType {
     RAT,
     CAT,

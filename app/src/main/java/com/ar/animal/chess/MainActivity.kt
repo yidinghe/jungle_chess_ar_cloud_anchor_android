@@ -565,61 +565,61 @@ class MainActivity : AppCompatActivity() {
 
     private fun initChessmen(centerTile: Node) {
         val tigerA = ChessmanNode(this,
-                Animal(0, 8, AnimalState.ALIVE, AnimalType.TIGER),
-                playeAtigerRenderable!!)
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.TIGER, AnimalDrawType.TYPE_A),
+                playeAtigerRenderable!!, 0.5F)
         val lionA = ChessmanNode(this,
-                Animal(6, 8, AnimalState.ALIVE, AnimalType.LION),
-                playeAlionRenderable!!)
+                Animal(6, 8, AnimalState.ALIVE, AnimalType.LION, AnimalDrawType.TYPE_A),
+                playeAlionRenderable!!, 0.5F)
 
         val catA = ChessmanNode(this,
-                Animal(1, 7, AnimalState.ALIVE, AnimalType.CAT),
-                playeAcatRenderable!!)
+                Animal(1, 7, AnimalState.ALIVE, AnimalType.CAT, AnimalDrawType.TYPE_A),
+                playeAcatRenderable!!, 0.5F)
         val dogA = ChessmanNode(this,
-                Animal(5, 7, AnimalState.ALIVE, AnimalType.DOG),
-                playeAdogRenderable!!)
+                Animal(5, 7, AnimalState.ALIVE, AnimalType.DOG, AnimalDrawType.TYPE_A),
+                playeAdogRenderable!!, 0.5F)
 
         val elephantA: ChessmanNode = ChessmanNode(this,
-                Animal(0, 6, AnimalState.ALIVE, AnimalType.ELEPHANT),
-                playeAelephantRenderable!!)
+                Animal(0, 6, AnimalState.ALIVE, AnimalType.ELEPHANT, AnimalDrawType.TYPE_A),
+                playeAelephantRenderable!!, 0.5F)
         val wolfA = ChessmanNode(this,
-                Animal(2, 6, AnimalState.ALIVE, AnimalType.WOLF),
-                playeAwolveRenderable!!)
+                Animal(2, 6, AnimalState.ALIVE, AnimalType.WOLF, AnimalDrawType.TYPE_A),
+                playeAwolveRenderable!!, 0.5F)
         val leopardA = ChessmanNode(this,
-                Animal(4, 6, AnimalState.ALIVE, AnimalType.LEOPARD),
+                Animal(4, 6, AnimalState.ALIVE, AnimalType.LEOPARD, AnimalDrawType.TYPE_A),
                 playeAleopardRenderable!!)
         val mouseA = ChessmanNode(this,
-                Animal(6, 6, AnimalState.ALIVE, AnimalType.RAT),
-                playeAmouseRenderable!!)
+                Animal(6, 6, AnimalState.ALIVE, AnimalType.RAT, AnimalDrawType.TYPE_A),
+                playeAmouseRenderable!!, 0.5F)
 
         val chessmanArrayA = arrayOf(mouseA, catA, dogA, wolfA, leopardA, tigerA, lionA, elephantA)
         playeAChessmen = Arrays.asList(*chessmanArrayA)
 
         val tigerB = ChessmanNode(this,
-                Animal(6, 0, AnimalState.ALIVE, AnimalType.TIGER),
-                playeBtigerRenderable!!)
+                Animal(6, 0, AnimalState.ALIVE, AnimalType.TIGER, AnimalDrawType.TYPE_B),
+                playeBtigerRenderable!!, 0.5F)
         val lionB = ChessmanNode(this,
-                Animal(0, 0, AnimalState.ALIVE, AnimalType.LION),
-                playeBlionRenderable!!)
+                Animal(0, 0, AnimalState.ALIVE, AnimalType.LION, AnimalDrawType.TYPE_B),
+                playeBlionRenderable!!, 0.5F)
 
         val catB = ChessmanNode(this,
-                Animal(5, 1, AnimalState.ALIVE, AnimalType.CAT),
-                playeBcatRenderable!!)
+                Animal(5, 1, AnimalState.ALIVE, AnimalType.CAT, AnimalDrawType.TYPE_B),
+                playeBcatRenderable!!, 0.5F)
         val dogB = ChessmanNode(this,
-                Animal(1, 1, AnimalState.ALIVE, AnimalType.DOG),
-                playeBdogRenderable!!)
+                Animal(1, 1, AnimalState.ALIVE, AnimalType.DOG, AnimalDrawType.TYPE_B),
+                playeBdogRenderable!!, 0.5F)
 
         val mouseB = ChessmanNode(this,
-                Animal(0, 2, AnimalState.ALIVE, AnimalType.RAT),
-                playeBmouseRenderable!!)
+                Animal(0, 2, AnimalState.ALIVE, AnimalType.RAT, AnimalDrawType.TYPE_B),
+                playeBmouseRenderable!!, 0.5F)
         val leopardB = ChessmanNode(this,
-                Animal(2, 2, AnimalState.ALIVE, AnimalType.LEOPARD),
-                playeBleopardRenderable!!)
+                Animal(2, 2, AnimalState.ALIVE, AnimalType.LEOPARD, AnimalDrawType.TYPE_B),
+                playeBleopardRenderable!!, 0.5F)
         val wolfB: ChessmanNode = ChessmanNode(this,
-                Animal(4, 2, AnimalState.ALIVE, AnimalType.WOLF),
-                playeBwolveRenderable!!)
+                Animal(4, 2, AnimalState.ALIVE, AnimalType.WOLF, AnimalDrawType.TYPE_B),
+                playeBwolveRenderable!!, 0.5F)
         val elephantB = ChessmanNode(this,
-                Animal(6, 2, AnimalState.ALIVE, AnimalType.ELEPHANT),
-                playeBelephantRenderable!!)
+                Animal(6, 2, AnimalState.ALIVE, AnimalType.ELEPHANT, AnimalDrawType.TYPE_B),
+                playeBelephantRenderable!!, 0.5F)
 
         val chessmanArrayB = arrayOf(mouseB, catB, dogB, wolfB, leopardB, tigerB, lionB, elephantB)
         playeBChessmen = Arrays.asList(*chessmanArrayB)
