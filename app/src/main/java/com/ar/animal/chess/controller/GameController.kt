@@ -15,6 +15,7 @@ class GameController {
     private var mOtherUser: ChessUserInfo? = null
     private var mIsGameStarted = false
     private var mCurrentRound = 0
+    private var mAnimalList: List<Animal>? = null
 
     private lateinit var onAnimalUpdate: (updatedAnimalA: Animal, updatedAnimalB: Animal?) -> Unit
     private lateinit var onGameFinish: (gameState: GameState, currentRound: Int) -> Unit
@@ -114,7 +115,18 @@ class GameController {
     }
 
     fun initGameBoard(animalList: List<Animal>) {
-        //TODO
+        d(TAG, "initGameBoard")
+        if (mCurrentUser == null) {
+            e(TAG, "current user is null, no need to store the gameBoard")
+            return
+        }
+        mAnimalList = animalList
+
+        if (mCurrentUser!!.userType == UserType.USER_A) {
+            d(TAG, "initGameBoard, userType UserA, store current game board do db.")
+            mStorageManager.writeAnimalInfo(mRoomId, animalList)
+        }
+
     }
 
     fun setOnAnimalUpdateListener(onAnimalUpdate: (updatedAnimalA: Animal, updatedAnimalB: Animal?) -> Unit) {

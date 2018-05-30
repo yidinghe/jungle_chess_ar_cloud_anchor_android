@@ -178,12 +178,18 @@ internal class ChessStorageManager {
                 })
     }
 
+    fun writeAnimalInfo(roomId: Int, animalList: List<Animal>) {
+        d(TAG, "writeAnimalInfo, roomId: $roomId")
+        val animalDbList = animalList.map { AnimalDbModel(it.posCol, it.posRow, it.state.ordinal, it.animalType.ordinal, it.animalDrawType.ordinal) }
+        rootRef.child(roomId.toString()).child(KEY_GAME_INFO).child(KEY_ANIMAL_INFO_LIST).setValue(animalDbList)
+    }
+
     fun readAnimalInfo(roomId: Int, onReadAnimalInfo: (updatedAnimalList: List<Animal>) -> Unit) {
         d(TAG, "readAnimalInfo, roomId: $roomId")
-        //TODO
 
         rootRef
                 .child(roomId.toString())
+                .child(KEY_GAME_INFO)
                 .child(KEY_ANIMAL_INFO_LIST)
                 .addValueEventListener(object : ValueEventListener {
                     override fun onCancelled(error: DatabaseError) {
@@ -192,7 +198,13 @@ internal class ChessStorageManager {
 
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         d(TAG, "readAnimalInfo onDataChange")
-
+                        val values = dataSnapshot.value
+                        if (values != null) {
+                            d(TAG, "readAnimalInfo onDataChange : $values")
+                            values as List<AnimalDbModel>
+                            val animalList = values.map { it.mapDbModelToDomain() }
+                            onReadAnimalInfo(animalList)
+                        }
                     }
 
                 })
