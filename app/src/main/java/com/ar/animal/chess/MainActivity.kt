@@ -52,9 +52,11 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
 
 import java.util.*
+import kotlin.collections.ArrayList
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
+
 
     private val RC_PERMISSIONS = 0x123
     private val RC_SIGN_IN = 234
@@ -78,6 +80,7 @@ class MainActivity : AppCompatActivity() {
     private var needShowWelcomePanel: Boolean = true
     private var isTracking: Boolean = false
     private var isHitting: Boolean = false
+    private var mRoomId: String? = null
 
     /*
     Chess tiles
@@ -93,6 +96,7 @@ class MainActivity : AppCompatActivity() {
      */
     private var playeAChessmen: MutableList<ChessmanNode> = java.util.ArrayList<ChessmanNode>()
     private var playeBChessmen: MutableList<ChessmanNode> = java.util.ArrayList<ChessmanNode>()
+    private var animalList:List<Animal> = ArrayList<Animal>()
     private var playeAmouseRenderable: ModelRenderable? = null
     private var playeAcatRenderable: ModelRenderable? = null
     private var playeAdogRenderable: ModelRenderable? = null
@@ -521,10 +525,20 @@ class MainActivity : AppCompatActivity() {
         controllerNode.setParent(center)
     }
 
+    private fun updateRoomPanel(){
+        val controllerRenderableView = controllerRenderable!!.view
+        val tv_room_id = controllerRenderableView.findViewById<TextView>(R.id.tv_room_id)
+        if(!mRoomId.isNullOrBlank()){
+            tv_room_id.text = "Room ID: $tv_room_id"
+        }
+    }
+
     private fun updateControllerPanel(otherUserInfo: ChessUserInfo) {
         val controllerRenderableView = controllerRenderable!!.view
+
         val p2_name = controllerRenderableView.findViewById<TextView>(R.id.p2_name)
         val p2_photo = controllerRenderableView.findViewById<ImageView>(R.id.p2_photo)
+
 
         p2_name.text = otherUserInfo.displayName
         DownloadImageTask(p2_photo).execute("https://lh6.googleusercontent.com" + otherUserInfo.photoUrl)
@@ -622,9 +636,92 @@ class MainActivity : AppCompatActivity() {
                 playeBelephantRenderable!!, 0.5F)
 
         val chessmanArrayB = arrayOf(mouseB, catB, dogB, wolfB, leopardB, tigerB, lionB, elephantB)
+        val animalArray = arrayOf(mouseA.animal, catA.animal, dogA.animal, wolfA.animal, leopardA.animal, tigerA.animal, lionA.animal, elephantA.animal,
+                mouseB.animal, catB.animal, dogB.animal, wolfB.animal, leopardB.animal, tigerB.animal, lionB.animal, elephantB.animal)
         playeBChessmen = Arrays.asList(*chessmanArrayB)
-
+        animalList = Arrays.asList(*animalArray)
+        setListenerForChessmen()
         placeChessmen(centerTile)
+    }
+
+    fun setListenerForChessmen(){
+        for (node in playeBChessmen){
+            node.setChessmanMoveListener(this)
+        }
+
+        for (node in playeAChessmen){
+            node.setChessmanMoveListener(this)
+        }
+    }
+
+    override fun onChessmanMove(node: ChessmanNode, moveType: MoveAnimeType) {
+        when(moveType){
+            MoveAnimeType.FORWARD ->
+                node.animal.posRow --
+            MoveAnimeType.BACK ->
+                node.animal.posRow ++
+            MoveAnimeType.LEFT ->
+                node.animal.posCol --
+            MoveAnimeType.RIGHT ->
+                node.animal.posCol ++
+        }
+        handleChessmenClash(node)
+    }
+
+    fun handleChessmenClash(inputNode: ChessmanNode){
+        var userType =  inputNode.animal.animalDrawType
+        val inputRow =  inputNode.animal.posRow
+        val inputCol =  inputNode.animal.posCol
+        val inputAnimalType =  inputNode.animal.animalType.ordinal
+
+        for(competeNode in if(userType == AnimalDrawType.TYPE_A) playeBChessmen else playeAChessmen){
+            if(inputRow == competeNode.animal.posRow && inputCol == competeNode.animal.posCol){
+                Log.d("ChessmanNode", "node clash detected. row:$inputRow col:$inputCol")
+                val competeAnimalType =  competeNode.animal.animalType.ordinal
+                if(inputAnimalType - competeAnimalType <= -7){
+                    //rat eats elephant
+                    inputNode.animal.state = AnimalState.ALIVE
+                }else if(inputAnimalType - competeAnimalType >= 7){
+                    //elephant ate by rat
+                    inputNode.animal.state = AnimalState.DEAD
+                }else {
+                    inputNode.animal.state = if(inputAnimalType >= competeAnimalType) AnimalState.ALIVE else AnimalState.DEAD
+                }
+                competeNode.animal.state = if(inputNode.animal.state == AnimalState.ALIVE) AnimalState.DEAD else AnimalState.ALIVE
+
+                Log.d("ChessmanNode", "update "+  inputNode.animal.animalDrawType+" node state: "+inputNode.animal.state)
+                updateChessmanList(inputNode)
+                Log.d("ChessmanNode", "update "+  competeNode.animal.animalDrawType+" node state: "+competeNode.animal.state)
+                updateChessmanList(competeNode)
+
+                gameController.updateGameInfo(inputNode.animal,competeNode.animal)
+
+                return
+            }
+        }
+    }
+
+    fun updateChessmanList(node: ChessmanNode){
+        var userType =  node.animal.animalDrawType
+        val animalState =  node.animal.state
+        if(animalState == AnimalState.DEAD){
+            node.isEnabled = false
+        }
+        if(userType == AnimalDrawType.TYPE_A){
+            playeAChessmen[getChessmanIndex(node)] = node
+        }else{
+            playeBChessmen[getChessmanIndex(node)] = node
+        }
+    }
+
+    fun getChessmanIndex(node: ChessmanNode): Int{
+        var type =  node.animal.animalType
+        for(i in playeAChessmen.indices){
+            if(type == playeAChessmen[i].animal.animalType){
+                return i
+            }
+        }
+        return 0
     }
 
     private fun initNeighbourTiles(center: Node) {
@@ -763,6 +860,7 @@ class MainActivity : AppCompatActivity() {
         val tilesAndChessmen = initTilesAndChessmen()
         anchorNode.addChild(tilesAndChessmen)
 
+        mGameController.initGameBoard(animalList)
         // setOnAnimalUpdateListener after place board
         mGameController.setOnAnimalUpdateListener(this::onAnimalUpdate)
         mGameController.setOnGameFinishListener(this::onGameFinish)
@@ -863,6 +961,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun onResolveOkPressed(dialogValue: String) {
         val roomId = dialogValue.toInt()
+        mRoomId = roomId.toString()
         mGameController.pairGame(roomId) { cloudAnchorId ->
             mGameController.storeUserInfo(mIsUserA, mFirebaseUser!!.uid, mFirebaseUser!!.displayName, mFirebaseUser!!.photoUrl!!.path)
             if (arSession == null) {
@@ -903,10 +1002,11 @@ class MainActivity : AppCompatActivity() {
                         Snackbar.make(findViewById(android.R.id.content), "Anchor hosted stored fail", Snackbar.LENGTH_SHORT).show()
                     } else {
                         d(TAG, "Anchor hosted stored CloudId:  ${cloudAnchor!!.cloudAnchorId}, roomId: $roomId")
+                        mRoomId = roomId
                         mGameController.storeUserInfo(mIsUserA, mFirebaseUser!!.uid, mFirebaseUser!!.displayName, mFirebaseUser!!.photoUrl!!.path)
                         Snackbar.make(findViewById(android.R.id.content), "Anchor hosted stored" +
                                 " CloudId: ${cloudAnchor!!.cloudAnchorId}", Snackbar.LENGTH_SHORT).show()
-
+                        updateRoomPanel()
                         mGameController.getUserInfo(false, this::onReadUserInfo)
                     }
                 }
@@ -924,6 +1024,7 @@ class MainActivity : AppCompatActivity() {
                 appAnchorState = AppAnchorState.RESOLVED
                 Snackbar.make(findViewById(android.R.id.content), "Anchor resolved successfully!", Snackbar.LENGTH_SHORT).show()
                 d(TAG, "Anchor resolved successfully!")
+                updateRoomPanel()
                 mGameController.getUserInfo(true, this::onReadUserInfo)
                 mHandler.removeCallbacksAndMessages(null)
                 placeBoard()
