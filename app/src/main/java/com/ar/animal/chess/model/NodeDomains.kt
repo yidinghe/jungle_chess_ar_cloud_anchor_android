@@ -28,6 +28,11 @@ class ChessmanNode(var context: Context,
     private val TAG = ChessmanNode::class.java.simpleName
     var chessmanPanel:Node? = null
     var moveAnimation: ObjectAnimator? = null
+    var chessmanMoveListener: ChessmanMoveListener? = null
+
+    internal fun setChessmanMoveListener( listener : ChessmanMoveListener) {
+        this.chessmanMoveListener = listener
+    }
 
     override fun onActivate() {
         if (scene == null) {
@@ -70,16 +75,21 @@ class ChessmanNode(var context: Context,
                                 btn_forward.setOnClickListener{
                                     Log.d(TAG,"btn_forward OnClick")
                                     moveDirection = MoveAnimeType.FORWARD
-                                    startMoveAnimation(moveDirection)}
+                                    startMoveAnimation(moveDirection)
+                                    chessmanMoveListener!!.onChessmanMove(this, MoveAnimeType.FORWARD)
+                                    }
                                 btn_back.setOnClickListener{
                                     moveDirection = MoveAnimeType.BACK
-                                    startMoveAnimation(moveDirection)}
+                                    startMoveAnimation(moveDirection)
+                                    chessmanMoveListener!!.onChessmanMove(this, MoveAnimeType.BACK)}
                                 btn_left.setOnClickListener{
                                     moveDirection = MoveAnimeType.LEFT
-                                    startMoveAnimation(moveDirection)}
+                                    startMoveAnimation(moveDirection)
+                                    chessmanMoveListener!!.onChessmanMove(this, MoveAnimeType.LEFT)}
                                 btn_right.setOnClickListener{
                                     moveDirection = MoveAnimeType.RIGHT
-                                    startMoveAnimation(moveDirection)}
+                                    startMoveAnimation(moveDirection)
+                                    chessmanMoveListener!!.onChessmanMove(this, MoveAnimeType.RIGHT)}
 
                             })
                     .exceptionally(
@@ -157,6 +167,10 @@ class ChessmanNode(var context: Context,
         animation.setEvaluator(Vector3Evaluator())
         animation.setAutoCancel(true)
         return animation
+    }
+
+    interface ChessmanMoveListener{
+        abstract fun onChessmanMove(node: ChessmanNode, moveType:MoveAnimeType)
     }
 }
 
