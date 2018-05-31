@@ -860,7 +860,6 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
         val tilesAndChessmen = initTilesAndChessmen()
         anchorNode.addChild(tilesAndChessmen)
 
-        mGameController.initGameBoard(animalList)
         // setOnAnimalUpdateListener after place board
         mGameController.setOnAnimalUpdateListener(this::onAnimalUpdate)
         mGameController.setOnGameFinishListener(this::onGameFinish)
@@ -964,6 +963,7 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
         mRoomId = roomId.toString()
         mGameController.pairGame(roomId) { cloudAnchorId ->
             mGameController.storeUserInfo(mIsUserA, mFirebaseUser!!.uid, mFirebaseUser!!.displayName, mFirebaseUser!!.photoUrl!!.path)
+            mGameController.initGameBoard(animalList)
             if (arSession == null) {
                 e(TAG, "onResolveOkPressed failed due to arSession is null")
             } else {
@@ -1004,6 +1004,7 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
                         d(TAG, "Anchor hosted stored CloudId:  ${cloudAnchor!!.cloudAnchorId}, roomId: $roomId")
                         mRoomId = roomId
                         mGameController.storeUserInfo(mIsUserA, mFirebaseUser!!.uid, mFirebaseUser!!.displayName, mFirebaseUser!!.photoUrl!!.path)
+                        mGameController.initGameBoard(animalList)
                         Snackbar.make(findViewById(android.R.id.content), "Anchor hosted stored" +
                                 " CloudId: ${cloudAnchor!!.cloudAnchorId}", Snackbar.LENGTH_SHORT).show()
                         updateRoomPanel()
