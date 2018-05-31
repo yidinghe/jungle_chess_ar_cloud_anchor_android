@@ -47,8 +47,10 @@ enum class UserType {
 enum class GameState {
     USER_A_TURN,
     USER_B_TURN,
-    USER_A_WIN,
-    USER_B_WIN,
+    USER_A_WIN_KILL_ALL,
+    USER_B_WIN_KILL_ALL,
+    USER_A_WIN_ATTACK_BASEMENT,
+    USER_B_WIN_ATTACK_BASEMENT,
     NO_WIN_USER
 }
 
