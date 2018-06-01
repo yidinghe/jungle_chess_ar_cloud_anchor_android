@@ -153,13 +153,13 @@ class ChessmanNode(var context: Context,
 
         when(moveType){
             MoveAnimeType.FORWARD ->
-                endVector3.set(0.0f, 0.0f, -1.0f/8)
+                endVector3.set(Vector3.add(endVector3, Vector3(0.0f, 0.0f, -1.0f/8)))
             MoveAnimeType.BACK ->
-                endVector3.set(0.0f, 0.0f, 1.0f/8)
+                endVector3.set(Vector3.add(endVector3, Vector3(0.0f, 0.0f, 1.0f/8)))
             MoveAnimeType.LEFT ->
-                endVector3.set(-1.0f/8, 0.0f, 0.0f)
+                endVector3.set(Vector3.add(endVector3, Vector3(-1.0f/8, 0.0f, 0.0f)))
             MoveAnimeType.RIGHT ->
-                endVector3.set(1.0f/8, 0.0f, 0.0f)
+                endVector3.set(Vector3.add(endVector3, Vector3(1.0f/8, 0.0f, 0.0f)))
         }
         animation.setObjectValues(startVector3, endVector3)
         animation.propertyName = "localPosition"
