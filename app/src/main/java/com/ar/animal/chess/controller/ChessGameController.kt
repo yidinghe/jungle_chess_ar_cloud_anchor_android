@@ -107,7 +107,8 @@ class ChessGameController {
         d(TAG, "needToNotifyUIList: $needToNotifyUIList")
         mAnimalList = updatedAnimalList
 
-        onAnimalUpdate(needToNotifyUIList)
+        if (needToNotifyUIList.isNotEmpty())
+            onAnimalUpdate(needToNotifyUIList)
     }
 
     fun test() {
