@@ -113,36 +113,9 @@ class ChessGameController {
     }
 
     fun test() {
-        val animalList = mutableListOf<Animal>(
-                Animal(0, 8, AnimalState.ALIVE, AnimalType.RAT, AnimalDrawType.TYPE_A),
-                Animal(0, 8, AnimalState.ALIVE, AnimalType.CAT, AnimalDrawType.TYPE_A),
-                Animal(0, 8, AnimalState.ALIVE, AnimalType.DOG, AnimalDrawType.TYPE_A),
-                Animal(0, 8, AnimalState.ALIVE, AnimalType.WOLF, AnimalDrawType.TYPE_A),
-                Animal(0, 8, AnimalState.ALIVE, AnimalType.LEOPARD, AnimalDrawType.TYPE_A),
-                Animal(0, 8, AnimalState.ALIVE, AnimalType.TIGER, AnimalDrawType.TYPE_A),
-                Animal(0, 8, AnimalState.ALIVE, AnimalType.LION, AnimalDrawType.TYPE_A),
-                Animal(0, 8, AnimalState.ALIVE, AnimalType.ELEPHANT, AnimalDrawType.TYPE_A),
-                Animal(0, 8, AnimalState.ALIVE, AnimalType.RAT, AnimalDrawType.TYPE_B),
-                Animal(0, 8, AnimalState.ALIVE, AnimalType.CAT, AnimalDrawType.TYPE_B),
-                Animal(0, 8, AnimalState.ALIVE, AnimalType.DOG, AnimalDrawType.TYPE_B),
-                Animal(0, 8, AnimalState.ALIVE, AnimalType.WOLF, AnimalDrawType.TYPE_B),
-                Animal(0, 8, AnimalState.ALIVE, AnimalType.LEOPARD, AnimalDrawType.TYPE_B),
-                Animal(0, 8, AnimalState.ALIVE, AnimalType.TIGER, AnimalDrawType.TYPE_B),
-                Animal(0, 8, AnimalState.ALIVE, AnimalType.LION, AnimalDrawType.TYPE_B),
-                Animal(0, 8, AnimalState.ALIVE, AnimalType.ELEPHANT, AnimalDrawType.TYPE_B)
-        )
-
-        val animal1 = Animal(1, 8, AnimalState.ALIVE, AnimalType.RAT, AnimalDrawType.TYPE_A)
-
-        val animal2 = Animal(1, 8, AnimalState.ALIVE, AnimalType.WOLF, AnimalDrawType.TYPE_A)
-
-        animalList.remove(animalList.find { it.animalDrawType == animal1.animalDrawType && it.animalType == animal1.animalType })
-
-        d(TAG, "mergeList: ${animalList.size}")
-        animalList.remove(animalList.find { it.animalDrawType == animal2.animalDrawType && it.animalType == animal2.animalType })
-        d(TAG, "mergeList2: ${animalList.size}")
-        val mergeList = animalList.plus(animal1).plus(animal2)
-        d(TAG, "mergeList: ${mergeList.size},  $mergeList")
+        mStorageManager.readGameGlobalInfo(7) { gameState, currentRound ->
+            d(TAG, "gameState: $gameState, currentRound: $currentRound")
+        }
     }
 
     /**

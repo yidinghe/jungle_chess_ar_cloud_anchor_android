@@ -108,7 +108,6 @@ internal class ChessStorageManager {
     fun readUserInfo(roomId: Int, isNeedGetUserA: Boolean, onReadUserInfo: (userInfo: ChessUserInfo) -> Unit) {
         val userRoot = if (isNeedGetUserA) KEY_USER_A else KEY_USER_B
         d(TAG, "readUserInfo: $userRoot")
-
         rootRef
                 .child(roomId.toString())
                 .child(KEY_CONFIG)
@@ -122,6 +121,7 @@ internal class ChessStorageManager {
                         d(TAG, "readUserInfo onDataChange")
                         val userDbModel = dataSnapshot.getValue(UserDbModel::class.java)
                         if (userDbModel != null) {
+                            d(TAG, "readUserInfo onDataChange: $userDbModel")
                             with(userDbModel) {
                                 val userInfo = ChessUserInfo(userId, userName, userImageUrl)
                                 userInfo.userType = if (userType == 0) UserType.USER_A else UserType.USER_B
@@ -176,6 +176,47 @@ internal class ChessStorageManager {
                 })
     }
 
+    fun writeGameGlobalInfo(roomId: Int, gameState: GameState, currentRound: Int) {
+        val gameGlobalInfoModel = GameGlobalInfoModel(currentRound, gameState.ordinal, System.currentTimeMillis().toString())
+        d(TAG, "writeGameGlobalInfo, roomId: $roomId, gameInfo: $gameGlobalInfoModel")
+        rootRef.child(roomId.toString()).child(KEY_GAME_INFO).child(KEY_GAME_GLOBAL_INFO).setValue(gameGlobalInfoModel)
+    }
+
+    fun readGameGlobalInfo(roomId: Int, onReadGameGlobalInfo: (gameState: GameState, currentRound: Int) -> Unit) {
+        d(TAG, "readGameGlobalInfo, roomId: $roomId")
+        rootRef
+                .child(roomId.toString())
+                .child(KEY_GAME_INFO)
+                .child(KEY_GAME_GLOBAL_INFO)
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onCancelled(error: DatabaseError) {
+                        d(TAG, "readGameGlobalInfo onCancelled")
+                    }
+
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        d(TAG, "readGameGlobalInfo onDataChange")
+                        val gameGlobalInfoModel = dataSnapshot.getValue(GameGlobalInfoModel::class.java)
+                        if (gameGlobalInfoModel != null) {
+                            d(TAG, "readGameGlobalInfo onDataChange: $gameGlobalInfoModel")
+                            val currentGameState = when (gameGlobalInfoModel.gameState) {
+                                GameState.USER_A_TURN.ordinal -> GameState.USER_A_TURN
+                                GameState.USER_B_TURN.ordinal -> GameState.USER_B_TURN
+                                GameState.USER_A_WIN_KILL_ALL.ordinal -> GameState.USER_A_WIN_KILL_ALL
+                                GameState.USER_B_WIN_KILL_ALL.ordinal -> GameState.USER_B_WIN_KILL_ALL
+                                GameState.USER_A_WIN_ATTACK_BASEMENT.ordinal -> GameState.USER_A_WIN_ATTACK_BASEMENT
+                                GameState.USER_B_WIN_ATTACK_BASEMENT.ordinal -> GameState.USER_B_WIN_ATTACK_BASEMENT
+                                GameState.NO_WIN_USER.ordinal -> GameState.NO_WIN_USER
+                                else -> {
+                                    GameState.USER_A_TURN
+                                }
+                            }
+                            onReadGameGlobalInfo(currentGameState, gameGlobalInfoModel.currentRound)
+                        }
+                    }
+
+                })
+    }
+
     fun writeAnimalInfo(roomId: Int, animalList: List<Animal>) {
         d(TAG, "writeAnimalInfo, roomId: $roomId")
         val animalDbList = animalList.map { AnimalDbModel(it.posCol, it.posRow, it.state.ordinal, it.animalType.ordinal, it.animalDrawType.ordinal) }
@@ -184,7 +225,6 @@ internal class ChessStorageManager {
 
     fun readAnimalInfo(roomId: Int, onReadAnimalInfo: (updatedAnimalList: List<Animal>) -> Unit) {
         d(TAG, "readAnimalInfo, roomId: $roomId")
-
         rootRef
                 .child(roomId.toString())
                 .child(KEY_GAME_INFO)
@@ -232,7 +272,6 @@ internal class ChessStorageManager {
                             animal
                         }
                         onReadAnimalInfo(animalList)
-
                     }
 
                 })
