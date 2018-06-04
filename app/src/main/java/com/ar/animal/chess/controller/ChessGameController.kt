@@ -1,5 +1,6 @@
 package com.ar.animal.chess.controller
 
+import android.os.Handler
 import com.ar.animal.chess.model.*
 import com.ar.animal.chess.storage.ChessStorageManager
 import com.ar.animal.chess.util.d
@@ -21,6 +22,7 @@ class ChessGameController {
     private val BASEMENT_A_Y = 8
     private val BASEMENT_B_X = 3
     private val BASEMENT_B_Y = 0
+    private val mHandler = Handler()
 
     private lateinit var onAnimalUpdate: (updatedAnimalList: List<Animal>) -> Unit
     private lateinit var onGameFinish: (gameState: GameState, currentRound: Int) -> Unit
@@ -195,7 +197,7 @@ class ChessGameController {
         } else if (mCurrentGameState == GameState.USER_B_TURN) {
             mCurrentGameState = GameState.USER_A_TURN
         }
-        mStorageManager.writeGameGlobalInfo(mRoomId, mCurrentGameState, mCurrentRound)
+        mHandler.postDelayed({ mStorageManager.writeGameGlobalInfo(mRoomId, mCurrentGameState, mCurrentRound) }, 5000)
     }
 
     fun initGameBoard(animalList: List<Animal>) {
