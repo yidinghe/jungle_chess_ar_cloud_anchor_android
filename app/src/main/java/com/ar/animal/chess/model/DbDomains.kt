@@ -5,10 +5,12 @@ data class ChessDbModel(var roomId: Int = 0,
                         var config: ConfigDbModel = ConfigDbModel(),
                         var gameInfo: GameInfoDbModel = GameInfoDbModel())
 
-data class GameInfoDbModel(var currentRound: Int = 0,
-                           var gameState: Int = GameState.USER_A_TURN.ordinal,
-                           var timestamp: String = "",
+data class GameInfoDbModel(var gameGlobalInfo: GameGlobalInfoModel = GameGlobalInfoModel(),
                            var animalInfoList: List<AnimalDbModel> = listOf())
+
+data class GameGlobalInfoModel(var currentRound: Int = 0,
+                               var gameState: Int = GameState.USER_A_TURN.ordinal,
+                               var timestamp: String = "")
 
 data class ConfigDbModel(var cloudAnchorConfig: CloudAnchorDbModel = CloudAnchorDbModel(),
                          var userConfirmStart: UserConfirmStartDbModel = UserConfirmStartDbModel(),

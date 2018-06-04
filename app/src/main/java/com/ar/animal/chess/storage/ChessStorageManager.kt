@@ -32,18 +32,13 @@ internal class ChessStorageManager {
      */
     fun nextRoomId(onReadroomId: (roomId: Int?) -> Unit) {
         d(TAG, "nextRoomId")
-        // Run a transaction on the node containing the next short code available. This increments the
-        // value in the database and retrieves it in one atomic all-or-nothing operation.
-//
-//        rootRef.child(KEY_NEXT_ROOM_ID).setValue(1)
-//        onReadroomId(1)
-
         rootRef
                 .child(KEY_NEXT_ROOM_ID)
                 .runTransaction(
                         object : Transaction.Handler {
 
-                            override fun doTransaction(currentData: MutableData): Transaction.Result {
+                            override fun doTransaction(currentData: MutableData):
+                                    Transaction.Result {
                                 var shortCode = currentData.getValue(Int::class.java)
                                 if (shortCode == null) {
                                     shortCode = INITIAL_ROOM_ID - 1
@@ -53,7 +48,8 @@ internal class ChessStorageManager {
                             }
 
                             override fun onComplete(
-                                    error: DatabaseError?, committed: Boolean, currentData: DataSnapshot?) {
+                                    error: DatabaseError?, committed: Boolean,
+                                    currentData: DataSnapshot?) {
                                 if (!committed) {
                                     e(TAG, "Firebase Error ${error?.toException()}")
                                     onReadroomId(null)
@@ -75,8 +71,10 @@ internal class ChessStorageManager {
      */
     fun writeCloudAnchorIdUsingRoomId(shortCode: Int, cloudAnchorId: String) {
         d(TAG, "writeCloudAnchorIdUsingRoomId")
-        val cloudAnchorDbModel = CloudAnchorDbModel(shortCode, cloudAnchorId, System.currentTimeMillis().toString())
-        rootRef.child(shortCode.toString()).child(KEY_CONFIG).child(KEY_CLOUD_ANCHOR_CONFIG).setValue(cloudAnchorDbModel)
+        val cloudAnchorDbModel = CloudAnchorDbModel(shortCode, cloudAnchorId,
+                System.currentTimeMillis().toString())
+        rootRef.child(shortCode.toString()).child(KEY_CONFIG)
+                .child(KEY_CLOUD_ANCHOR_CONFIG).setValue(cloudAnchorDbModel)
     }
 
     /**
@@ -261,5 +259,6 @@ internal class ChessStorageManager {
         private const val KEY_ANIMAL_STATE = "state"
         private const val KEY_ANIMAL_DRAW_TYPE = "animalDrawType"
         private const val KEY_ANIMAL_TYPE = "animalType"
+        private const val KEY_GAME_GLOBAL_INFO = "gameGlobalInfo"
     }
 }

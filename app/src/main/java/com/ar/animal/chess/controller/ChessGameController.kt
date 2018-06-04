@@ -24,6 +24,7 @@ class ChessGameController {
 
     private lateinit var onAnimalUpdate: (updatedAnimalList: List<Animal>) -> Unit
     private lateinit var onGameFinish: (gameState: GameState, currentRound: Int) -> Unit
+    private lateinit var onGameGlobalInfoUpdate: (gameState: GameState, currentRound: Int) -> Unit
 
     companion object {
         val instance: ChessGameController = ChessGameController()
@@ -176,10 +177,16 @@ class ChessGameController {
             return
         }
 
-        mAnimalList!!.toMutableList().remove(mAnimalList!!.find { it.animalDrawType == updatedAnimal1.animalDrawType && it.animalType == updatedAnimal1.animalType })
+        mAnimalList!!.toMutableList().remove(mAnimalList!!.find {
+            it.animalDrawType == updatedAnimal1.animalDrawType
+                    && it.animalType == updatedAnimal1.animalType
+        })
         mAnimalList!!.plus(updatedAnimal1)
         updatedAnimal2?.let {
-            mAnimalList!!.toMutableList().remove(mAnimalList!!.find { it.animalDrawType == updatedAnimal2.animalDrawType && it.animalType == updatedAnimal2.animalType })
+            mAnimalList!!.toMutableList().remove(mAnimalList!!.find {
+                it.animalDrawType == updatedAnimal2.animalDrawType
+                        && it.animalType == updatedAnimal2.animalType
+            })
             mAnimalList!!.plus(it)
         }
         d(TAG, "mergeList: ${mAnimalList!!.size},  $mAnimalList")
@@ -217,6 +224,12 @@ class ChessGameController {
         this.onGameFinish = onGameFinish
     }
 
+    fun setOnGameGlobalInfoUpdateListener(onGameGlobalInfoUpdate:
+                                          (gameState: GameState, currentRound: Int) -> Unit) {
+        d(TAG, "setOnGameGlobalInfoUpdateListener")
+        this.onGameGlobalInfoUpdate = onGameGlobalInfoUpdate
+    }
+
     fun storeUserInfo(isUserA: Boolean, uid: String, displayName: String?, photoUrl: String?) {
         d(TAG, "storeUserInfo")
         val userInfo = ChessUserInfo(uid)
@@ -231,7 +244,8 @@ class ChessGameController {
         mStorageManager.writeUserInfo(mRoomId, userInfo)
     }
 
-    fun getUserInfo(isNeedUserA: Boolean, onReadUserInfo: (currentUserInfo: ChessUserInfo, otherUserInfo: ChessUserInfo) -> Unit) {
+    fun getUserInfo(isNeedUserA: Boolean, onReadUserInfo: (currentUserInfo: ChessUserInfo,
+                                                           otherUserInfo: ChessUserInfo) -> Unit) {
         d(TAG, "getUserInfo: $isNeedUserA")
         if (mCurrentUser == null) {
             e(TAG, "getUserInfo, init current user First")
@@ -240,7 +254,8 @@ class ChessGameController {
 
         mStorageManager.readUserInfo(mRoomId, isNeedUserA) { chessUserInfo ->
             d(TAG, "onReadUserInfo: $chessUserInfo")
-            if (isNeedUserA && chessUserInfo.userType == UserType.USER_B || ((!isNeedUserA) && chessUserInfo.userType == UserType.USER_A)) {
+            if (isNeedUserA && chessUserInfo.userType == UserType.USER_B || ((!isNeedUserA)
+                            && chessUserInfo.userType == UserType.USER_A)) {
                 e(TAG, "onReadUserInfo data is not needed, no need to notify UI")
             } else {
                 mOtherUser = chessUserInfo

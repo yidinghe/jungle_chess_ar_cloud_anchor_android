@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
      */
     private var playeAChessmen: MutableList<ChessmanNode> = java.util.ArrayList<ChessmanNode>()
     private var playeBChessmen: MutableList<ChessmanNode> = java.util.ArrayList<ChessmanNode>()
-    private var animalList:List<Animal> = ArrayList<Animal>()
+    private var animalList: List<Animal> = ArrayList<Animal>()
     private var playeAmouseRenderable: ModelRenderable? = null
     private var playeAcatRenderable: ModelRenderable? = null
     private var playeAdogRenderable: ModelRenderable? = null
@@ -525,10 +525,10 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
         controllerNode.setParent(center)
     }
 
-    private fun updateRoomPanel(){
+    private fun updateRoomPanel() {
         val controllerRenderableView = controllerRenderable!!.view
         val tv_room_id = controllerRenderableView.findViewById<TextView>(R.id.tv_room_id)
-        if(!mRoomId.isNullOrBlank()){
+        if (!mRoomId.isNullOrBlank()) {
             tv_room_id.text = "Room ID: $tv_room_id"
         }
     }
@@ -644,80 +644,80 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
         placeChessmen(centerTile)
     }
 
-    fun setListenerForChessmen(){
-        for (node in playeBChessmen){
+    fun setListenerForChessmen() {
+        for (node in playeBChessmen) {
             node.setChessmanMoveListener(this)
         }
 
-        for (node in playeAChessmen){
+        for (node in playeAChessmen) {
             node.setChessmanMoveListener(this)
         }
     }
 
     override fun onChessmanMove(node: ChessmanNode, moveType: MoveAnimeType) {
-        when(moveType){
+        when (moveType) {
             MoveAnimeType.FORWARD ->
-                node.animal.posRow --
+                node.animal.posRow--
             MoveAnimeType.BACK ->
-                node.animal.posRow ++
+                node.animal.posRow++
             MoveAnimeType.LEFT ->
-                node.animal.posCol --
+                node.animal.posCol--
             MoveAnimeType.RIGHT ->
-                node.animal.posCol ++
+                node.animal.posCol++
         }
         handleChessmenClash(node)
     }
 
-    fun handleChessmenClash(inputNode: ChessmanNode){
-        var userType =  inputNode.animal.animalDrawType
-        val inputRow =  inputNode.animal.posRow
-        val inputCol =  inputNode.animal.posCol
-        val inputAnimalType =  inputNode.animal.animalType.ordinal
+    fun handleChessmenClash(inputNode: ChessmanNode) {
+        var userType = inputNode.animal.animalDrawType
+        val inputRow = inputNode.animal.posRow
+        val inputCol = inputNode.animal.posCol
+        val inputAnimalType = inputNode.animal.animalType.ordinal
 
-        for(competeNode in if(userType == AnimalDrawType.TYPE_A) playeBChessmen else playeAChessmen){
-            if(inputRow == competeNode.animal.posRow && inputCol == competeNode.animal.posCol){
+        for (competeNode in if (userType == AnimalDrawType.TYPE_A) playeBChessmen else playeAChessmen) {
+            if (inputRow == competeNode.animal.posRow && inputCol == competeNode.animal.posCol) {
                 Log.d("ChessmanNode", "node clash detected. row:$inputRow col:$inputCol")
-                val competeAnimalType =  competeNode.animal.animalType.ordinal
-                if(inputAnimalType - competeAnimalType <= -7){
+                val competeAnimalType = competeNode.animal.animalType.ordinal
+                if (inputAnimalType - competeAnimalType <= -7) {
                     //rat eats elephant
                     inputNode.animal.state = AnimalState.ALIVE
-                }else if(inputAnimalType - competeAnimalType >= 7){
+                } else if (inputAnimalType - competeAnimalType >= 7) {
                     //elephant ate by rat
                     inputNode.animal.state = AnimalState.DEAD
-                }else {
-                    inputNode.animal.state = if(inputAnimalType >= competeAnimalType) AnimalState.ALIVE else AnimalState.DEAD
+                } else {
+                    inputNode.animal.state = if (inputAnimalType >= competeAnimalType) AnimalState.ALIVE else AnimalState.DEAD
                 }
-                competeNode.animal.state = if(inputNode.animal.state == AnimalState.ALIVE) AnimalState.DEAD else AnimalState.ALIVE
+                competeNode.animal.state = if (inputNode.animal.state == AnimalState.ALIVE) AnimalState.DEAD else AnimalState.ALIVE
 
-                Log.d("ChessmanNode", "update "+  inputNode.animal.animalDrawType+" node state: "+inputNode.animal.state)
+                Log.d("ChessmanNode", "update " + inputNode.animal.animalDrawType + " node state: " + inputNode.animal.state)
                 updateChessmanList(inputNode)
-                Log.d("ChessmanNode", "update "+  competeNode.animal.animalDrawType+" node state: "+competeNode.animal.state)
+                Log.d("ChessmanNode", "update " + competeNode.animal.animalDrawType + " node state: " + competeNode.animal.state)
                 updateChessmanList(competeNode)
 
-                gameController.updateGameInfo(inputNode.animal,competeNode.animal)
+                gameController.updateGameInfo(inputNode.animal, competeNode.animal)
 
                 return
             }
         }
     }
 
-    fun updateChessmanList(node: ChessmanNode){
-        var userType =  node.animal.animalDrawType
-        val animalState =  node.animal.state
-        if(animalState == AnimalState.DEAD){
+    fun updateChessmanList(node: ChessmanNode) {
+        var userType = node.animal.animalDrawType
+        val animalState = node.animal.state
+        if (animalState == AnimalState.DEAD) {
             node.isEnabled = false
         }
-        if(userType == AnimalDrawType.TYPE_A){
+        if (userType == AnimalDrawType.TYPE_A) {
             playeAChessmen[getChessmanIndex(node)] = node
-        }else{
+        } else {
             playeBChessmen[getChessmanIndex(node)] = node
         }
     }
 
-    fun getChessmanIndex(node: ChessmanNode): Int{
-        var type =  node.animal.animalType
-        for(i in playeAChessmen.indices){
-            if(type == playeAChessmen[i].animal.animalType){
+    fun getChessmanIndex(node: ChessmanNode): Int {
+        var type = node.animal.animalType
+        for (i in playeAChessmen.indices) {
+            if (type == playeAChessmen[i].animal.animalType) {
                 return i
             }
         }
@@ -863,6 +863,7 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
         // setOnAnimalUpdateListener after place board
         mGameController.setOnAnimalUpdateListener(this::onAnimalUpdate)
         mGameController.setOnGameFinishListener(this::onGameFinish)
+        mGameController.setOnGameGlobalInfoUpdateListener(this::onGameGlobalInfoUpdate)
     }
 
     private fun signInGoogleAccount() {
@@ -926,6 +927,10 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
 
     private fun onGameFinish(gameState: GameState, currentRound: Int) {
         d(TAG, "onGameFinish: gameState $gameState, currentRound: $currentRound ")
+    }
+
+    private fun onGameGlobalInfoUpdate(gameState: GameState, currentRound: Int) {
+        d(TAG, "onGameGlobalInfoUpdate: gameState $gameState, currentRound: $currentRound ")
     }
 
     private fun onReadUserInfo(currentUserInfo: ChessUserInfo, otherUserInfo: ChessUserInfo) {
