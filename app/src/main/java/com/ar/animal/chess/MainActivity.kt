@@ -925,10 +925,16 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
 
     }
 
+    /**
+     * For all the GameState with WIN, notify here
+     */
     private fun onGameFinish(gameState: GameState, currentRound: Int) {
         d(TAG, "onGameFinish: gameState $gameState, currentRound: $currentRound ")
     }
 
+    /**
+     * ONLY USER_A_TURN and USER_B_TURN notify onGameGlobalInfoUpdate
+     */
     private fun onGameGlobalInfoUpdate(gameState: GameState, currentRound: Int) {
         d(TAG, "onGameGlobalInfoUpdate: gameState $gameState, currentRound: $currentRound ")
     }

@@ -68,7 +68,7 @@ class ChessGameController {
      */
     fun confirmGameStart(onGameStart: (isUserAConfirm: Boolean, isUserBConfirm: Boolean) -> Unit) {
         d(TAG, "confirmGameStart")
-        //TODO
+
         if (mCurrentUser == null) {
             return
         }
@@ -87,12 +87,31 @@ class ChessGameController {
                     mStorageManager.readAnimalInfo(mRoomId) {
                         handleReceiveAnimalListUpdate(it)
                     }
+                    mStorageManager.readGameGlobalInfo(mRoomId) { gameState, currentRound ->
+                        handleReceiveGameGlobalInfoUpdate(gameState, currentRound)
+                    }
                 }
             }
 
             if (isUserAReady && isUserBReady) {
                 d(TAG, "isUserAReady, isUserBReady, start game, now UserA turn")
                 onGameStart(isUserAReady, isUserBReady)
+            }
+        }
+    }
+
+    private fun handleReceiveGameGlobalInfoUpdate(gameState: GameState, currentRound: Int) {
+        d(TAG, "handleReceiveAnimalListUpdate")
+        mCurrentRound = currentRound
+        when (gameState) {
+            GameState.USER_A_WIN_ATTACK_BASEMENT, GameState.USER_B_WIN_ATTACK_BASEMENT,
+            GameState.USER_A_WIN_KILL_ALL, GameState.USER_B_WIN_KILL_ALL, GameState.NO_WIN_USER -> {
+                d(TAG, "handleReceiveAnimalListUpdate, onGameFinish")
+                onGameFinish(gameState, mCurrentRound)
+            }
+            GameState.USER_A_TURN, GameState.USER_B_TURN -> {
+                d(TAG, "handleReceiveAnimalListUpdate, onGameGlobalInfoUpdate")
+                onGameGlobalInfoUpdate(gameState, currentRound)
             }
         }
     }
@@ -141,7 +160,7 @@ class ChessGameController {
         if (mCurrentRound >= 100) {
             mCurrentGameState = GameState.NO_WIN_USER
             d(TAG, "current round: $mCurrentRound, NO_WIN_USER")
-            //TODO store this state to firebase db
+            mStorageManager.writeGameGlobalInfo(mRoomId, mCurrentGameState, mCurrentRound)
             return
         }
 
@@ -170,6 +189,13 @@ class ChessGameController {
         }
 
         mStorageManager.writeAnimalInfo(mRoomId, mAnimalList!!)
+        //TODO change User turn, now only change the turn between USER_A and USER_B
+        if (mCurrentGameState == GameState.USER_A_TURN) {
+            mCurrentGameState = GameState.USER_B_TURN
+        } else if (mCurrentGameState == GameState.USER_B_TURN) {
+            mCurrentGameState = GameState.USER_A_TURN
+        }
+        mStorageManager.writeGameGlobalInfo(mRoomId, mCurrentGameState, mCurrentRound)
     }
 
     fun initGameBoard(animalList: List<Animal>) {
@@ -248,13 +274,13 @@ class ChessGameController {
                 d(TAG, "checkBasementAttack USER_A_WIN_ATTACK_BASEMENT")
                 mCurrentGameState = GameState.USER_A_WIN_ATTACK_BASEMENT
                 onGameFinish(GameState.USER_A_WIN_ATTACK_BASEMENT, mCurrentRound)
-                //TODO store to db
+                mStorageManager.writeGameGlobalInfo(mRoomId, mCurrentGameState, mCurrentRound)
                 return true
             } else if (animalDrawType == AnimalDrawType.TYPE_B && posCol == BASEMENT_A_X && posRow == BASEMENT_A_Y) {
                 d(TAG, "checkBasementAttack USER_B_WIN_ATTACK_BASEMENT")
                 mCurrentGameState = GameState.USER_B_WIN_ATTACK_BASEMENT
                 onGameFinish(GameState.USER_B_WIN_ATTACK_BASEMENT, mCurrentRound)
-                //TODO store to db
+                mStorageManager.writeGameGlobalInfo(mRoomId, mCurrentGameState, mCurrentRound)
                 return true
             }
         }
@@ -282,13 +308,13 @@ class ChessGameController {
             d(TAG, "checkCurrentGameFinish USER_B_WIN_KILL_ALL")
             mCurrentGameState = GameState.USER_B_WIN_KILL_ALL
             onGameFinish(GameState.USER_B_WIN_KILL_ALL, mCurrentRound)
-            //TODO store to db
+            mStorageManager.writeGameGlobalInfo(mRoomId, mCurrentGameState, mCurrentRound)
             return true
         } else if (animalAliveCountB <= 0) {
             d(TAG, "checkCurrentGameFinish USER_A_WIN_KILL_ALL")
             mCurrentGameState = GameState.USER_A_WIN_KILL_ALL
             onGameFinish(GameState.USER_A_WIN_KILL_ALL, mCurrentRound)
-            //TODO store to db
+            mStorageManager.writeGameGlobalInfo(mRoomId, mCurrentGameState, mCurrentRound)
             return true
         }
         return false
