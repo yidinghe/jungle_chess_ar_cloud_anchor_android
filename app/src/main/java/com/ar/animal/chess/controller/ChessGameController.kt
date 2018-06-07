@@ -103,16 +103,16 @@ class ChessGameController {
     }
 
     private fun handleReceiveGameGlobalInfoUpdate(gameState: GameState, currentRound: Int) {
-        d(TAG, "handleReceiveAnimalListUpdate")
+        d(TAG, "handleReceiveGameGlobalInfoUpdate")
         mCurrentRound = currentRound
         when (gameState) {
             GameState.USER_A_WIN_ATTACK_BASEMENT, GameState.USER_B_WIN_ATTACK_BASEMENT,
             GameState.USER_A_WIN_KILL_ALL, GameState.USER_B_WIN_KILL_ALL, GameState.NO_WIN_USER -> {
-                d(TAG, "handleReceiveAnimalListUpdate, onGameFinish")
+                d(TAG, "handleReceiveGameGlobalInfoUpdate, onGameFinish")
                 onGameFinish(gameState, mCurrentRound)
             }
             GameState.USER_A_TURN, GameState.USER_B_TURN -> {
-                d(TAG, "handleReceiveAnimalListUpdate, onGameGlobalInfoUpdate")
+                d(TAG, "handleReceiveGameGlobalInfoUpdate, onGameGlobalInfoUpdate")
                 onGameGlobalInfoUpdate(gameState, currentRound)
             }
         }
