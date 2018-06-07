@@ -130,6 +130,7 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
 
     private var mFirebaseAuth: FirebaseAuth? = null
     private var mFirebaseUser: FirebaseUser? = null
+    private var mOtherUser: ChessUserInfo? = null
     private var mGoogleApiClient: GoogleApiClient? = null
     private var mIsUserA = true
 
@@ -529,7 +530,18 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
         val controllerRenderableView = controllerRenderable!!.view
         val tv_room_id = controllerRenderableView.findViewById<TextView>(R.id.tv_room_id)
         if (!mRoomId.isNullOrBlank()) {
-            tv_room_id.text = "Room ID: $tv_room_id"
+            tv_room_id.text = "Room ID: $mRoomId"
+        }
+    }
+
+    private fun updateRoundPanel(gameState: GameState){
+        val controllerRenderableView = controllerRenderable!!.view
+        val tv_room_id = controllerRenderableView.findViewById<TextView>(R.id.tv_room_id)
+
+        if (gameState == GameState.USER_A_TURN) {
+            tv_room_id.text = (if(mIsUserA) mFirebaseUser!!.displayName else mOtherUser!!.displayName) + "'s round"
+        }else {
+            tv_room_id.text = (if(!mIsUserA) mFirebaseUser!!.displayName else mOtherUser!!.displayName) + "'s round"
         }
     }
 
@@ -669,11 +681,12 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
     }
 
     fun handleChessmenClash(inputNode: ChessmanNode) {
+        toggleChessmanLock(false)
         var userType = inputNode.animal.animalDrawType
         val inputRow = inputNode.animal.posRow
         val inputCol = inputNode.animal.posCol
         val inputAnimalType = inputNode.animal.animalType.ordinal
-
+        //Check if there is any clash occurred on the board, send two updated chessmen info to controller
         for (competeNode in if (userType == AnimalDrawType.TYPE_A) playeBChessmen else playeAChessmen) {
             if (inputRow == competeNode.animal.posRow && inputCol == competeNode.animal.posCol) {
                 Log.d("ChessmanNode", "node clash detected. row:$inputRow col:$inputCol")
@@ -697,6 +710,22 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
                 gameController.updateGameInfo(inputNode.animal, competeNode.animal)
 
                 return
+            }
+        }
+        //If no clash occurred, send one chessman info to controller
+        Log.d("ChessmanNode", "update " + inputNode.animal.animalDrawType + " node state: " + inputNode.animal.state)
+        gameController.updateGameInfo(inputNode.animal, null)
+    }
+
+    fun toggleChessmanLock(lock:Boolean){
+        if(lock){
+            (if(mIsUserA) playeAChessmen else playeBChessmen).forEach {
+                it.chessmanPanel?.isEnabled = false
+                it.toggleTapListener(false)
+            }
+        }else{
+            (if(mIsUserA) playeAChessmen else playeBChessmen).forEach {
+                it.toggleTapListener(true)
             }
         }
     }
@@ -916,13 +945,36 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
         }
     }
 
+
+    private fun getAnimalRender(animalType:AnimalType, userType: AnimalDrawType): ModelRenderable?{
+        when(animalType){
+            AnimalType.RAT -> return if(userType == AnimalDrawType.TYPE_A) playeAmouseRenderable else playeBmouseRenderable
+            AnimalType.CAT -> return if(userType == AnimalDrawType.TYPE_A) playeAcatRenderable else playeBcatRenderable
+            AnimalType.DOG -> return if(userType == AnimalDrawType.TYPE_A) playeAdogRenderable else playeBdogRenderable
+            AnimalType.WOLF -> return if(userType == AnimalDrawType.TYPE_A) playeAwolveRenderable else playeBwolveRenderable
+            AnimalType.LEOPARD -> return if(userType == AnimalDrawType.TYPE_A) playeAleopardRenderable else playeBleopardRenderable
+            AnimalType.TIGER -> return if(userType == AnimalDrawType.TYPE_A) playeAtigerRenderable else playeBtigerRenderable
+            AnimalType.LION -> return if(userType == AnimalDrawType.TYPE_A) playeAlionRenderable else playeBlionRenderable
+            AnimalType.ELEPHANT -> return if(userType == AnimalDrawType.TYPE_A) playeAelephantRenderable else playeBelephantRenderable
+        }
+
+    }
+
     /**
      * onAnimalUpdated received when User turn changed
      * Also, updatedAnimalB can be null since there maybe only one animal moving
      */
     private fun onAnimalUpdate(updatedAnimalList: List<Animal>) {
         d(TAG, "onAnimalUpdate: $updatedAnimalList")
-
+        if(updatedAnimalList.isNotEmpty()){
+            updatedAnimalList.forEach {
+                updateChessmanList(ChessmanNode(this,
+                        it,
+                        getAnimalRender(it.animalType, it.animalDrawType)!!,
+                        0.00f,
+                        MoveAnimeType.STILL))
+            }
+        }
     }
 
     /**
@@ -937,12 +989,27 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
      */
     private fun onGameGlobalInfoUpdate(gameState: GameState, currentRound: Int) {
         d(TAG, "onGameGlobalInfoUpdate: gameState $gameState, currentRound: $currentRound ")
+        when(gameState){
+            GameState.USER_A_TURN ->{
+                updateRoundPanel(GameState.USER_A_TURN)
+                toggleChessmanLock(mIsUserA)
+            }
+            GameState.USER_B_TURN ->{
+                updateRoundPanel(GameState.USER_B_TURN)
+                toggleChessmanLock(!mIsUserA)
+            }
+
+            else -> {
+                d(TAG, "currentUserInfo: $gameState")
+            }
+        }
     }
 
     private fun onReadUserInfo(currentUserInfo: ChessUserInfo, otherUserInfo: ChessUserInfo) {
         d(TAG, "currentUserInfo: $currentUserInfo")
         d(TAG, "otherUserInfo: $otherUserInfo")
-        updateControllerPanel(otherUserInfo)
+        mOtherUser = otherUserInfo
+        updateControllerPanel(mOtherUser!!)
     }
 
     private fun hostCloudAnchor(anchor: Anchor) {

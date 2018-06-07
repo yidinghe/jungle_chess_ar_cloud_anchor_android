@@ -99,6 +99,14 @@ class ChessmanNode(var context: Context,
         renderable = chessRenderable
     }
 
+    fun toggleTapListener(enable: Boolean){
+        if(enable){
+            setOnTapListener(this)
+        }else{
+            setOnTapListener(null)
+        }
+    }
+
     /*
     Tap chess node, display move options panel
      */
