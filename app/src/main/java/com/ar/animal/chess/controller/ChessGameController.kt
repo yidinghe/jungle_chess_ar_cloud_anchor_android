@@ -16,7 +16,7 @@ class ChessGameController {
     private var mOtherUser: ChessUserInfo? = null
     private var mIsGameStarted = false
     private var mCurrentRound = 0
-    private var mAnimalList: List<Animal>? = null
+    private var mAnimalList: MutableList<Animal>? = null
 
     private val BASEMENT_A_X = 3
     private val BASEMENT_A_Y = 8
@@ -127,16 +127,41 @@ class ChessGameController {
 
         val needToNotifyUIList = updatedAnimalList.minus(mAnimalList!!)
         d(TAG, "needToNotifyUIList: $needToNotifyUIList")
-        mAnimalList = updatedAnimalList
+        mAnimalList = updatedAnimalList.toMutableList()
 
         if (needToNotifyUIList.isNotEmpty())
             onAnimalUpdate(needToNotifyUIList)
     }
 
     fun test() {
-        mStorageManager.readGameGlobalInfo(7) { gameState, currentRound ->
-            d(TAG, "gameState: $gameState, currentRound: $currentRound")
-        }
+        val animalList = mutableListOf<Animal>(
+                Animal(6, 6, AnimalState.ALIVE, AnimalType.RAT, AnimalDrawType.TYPE_A),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.CAT, AnimalDrawType.TYPE_A),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.DOG, AnimalDrawType.TYPE_A),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.WOLF, AnimalDrawType.TYPE_A),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.LEOPARD, AnimalDrawType.TYPE_A),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.TIGER, AnimalDrawType.TYPE_A),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.LION, AnimalDrawType.TYPE_A),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.ELEPHANT, AnimalDrawType.TYPE_A),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.RAT, AnimalDrawType.TYPE_B),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.CAT, AnimalDrawType.TYPE_B),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.DOG, AnimalDrawType.TYPE_B),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.WOLF, AnimalDrawType.TYPE_B),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.LEOPARD, AnimalDrawType.TYPE_B),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.TIGER, AnimalDrawType.TYPE_B),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.LION, AnimalDrawType.TYPE_B),
+                Animal(0, 8, AnimalState.ALIVE, AnimalType.ELEPHANT, AnimalDrawType.TYPE_B)
+        )
+
+        val updatedAnimal1 = Animal(6, 5, AnimalState.ALIVE, AnimalType.RAT, AnimalDrawType.TYPE_A)
+
+        val index = if (updatedAnimal1.animalDrawType == AnimalDrawType.TYPE_A)
+            updatedAnimal1.animalType.ordinal
+        else
+            updatedAnimal1.animalType.ordinal + 8
+        animalList[index] = updatedAnimal1
+
+        d(TAG, "test: $animalList")
     }
 
     /**
@@ -171,17 +196,21 @@ class ChessGameController {
             return
         }
 
-        mAnimalList!!.toMutableList().remove(mAnimalList!!.find {
-            it.animalDrawType == updatedAnimal1.animalDrawType
-                    && it.animalType == updatedAnimal1.animalType
-        })
-        mAnimalList!!.plus(updatedAnimal1)
+        val index = if (updatedAnimal1.animalDrawType == AnimalDrawType.TYPE_A)
+            updatedAnimal1.animalType.ordinal
+        else
+            updatedAnimal1.animalType.ordinal + 8
+        mAnimalList!![index] = updatedAnimal1
+
+        d(TAG, "updatedAnimal1, $updatedAnimal1")
+
         updatedAnimal2?.let {
-            mAnimalList!!.toMutableList().remove(mAnimalList!!.find {
-                it.animalDrawType == updatedAnimal2.animalDrawType
-                        && it.animalType == updatedAnimal2.animalType
-            })
-            mAnimalList!!.plus(it)
+            val index2 = if (it.animalDrawType == AnimalDrawType.TYPE_A)
+                it.animalType.ordinal
+            else
+                it.animalType.ordinal + 8
+            mAnimalList!![index2] = it
+            d(TAG, "updatedAnimal2, $it")
         }
         d(TAG, "mergeList: ${mAnimalList!!.size},  $mAnimalList")
 
@@ -206,7 +235,7 @@ class ChessGameController {
             e(TAG, "current user is null, no need to store the gameBoard")
             return
         }
-        mAnimalList = animalList
+        mAnimalList = animalList.toMutableList()
 
         if (mCurrentUser!!.userType == UserType.USER_A) {
             d(TAG, "initGameBoard, userType UserA, store current game board do db.")
