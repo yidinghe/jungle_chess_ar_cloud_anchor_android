@@ -681,7 +681,7 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
     }
 
     fun handleChessmenClash(inputNode: ChessmanNode) {
-        toggleChessmanLock(false)
+        toggleChessmanLock(true)
         var userType = inputNode.animal.animalDrawType
         val inputRow = inputNode.animal.posRow
         val inputCol = inputNode.animal.posCol
@@ -992,11 +992,11 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
         when(gameState){
             GameState.USER_A_TURN ->{
                 updateRoundPanel(GameState.USER_A_TURN)
-                toggleChessmanLock(mIsUserA)
+                toggleChessmanLock(!mIsUserA)
             }
             GameState.USER_B_TURN ->{
                 updateRoundPanel(GameState.USER_B_TURN)
-                toggleChessmanLock(!mIsUserA)
+                toggleChessmanLock(mIsUserA)
             }
 
             else -> {
