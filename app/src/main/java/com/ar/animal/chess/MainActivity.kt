@@ -275,9 +275,9 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
                 .scene
                 .setOnUpdateListener { frameTime ->
 
-                    if (needShowWelcomePanel) {
-                        onUpdate()
-                    }
+//                    if (needShowWelcomePanel) {
+//                        onUpdate()
+//                    }
 
                     if (loadingMessageSnackbar == null) {
                         return@setOnUpdateListener
@@ -352,7 +352,6 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
                     Log.d(TAG, "HIT CAPTURE")
                     welcomeAnchor = hit.createAnchor()
                     hideLoadingMessage()
-                    placeWelcomePanel()
                     needShowWelcomePanel = false
                     isHitting = true
                     break
@@ -462,11 +461,6 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
     }
 
     private fun onSingleTap(tap: MotionEvent) {
-        if (welcomeAnchor != null) {
-            d(TAG, "welcomeAnchor is still alive. destroy first.")
-            return
-        }
-
         if (!hasFinishedLoading) {
             return
         }
@@ -858,32 +852,30 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
     private fun placeWelcomePanel() {
         welcomeNode.renderable = welcomeRenderable
         welcomeNode.localPosition = Vector3(0.0f, 0f, 0.0f)
+        val anchorNode = AnchorNode(cloudAnchor)
 
         val welcomeRenderableView = welcomeRenderable!!.view
         val btn_new_game = welcomeRenderableView.findViewById<Button>(R.id.btn_new_game)
         val btn_pair = welcomeRenderableView.findViewById<Button>(R.id.btn_pair)
         btn_new_game.setOnClickListener {
             mIsUserA = true
+            welcomeNode.isEnabled = false
             signInGoogleAccount()
-            welcomeAnchor!!.detach()
-            welcomeAnchor = null
+            placeBoard(anchorNode)
         }
 
         btn_pair.setOnClickListener {
             mIsUserA = false
-            signInGoogleAccount()
-            welcomeAnchor!!.detach()
-            welcomeAnchor = null
+            welcomeNode.isEnabled = false
 
+            signInGoogleAccount()
         }
 
-        val anchorNode = AnchorNode(welcomeAnchor)
         anchorNode.setParent(arSceneView!!.scene)
         anchorNode.addChild(welcomeNode)
     }
 
-    private fun placeBoard() {
-        val anchorNode = AnchorNode(cloudAnchor)
+    private fun placeBoard(anchorNode: AnchorNode) {
         anchorNode.setParent(arSceneView!!.scene)
 
         val tilesAndChessmen = initTilesAndChessmen()
@@ -1019,8 +1011,7 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
         setNewAnchor(newAnchor)
 
         startCheckUpdatedAnchor()
-
-        placeBoard()
+        placeWelcomePanel()
         Snackbar.make(findViewById(android.R.id.content), "hostCloudAnchor", Snackbar.LENGTH_SHORT).show()
         d(TAG, "setNewAnchor: hostCloudAnchor HOSTING")
         appAnchorState = AppAnchorState.HOSTING
@@ -1028,8 +1019,9 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
 
     private fun showResolveAnchorPanel() {
         if (cloudAnchor != null) {
-            e(TAG, "Already had cloud anchor, need clear anchor first.")
-            return
+            e(TAG, "Already had cloud anchor, clear anchor.")
+            cloudAnchor!!.detach()
+            cloudAnchor = null
         }
         val dialogFragment = ResolveDialogFragment()
         dialogFragment.setOkListener(this::onResolveOkPressed)
@@ -1106,7 +1098,7 @@ class MainActivity : AppCompatActivity(), ChessmanNode.ChessmanMoveListener {
                 updateRoomPanel()
                 mGameController.getUserInfo(true, this::onReadUserInfo)
                 mHandler.removeCallbacksAndMessages(null)
-                placeBoard()
+                placeBoard(AnchorNode(cloudAnchor))
             } else {
                 startCheckUpdatedAnchor()
                 d(TAG, "Resolve Anchor state: $cloudState start another check around")
